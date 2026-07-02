@@ -1,355 +1,313 @@
-# ☸️ Kubernetes & 🐋 Docker Production Cheat Sheet
+## 🐋 Docker Post-Installation (Non-Sudo Access)
 
-A comprehensive, clean, and production-ready reference guide for managing Container Runtimes, Clusters, Nodes, Pods, Deployments, Services, Storage, and Multi-Node Swarm Orchestration.
-
-**🖥️ Cluster Management**
-
-### Disable Swap Space
-Required on host machines before initializing or running a cluster.
-```bash
-sudo swapoff -a
-```
-
-### Get Built-in Tool Help
+### Add Active User to the Docker Group
+Enables running Docker engine calls without requiring root `sudo` elevation.
 ```bash
-kubectl -h
+sudo apt install util-linux-extra
+sudo usermod -aG docker $USER
+newgrp docker
 ```
 
-### Check Kubelet Service Status
-```bash
-systemctl status kubelet
-```
+---
 
-### View Cluster Information
-```bash
-kubectl cluster-info
-```
+## 📊 System Diagnostics & Resource Tuning
 
-### View Kubernetes Version Details
+### View Daemon Engine Version Information
 ```bash
-kubectl version
+docker -v
 ```
 
-### Inspect Merged Kubeconfig Configuration
+### Check Host Service Process Daemon Status
 ```bash
-kubectl config view
+sudo systemctl status docker
 ```
 
-### Extract List of Users from Kubeconfig
+### Show Comprehensive System-Wide Configuration
 ```bash
-kubectl config view -o jsonpath='{.users[*].name}'
+docker info
 ```
 
-### Display the Active Context Name
+### Display Real-Time Container Resource Statistics
 ```bash
-kubectl config current-context
+docker stats
 ```
 
-### List All Available Contexts
+### Display Storage Utilization Disk Footprint Summary
 ```bash
-kubectl config get-contexts
+docker system df
 ```
 
-### Configure or Modify a Context Entry
+### Inspect the Real-Time Docker Daemon Event Stream
 ```bash
-kubectl config set-context "context_name"
+docker system events
 ```
 
-### Switch Active Target Context
+### Wipe Unused Data (Stopped Containers, Dangling Images, Cache)
 ```bash
-kubectl config use-context "cluster_name"
+docker system prune -a --volumes
 ```
 
-### List Supported API Resources
+### Display Host Memory Usage Profile
 ```bash
-kubectl api-resources
+free -m
 ```
 
-### List Supported API Versions
+### Show Active Network Interconnect Interfaces and IPs
 ```bash
-kubectl api-versions
+ip a
 ```
 
-### List All Core Resources Across All Namespaces
-```bash
-kubectl get all --all-namespaces
-```
+---
 
-**🔌 Node Administration**
+## 📦 Container Lifecycle & Processing Controls
 
-### List All Cluster Nodes
+### List All Active Containers Currently Running
 ```bash
-kubectl get nodes
+docker ps
 ```
 
-### List Nodes with IP and OS Details
+### List All Containers Regardless of Current Runtime State
 ```bash
-kubectl get nodes -o wide
+docker ps -a
 ```
 
-### View Detailed Node Metrics and Status
+### Spin up an Isolated Background Container (Defined Port Mapping)
 ```bash
-kubectl describe node "node_name"
+docker run -d -it --name "container_name" -p 80:80 "image_name"
 ```
 
-### View Real-Time Node CPU/Memory Usage
+### Spin up a Container and Map Ports to Random Ephemeral Host Ports
 ```bash
-kubectl top node "node_name"
+docker run -d -it --name "container_name" -P "image_name"
 ```
 
-### Find Pods Running on a Specific Node
+### Spin up an OS Core Environment Overriding the Entrypoint Bash Shell
 ```bash
-kubectl get pods -o wide | grep "node_name"
+docker run -d -it --name "container_name" -p 81:80 "image_name" /bin/bash
 ```
 
-### Add metadata Annotation to a Node
+### Spin up a Container Mounting a Named Managed Docker Volume
 ```bash
-kubectl annotate node "node_name" comment="maintenance_pending"
+docker run -d -it --name "container_name" -p 80:80 --mount source="volume_name",destination=/data "image_name"
 ```
 
-### Apply a Label to a Node
+### Spin up a Container using a Direct Bind Mount (Host Directory to Target Location)
 ```bash
-kubectl label node "node_name" kubernetes.io/role=worker1
+docker run -d -it --name "container_name" -p 80:80 -v /host/data:/container/destination "image_name"
 ```
 
-### Add a Taint to a Node
+### Open an Interactive Terminal Session Inside a Container Instance
 ```bash
-kubectl taint node "node_name" key=value:NoSchedule
+docker exec -it "container_name" /bin/sh
 ```
 
-### Cordon a Node (Mark as Unschedulable)
+### Stream Runtime Activity Records and Output Logs
 ```bash
-kubectl cordon node "node_name"
+docker logs -f "container_name"
 ```
 
-### Uncordon a Node (Mark as Schedulable)
+### Display the Running Process Tree Layer of a Target Container
 ```bash
-kubectl uncordon node "node_name"
+docker top "container_name"
 ```
 
-### Drain Node safely for Maintenance
+### Stop a Warm Running Container Instance
 ```bash
-kubectl drain node "node_name" --ignore-daemonsets --delete-emptydir-data
+docker stop "container_name"
 ```
 
-### Open Node Configuration in Default Editor
+### Wake a Pre-existing Stopped Container Instance
 ```bash
-kubectl edit node "node_name"
+docker start "container_name"
 ```
 
-### Apply Partial JSON/YAML Update to a Node
+### Clean up and Delete a Defunct Stopped Container
 ```bash
-kubectl patch node "node_name" -p '{"spec":{"unschedulable":true}}'
+docker rm "container_name"
 ```
 
-### Delete a Node from the Cluster
+### Force Terminate and Instantly Evict a Running Container
 ```bash
-kubectl delete node "node_name"
+docker rm -f "container_name"
 ```
 
-**📦 Pod Management**
+---
 
-### List Pods in Active Namespace
-```bash
-kubectl get pods
-```
+## 🖼️ Image Assembly, Management & Backup
 
-### List Pods with IP and Target Node Details
+### Query Public Registries for Available Images
 ```bash
-kubectl get pods -o wide
+docker search "image_name"
 ```
 
-### Spin up a New Standalone Pod
+### Download a Remote Image Locally Into the Engine Engine Cache
 ```bash
-kubectl run "pod_name" --image=nginx
+docker pull "image_name"
 ```
 
-### Output Pod Specifications in JSON Format
+### List Locally Available Cached Engine Images
 ```bash
-kubectl get pods -o json
+docker images
 ```
 
-### Output Pod Specifications in YAML Format
+### Extract Deep Low-Level Manifest Specifications for an Image Asset
 ```bash
-kubectl get pods -o yaml
+docker inspect "image:tag"
 ```
 
-### Filter List by Running Pods
+### Read the Layer Construction Metadata Record History of an Image
 ```bash
-kubectl get pods --field-selector=status.phase=Running
+docker history "image:tag"
 ```
 
-### List Pods and Display Assigned Labels
+### Purge and Delete a Local Cached Engine Image Reference
 ```bash
-kubectl get pods --show-labels
+docker rmi "image_name"
 ```
 
-### Sort Pods by Container Restart Count
+### Commit Runtime Changes on a Container into a New Local Image Asset
 ```bash
-kubectl get pods --sort-by='.status.containerStatuses.restartCount'
+docker commit "container_id" "new_image_name:tag"
 ```
 
-### View Detailed Pod Configuration and Events
+### Export an Image layer to a Static Backup Compressed Archive File
 ```bash
-kubectl describe pod "pod_name"
+docker save "image_id" > image_backup.tar
 ```
 
-### View Real-Time Pod Performance Metrics
+### Secure Transfer Backup Archive to a Remote Server Host Node
 ```bash
-kubectl top pod
+scp image_backup.tar user@target_ip:/home/pc/
 ```
 
-### Print Logs for a Specific Pod
+### Unpack and Load a Backup Archive Asset into the Local Images Pool
 ```bash
-kubectl logs "pod_name"
+docker load -i image_backup.tar
 ```
 
-### Stream Pod Logs in Real Time
-```bash
-kubectl logs -f "pod_name"
-```
+---
 
-### Open an Interactive Terminal Inside a Pod Container
-```bash
-kubectl exec -it "pod_name" -c "container_name" -- /bin/sh
-```
+## 🛠️ Image Compilation (Dockerfile Engine)
 
-### Run a Single Command Against a Container
+### Create a Working Environment Directory Structure
 ```bash
-kubectl exec "pod_name" -c "container_name" -- ls -la
+mkdir new_project && cd new_project
+touch Dockerfile
 ```
 
-### Forward Local Traffic Port to a Pod Port
+### Compile and Tag a Local Image Asset from a Dockerfile Context
 ```bash
-kubectl port-forward pod/"pod_name" 8080:80
+docker build -t "new_image_name" .
 ```
 
-### Block Script Execution Until a Pod is Ready
-```bash
-kubectl wait --for=condition=Ready pod/"pod_name"
-```
+### Core Dockerfile Instructions Reference
 
-### Copy Files from Local Host to Pod Container
-```bash
-kubectl cp /local/path/file.txt "pod_name":/path/in/pod/file.txt
-```
+| Instruction | Operational Functional Objective |
+| :--- | :--- |
+| `FROM` | Declares the initial base execution layer stage image. |
+| `ADD` | Transports local files or pulls remote internet download assets. |
+| `COPY` | Transfers local directory files inside the workspace context. |
+| `RUN` | Executes software setup installations inside the temporary image builds. |
+| `CMD` | Establishes mutable baseline fallback arguments for running containers. |
+| `ENTRYPOINT` | locks down immutable hardcoded execution parameters. |
+| `ENV` | Binds continuous system configuration environment variables. |
+| `ARG` | Handles configuration properties used strictly during image assembly time. |
+| `EXPOSE` | Documents intended ingress communication network ports. |
+| `USER` | Locks down target UID/GID context parameters to minimize root exploit scope. |
+| `WORKDIR` | Standardizes default execution file locations. |
+| `VOLUME` | Instantiates decoupled storage target markers. |
+| `LABEL` | Inject metadata documentation parameters into an image layout block. |
+| `HEALTHCHECK` | Configures monitoring loops to audit runtime container integrity states. |
+| `SHELL` | Overrides native OS system execution prompt pathways. |
 
-### Copy Files from Pod Container to Local Host
-```bash
-kubectl cp "pod_name":/path/in/pod/file.txt /local/path/file.txt
-```
+---
 
-### Add or Update Pod Labels
-```bash
-kubectl label pods "pod_name" environment=production
-```
+## 💾 Storage Volume Management
 
-### Add or Update Pod Annotations
+### Create an Isolated Persistent Data Volume Partition
 ```bash
-kubectl annotate pod "pod_name" description="frontend_app"
+docker volume create "volume_name"
 ```
 
-### Replace/Update a Pod Manifest Declaratively
+### List All Active Persistent Volumes Provisioned Locally
 ```bash
-kubectl replace -f pod.yaml
+docker volume ls
 ```
 
-### Delete a Pod Safely with Grace Period
+### Find the Storage Path and Inspect Volume Meta Configuration Profiles
 ```bash
-kubectl delete pod "pod_name" --grace-period=10
+docker volume inspect "volume_name"
 ```
 
-### Force Delete a Pod Immediately
+### Remove a Targeted Volume Layer
 ```bash
-kubectl delete pod "pod_name" --grace-period=0 --force
+docker volume rm "volume_name"
 ```
-
-**🚀 Deployment Controls**
 
-### Create Resources from a Directory or File
+### Purge and Clear Out All Unattached Orphaned Storage Volumes
 ```bash
-kubectl create -f ./manifest_folder/
+docker volume prune
 ```
 
-### Apply/Update Resources from a Specific Manifest File
-```bash
-kubectl apply -f deployment.yaml
-```
+---
 
-### List All Active Deployments
-```bash
-kubectl get deployments
-```
+## ⚖️ Container Compute & Resource Scheduling Boundaries
 
-### Stream Deployment State Changes in Real Time
+### Enforce Memory Request Reservations and Hard Runtime Ceilings
 ```bash
-kubectl get deployment "deployment_name" --watch
+docker run --memory-reservation=256m -m 512m -d --name "container_name" "image_name"
 ```
 
-### View Detailed Deployment Operational Status
+### Dedicate Explicit Proportional CPU Fractional Execution Quotas
 ```bash
-kubectl describe deployment "deployment_name"
+docker run --cpus=1.2 -d --name "container_name" "image_name"
 ```
 
-### Scale Deployment Replicas Up or Down
+### Regulate Relative Priority CPU Shares Weights for Execution Balancing
 ```bash
-kubectl scale deployment "deployment_name" --replicas=3
+docker run --cpu-shares=1000 --cpus=1.2 -d --name "container_name" "image_name"
 ```
 
-### Perform a Force Replace/Re-create Deployment
-```bash
-kubectl replace --force -f deployment.yaml
-```
+---
 
-### Edit a Running Deployment Configuration Live
-```bash
-kubectl edit deployment "deployment_name"
-```
+## 🐙 Multi-Container App Coordination (Docker Compose)
 
-### Trigger a Rolling Image Update
+### Install the Docker Compose Plugin Utilities Dependency Engine
 ```bash
-kubectl set image deployment/"deployment_name" "container_name"=nginx:1.25.3
+sudo apt-get install docker-compose-plugin
 ```
 
-### View Rolling Deployment Progress Status
+### Spin up Multi-Container Infrastructure in Isolated Detached Mode
 ```bash
-kubectl rollout status deployment "deployment_name"
+docker compose -f docker-compose.yml up -d
 ```
 
-### View Rollout Version History
+### Stop Running Application Infrastructure Layers and Drop Custom Networks
 ```bash
-kubectl rollout history deployment "deployment_name"
+docker compose -f docker-compose.yml down
 ```
 
-### Roll Back to the Previous Deployment Version
+### Stream Application Service Cluster Execution Output Records and Logs
 ```bash
-kubectl rollout undo deployment "deployment_name"
+docker compose -f docker-compose.yml logs "service_name"
 ```
 
-### Delete a Deployment
+### Validate Syntax Schema Compliance without Altering Current Infrastructures
 ```bash
-kubectl delete deployment "deployment_name"
+docker compose -f docker-compose.yml config
 ```
 
-**🔌 Service Discovery & Networking**
+---
 
-### List All Services
-```bash
-kubectl get services
-```
-
-### View Service Endpoints and Routing Rules
-```bash
-kubectl describe service "service_name"
-```
+## 🕸️ Swarm Multi-Node Orchestration Platform
 
-### Expose a Deployment as a LoadBalancer Service
+### Initialize a Primary Swarm Manager Node Endpoint Interface
 ```bash
-kubectl expose deployment "deployment_name" --type=LoadBalancer --port=80
+docker swarm init --advertise-addr "manager_interface_ip"
 ```
 
-### Delete a Service
+### List Active Nodes Cooperating Inside the Swarm Setup
 ```bash
-kubectl delete service "service_name"
+docker node ls
 ```
 
