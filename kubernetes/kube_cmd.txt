@@ -1,0 +1,507 @@
+## Deployment A New File/
+#CREATE
+vi deployment.yaml               (TO CREATE A FILE)
+kubectl apply -f deployment.yaml (TO RUN THE YAML FILE)
+kubectl run ''
+
+#CHECK DEPLOY STATUS
+kubectl get deploy               (TO LIST DEPLOYMENT WITH DEFAULT NAMESPACE )
+kubectl get deploy -n 'ns name'  (TO LIST DEPLOYMENT WITH NEW NAMESPACE)
+
+#CHECK POD STATUS
+kubectl get pods                 (TO LIST PODS WITH DEFAULT NAMESPACE)
+kubectl get pods -n 'ns name'    (TO LIST PODS WITH NEW NAMESPACE)
+kubectl get pod -o wide              (TO LIST IP TO ACCESS IN EXTERNAL)
+kubectl get pod -n 'ns name' -o wide (TO LIST IP TO ACCESS IN EXTERNAL WITH NAMESPACE)
+
+#
+kubectl get svc                  (TO LIST SERVICE WITH DEFAULT NAMESPACE)
+kubectl get svc -n 'ns name'     (TO LIST SERVICE WITH NEW NAMESPACE)
+minikube service -n 'ns name' 'svc name' --url (TO ACCESS IN WEBSITE)
+nslookup 'url'                   (TO CHECK THE SERVER IN WORKING)
+
+#
+kubectl edit 'deploy name'       (TO EDIT A CLUSTER FILE AND DELETED FILE)
+kubectl delete 'deploy name'     (TO DELETE PERMANTELY)
+kubectl get deploy 'deleted deploy name' -o yaml (TO GET DELETED DEPLOY IN YAML FORMAT, COPY AND CREATE A NEW FILE)
+
+
+
+Cluster Management:
+sudo swapoff -a                                     (SWAPOFF TO START THE CLUSTER)
+kubectl -h                                          (HELP FOR kubectl)
+systemctl status kubelet
+kubectl cluster-info                                (DISPLAY CLUSTER INFORMATION)
+kubectl get nodes                                   (LIST ALL NODES IN THE CLUSTER)
+kubectl describe node 'node_name'                   (SHOW DETAILED INFORMATION ABOUT A SPECIFIC NODE)
+kubectl version                                     (DISPLAY THE KUBERNETES VERSION RUNNING ON THE CLIENT AND SERVER)
+kubectl config view                                 (GET THE CLUSTER CONFIGURATION)
+kubectl config view -o jsonpath='{.users[*].name}'  (GET A LIST OF USERS)
+kubectl config current-context   	 	    (DISPLAY THE CURRENT CONTEXT)
+kubectl config get-contexts       	  	    (DISPLAY A LIST OF CONTEXTS)
+kubectl config set-context 'name'         	    ( UPDATE OR CREATE A CONTEXT ENTRY IN KUBECONFIG FILE, DEFINING CLUSTER ACCESS SETTINGS LIKE THE CLUSTER, NAMESPACE, AND USER)
+kubectl config use-context 'cluster name'           (SET THE DEFAULT CONTEXT)
+kubectl api-resources                               (LIST THE AVAILABLE API RESOURCES)
+kubectl api-versions                                (LIST THE AVAILABLE API VERSIONS)
+kubectl get all                                     (ALL-NAMESPACES)
+
+#Nodes commands
+kubectl get node                            (LIST ONE OR MORE NODES)
+kubectl taint node 'node_name'              (UPDATE THE TAINTS ON ONE OR MORE NODES)
+kubectl delete node 'node_name'             (DELETE A NODE OR MULTIPLE NODES)
+kubectl top node 'node_name'                (DISPLAY RESOURCE USAGE (CPU/MEMORY/STORAGE) FOR NODES)
+kubectl get pods -o wide | grep 'node_name' (PODS RUNNING ON A NODE)
+kubectl annotate node 'node_name'           (COMMENTS OD A NODE)
+kubectl cordon node 'node_name'             (MARK A NODE AS UNSCHEDULABLE) 
+kubectl uncordon node 'node_name'           (MARK NODE AS SCHEDULABLE)
+kubectl drain node 'node_name'              (DRAIN A NODE IN PREPARATION FOR MAINTENANCE)
+kubectl label node 'node_name' kubernetes.io/role=worker1                         (UPDATE THE LABELS OF ONE OR MORE NODES)
+kubectl describe node 'node_name'           (SHOWS DETAILED INFORMATION ABOUT A NODE, INCLUDING LABELS, TAINTS, CONDITIONS, AND ALLOCATED RESOURCES)
+kubectl edit node 'node_name'               (OPEN THE NODE CONFIGURATION IN YOUR DEFAULT EDITOR FOR MANUAL CHANGES, SUCH AS EDITING LABELS OR TAINTS)
+kubectl patch node 'node_name' -p 'patch'   (APPLY A PARTIAL UPDATE TO A NODE’S CONFIGURATION USING A JSON OR YAML PATCH)
+
+Pod Management:
+kubectl get pods                                                        (LIST ALL PODS IN THE CURRENT NAMESPACE)
+kubectl create pod 'pod_name'                                           (CREATE A POD)
+kubectl cp <pod_name>:<path_in_pod> <local_path>                        (COPY FILES FROM A POD TO YOUR LOCAL SYSTEM, OR VICE VERSA)
+kubectl replace -f <pod.yaml>                                           (REPLACE A POD USING A MODIFIED YAML DEFINITION (OFTEN USED IN CI/CD WORKFLOWS))
+kubectl describe pod 'pod_name'                                         (SHOW DETAILED INFORMATION ABOUT A SPECIFIC POD)
+kubectl logs 'pod_name'                                                 (PRINT THE LOGS OF A SPECIFIC POD)
+kubectl exec -it 'pod_name' -- 'cont_name' /bin/sh                      (EXECUTE A COMMAND IN A RUNNING CONTAINER WITHIN A POD)
+kubectl exec 'pod_name' -c 'cont_name'                                  (EXECUTE A COMMAND AGAINST A CONTAINER IN A POD. READ MORE: USING KUBECTL EXEC: CONNECT TO YOUR KUBERNETES CONTAINERS)
+kubectl get pods -o=json                                                (OUTPUT FORMAT IN JSON)
+kubectl get pods -o=yaml                                                (OUTPUT FORMAT IN YAML INSPECTION OR REUSE)
+kubectl get pods -o=wide                                                (OUTPUT IN THE PLAIN-TEXT FORMAT)
+kubectl delete pod 'pod_name'                                           (DELETE A SPECIFIC POD)
+kubectl delete pod 'pod' --grace-period=10                              (SET TERMINATION GRACE PERIOD IN SECONDS)
+kubectl delete pod 'pod' --grace-period=0 --force                       (FORCE ACTIONS LIKE DELETION)
+kubectl get pods --sort-by='.status.containerStatuses[0].restartCount'  ()
+kubectl get pods --field-selector=status.phase=Running                  (GET ALL RUNNING PODS IN THE NAMESPACE)
+kubectl top pod                                                         (DISPLAY RESOURCE USAGE  (CPU/Memory/Storage) for pods.)
+kubectl annotate pod 'pod_name' 'annotation'                            (ADD OR UPDATE THE ANNOTATIONS OF A POD)
+kubectl label pods 'pod_name' new-label='label name'                    (ADD OR UPDATE THE LABEL OF A POD)
+kubectl get pods --show-labels –                                        (GET PODS AND SHOW LABELS)
+kubectl port-forward 'pod name' 'port listen on':'port forward to'      (LISTEN ON A PORT ON THE LOCAL MACHINE AND FORWARD TO A PORT ON A SPECIFIED POD)
+kubectl wait --for=condition=Ready pod/<pod_name>                       (BLOCK UNTIL THE POD IS READY. USEFUL IN AUTOMATION SCRIPTS)
+
+Deployment Management:
+kubectl apply -f 'file.yaml'                           (TO DEPLOY A YAML FILE)
+kubectl create -f ./'file name'                        (FILENAME, DIRECTORY, OR URL TO FILES TO USE TO CREATE A RESOURCE)
+kubectl get deployments                                (LIST ALL DEPLOYMENTS IN THE CURRENT NAMESPACE)
+kubectl get deployment 'file.yaml --watch              (STREAM RESOURCE CHANGES IN REAL TIME)
+kubectl describe deployment 'deploy_name'              (SHOW DETAILED INFORMATION ABOUT A SPECIFIC DEPLOYMENT)
+kubectl scale deployment 'deploy_name' --replicas=3    (SCALE THE NUMBER OF REPLICAS FOR A DEPLOYMENT TO 3)
+kubectl rollout status deployment 'deploy_name'        (CHECK THE STATUS OF A DEPLOYMENT ROLLOUT)
+kubectl rollout history deployment 'deploy_name'       (VIEW THE REVISION HISTORY OF A DEPLOYMENT)
+kubectl rollout undo deployment 'deploy_name'          (ROLLBACK A DEPLOYMENT TO THE PREVIOUS REVISION)
+kubectl edit deployment 'deploy_name'                  (EDIT AND UPDATE THE DEFINITION OF ONE OR MORE DEPLOYMENTS ON THE SERVER)
+kubectl delete deployment 'deploy_name'                (DELETE DEPLOYMENTS)
+kubectl set image 'deploy name' 'cont name'=image:'new image version' (PERFORM A ROLLING UPDATE (K8S DEFAULT), SET THE IMAGE OF THE CONTAINER TO A NEW VERSION FOR A PARTICULAR DEPLOYMENT)
+kubectl replace --force -f 'configuration file'        (PERFORM A REPLACE DEPLOYMENT: FORCE REPLACE, DELETE, AND THEN RE-CREATE THE RESOURCE)
+
+
+Service Management:
+kubectl get services                                                  (LIST ALL SERVICES IN THE CURRENT NAMESPACE)
+kubectl describe service 'svc_name'                                   (SHOW DETAILED INFORMATION ABOUT A SPECIFIC SERVICE)             
+kubectl expose deployment 'deploy_name' --type=LoadBalancer --port=80 (EXPOSE A DEPLOYMENT AS A LOADBALANCER SERVICE ON PORT 80)
+kubectl delete service 'svc_name'                                     (DELETE A SPECIFIC SERVICE)
+
+Namespace Management:
+kubectl create namespace 'new ns_name'   (CREATE A NAMESPACE)
+kubectl edit namespace 'ns_name'         (EDIT AND UPDATE THE DEFINITION OF A NAMESPACE)
+kubectl get namespace 'ns_name'          (LIST ONE OR MORE NAMESPACES)
+kubectl top namespace 'ns_name'          (DISPLAY RESOURCE (CPU/Memory/Storage) USAGE FOR A NAMESPACE)
+kubectl api-resources --namespaced=true  (SHOW WHICH KUBERNETES RESOURCE TYPES ARE NAMESPACE-SCOPED vs. CLUSTER-SCOPED)
+kubectl get namespaces                   (LIST ALL NAMESPACES IN THE CLUSTER)
+kubectl describe namespace 'ns_name'     (SHOW DETAILED INFORMATION ABOUT A SPECIFIC NAMESPACE)
+kubectl create namespace 'ns_name'       (CREATE A NEW NAMESPACE)
+kubectl delete namespace 'ns_name'       (DELETE A SPECIFIC NAMESPACE)
+kubectl get pods -n='ns_name'            (-n –ALIAS FOR NAMESPACE)
+
+Configuration Management:
+kubectl create configmap 'configmap_name' --from-file=path/to/file   (CREATE A CONFIGMAP FROM A FILE)
+kubectl create secret generic 'secret_name' --from-literal=key=value (CREATE A SECRET FROM A LITERAL KEY-VALUE PAIR)
+kubectl describe configmap/configmap_name                            (SHOW DETAILED INFORMATION ABOUT A SPECIFIC CONFIGMAP)
+kubectl describe secret/secret_name                                  (SHOW DETAILED INFORMATION ABOUT A SPECIFIC SECRET)
+kubectl get configmaps                                               (LIST ALL CONFIGMAPS IN THE CURRENT NAMESPACE)
+kubectl get secrets                                                  (LIST ALL SECRETS IN THE CURRENT NAMESPACE)
+
+Volume Management:
+kubectl get pv                  (LIST ALL PERSISTENT VOLUMES)
+kubectl get pvc                 (LIST ALL PERSISTENT VOLUME CLAIMS IN THE CURRENT NAMESPACE)
+kubectl describe pv 'pv_name'   (SHOW DETAILED INFORMATION ABOUT A SPECIFIC PERSISTENT VOLUME)
+kubectl describe pvc 'pvc_name' (SHOW DETAILED INFORMATION ABOUT A SPECIFIC PERSISTENT VOLUME CLAIM)
+
+Health Checks:
+kubectl get readiness/liveness probe 'pod_name' (CHECK THE STATUS OF READINESS OR LIVENESS PROBES FOR A SPECIFIC POD)
+kubectl describe pod 'pod_name'                 (SHOW THE STATUS OF READINESS AND LIVENESS PROBES FOR CONTAINERS WITHIN A POD)
+
+Secrets and ConfigMaps:
+kubectl create secret                                                 (CREATE A SECRET)
+kubectl get secrets                                                   (LIST SECRETS)
+kubectl describe secrets                                              (LIST DETAILS ABOUT SECRETS)
+kubectl delete secret 'secret_name'                                   (DELETE A SECRET)
+kubectl create secret generic 'secret_name' --from-file=path/to/file  (CREATE A SECRET FROM A FILE)
+kubectl create configmap 'configmap_name' --from-file=path/to/file    (CREATE A CONFIGMAP FROM A FILE)
+kubectl create secret generic 'secret_name' --from-literal=key=value  (CREATE A SECRET FROM A LITERAL KEY-VALUE PAIR)
+kubectl create configmap 'configmap_name' --from-literal=key=value    (CREATE A CONFIGMAP FROM A LITERAL KEY-VALUE PAIR)
+
+Advanced Operations:
+kubectl apply -f 'filename'  (APPLY A CONFIGURATION FILE TO CREATE OR UPDATE RESOURCES)
+kubectl explain resource     (GET DETAILED INFORMATION ABOUT A SPECIFIC RESOURCE)
+kubectl get events           (LIST EVENTS RELATED TO RESOURCES IN THE CURRENT NAMESPACE )
+
+Log Management:
+kubectl logs 'pod_name'                 (PRINT THE LOGS FOR A POD, FOR MULTI-CONTAINER PODS, ADD -c 'cont_name')
+kubectl logs --since=6h 'pod_name'      (PRINT THE LOGS FOR THE LAST 6 HOURS FOR A POD)
+kubectl logs --tail=50 'pod_name'       (GET THE MOST RECENT 50 LINES OF LOGS)
+kubectl logs -f 'pod_name'              (PRINT THE LOGS FOR A POD AND FOLLOW NEW LOGS)
+kubectl logs -c ;cont_name' 'pod_name'  (PRINT THE LOGS FOR A CONTAINER IN A POD)
+kubectl logs 'pod_name' pod.log         (OUTPUT THE LOGS FOR A POD INTO A FILE NAMED “pod.log”)
+kubectl logs --previous 'pod_name'      (VIEW THE LOGS FOR A PREVIOUSLY FAILED POD)
+kubectl logs --timestamps 'pod_name'    (INCLUDE TIMESTAMPS WITH EACH LOG LINE) 
+kubectl logs -l name='label name'   (-l – FILTER USING A SPECIFIED LABEL)
+
+#Daemonsets commands
+kubectl apply -f <daemonset_name> Create a DaemonSet.
+kubectl get daemonset – List one or more Daemonsets
+kubectl get daemonsets --all-namespaces – List DaemonSets across all namespaces.
+kubectl get daemonset <daemonset_name> -o yaml – YAML output of a DaemonSet (for backup or inspection)
+kubectl edit daemonset <daemonset_name> – Edit and update the definition of one or more Daemonsets.
+kubectl delete daemonset <daemonset_name> – Delete a Daemonset.
+kubectl rollout daemonset – Manage the rollout of a Daemonset.
+kubectl describe ds <daemonset_name> -n <namespace_name> – Display the detailed state of Daemonsets within a namespace.
+
+#Events commands
+A Kubernetes event is a record of a state change or occurrence within the cluster, typically used for debugging or auditing. Events are generated by the Kubernetes system and components such as the scheduler, controllers, or kubelet.
+kubectl get events – List recent events for all resources in the system.
+kubectl get events --field-selector type=Warning – List Warnings only.
+kubectl get events --sort-by=.metadata.creationTimestamp – List events sorted by timestamp.
+kubectl get events --field-selector involvedObject.kind!=Pod – List events but exclude Pod events.
+kubectl get events --field-selector involvedObject.kind=Node, involvedObject.name=<node_name> – Pull events for a single node with a specific name.
+kubectl get events --field-selector type!=Normal – Filter out normal events from a list of events
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+alias k=kubectl
+echo 'alias k=kubectl' >>~/.bashrc
+
+
+
+
+
+
+
+
+
+
+#Namespaces commands
+A Kubernetes namespace is a logical partition within a cluster that isolates groups of resources for organizational or access control purposes. Each namespace maintains its own scope for namespaced resources such as Pods, Services, Deployments, and ConfigMaps.
+
+
+
+
+#Replication Controllers commands
+kubectl get rc – List the replication controllers.
+kubectl get rc --namespace=”<namespace_name>” – List the replication controllers by namespace
+
+#ReplicaSets commands
+kubectl get replicasets – List ReplicaSets.
+kubectl describe replicasets <replicaset_name> – Display the detailed state of one or more ReplicaSets.
+kubectl scale --replicas=[x] – Scale a ReplicaSet
+
+
+
+
+#Service Accounts commands
+kubectl get serviceaccounts – List service accounts.
+kubectl describe serviceaccounts – Display the detailed state of one or more service accounts.
+kubectl replace serviceaccount – Replace a service account.
+kubectl delete serviceaccount <service_account_name> – Delete a service account
+
+#StatefulSet commands
+kubectl get statefulset – List StatefulSet
+kubectl delete statefulset/<stateful_set_name> --cascade=false – Delete StatefulSet only (not pods).
+kubectl describe statefulset <stateful_set_name> – Describe a StatefulSet (inspect configuration and status).
+kubectl scale statefulset <stateful_set_name> --replicas=<count> – Scale a StatefulSet (manually set replica count).
+kubectl edit statefulset <stateful_set_name> – Edit a StatefulSet (modify YAML in-place).
+kubectl patch statefulset <stateful_set_name> -p '{"spec":{"template":{"metadata":{"annotations":{"date":"'"$(date +%s)"'"}}}}}' – Force rolling update by patching the pod template (e.g., update annotations).
+kubectl get pods -l app=<label_of_statefulset> – View pods managed by a StatefulSet (by label selector).
+
+
+                                     Create EKS Cluster on AWS using Eksctl
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.7/2020-07-08/bin/linux/amd64/kubectl
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin
+kubectl version --short --client
+eksctl create cluster
+--name eks-cluster-demo
+--version 1.15
+--region us-west-1
+--nodegroup-name eks-worker-nodes
+--node-type t3.medium
+--nodes 2
+--nodes-min 2
+--nodes-max 4
+--ssh-access
+--ssh-public-key selvakey.pub
+--managed
+                                       Get our Demo Application from GitHub repository
+git clone https://github.com/learnitguide/kubernetes-knote.git
+
+
+
+[root@kubernetes-master ~]# kubectl run my-httpd --image=httpd --replicas=1 --port=80
+kubectl get deployment
+kubectl get deployment -o wide
+kubectl get pod
+kubectl get pod -o wide
+url 172.16.1.5:80
+kubectl expose deployment my-httpd --port=8080 --target-port=80 --type=LoadBalancer
+kubectl get svc
+curl http://kubernetes-client1.learnitguide.net:31255
+
+
+                                       Create Kubernetes Deployment, Services & Pods using YAML
+cat httpd-basic-deployment.yaml
+kind: Deployment
+apiVersion: apps/v1beta1
+metadata:
+name: my-httpd
+spec:
+replicas: 1
+template:
+metadata:
+labels:
+app: webservers
+spec:
+containers:
+- name: my-httpd-container1
+image: httpd
+ports:
+- containerPort: 80
+
+kubectl apply -f httpd-basic-deployment.yml
+kubectl get deploy -o wide
+kubectl get pod -o wide
+ssh kubernetes-client1.learnitguide.net
+curl 172.16.1.18:80
+exit
+
+
+cat httpd-basic-service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+name: my-httpd-service
+spec:
+selector:
+app: webservers
+type: LoadBalancer
+ports:
+- name: my-apache-port
+port: 8080
+targetPort: 80
+
+ubectl apply -f httpd-basic-service.yml
+kubectl get svc -o wide
+curl https://kubernetes-client1.learnitguide.net:30374
+
+
+                                            Kubernetes Volumes
+spec:
+volumes:
+- name: volume
+hostPath:
+         path: /mnt/data
+containers:
+- name: container1-nginx
+image: nginx
+volumeMounts:
+- name: volume
+mountPath: "/var/nginx-data"
+- name: container2-tomcat
+image: tomcat
+
+                     In order to use a volume only to specific container running in a pod, we must use volumemounts option. so that particular container will use the volume specified in spec
+kind:  Deployment
+apiVersion: apps/v1
+metadata:
+ name: ebay-app
+spec:
+ selector:
+  matchLabels:
+   environment: dev
+   app: ebay
+replicas: 1
+template:
+metadata:
+ labels:
+  environment: dev
+  app: ebay
+spec:
+volumes:
+- name: volume
+hostPath:
+path: /mnt/data
+containers:
+- name: container1-nginx
+image: nginx
+volumeMounts:
+- name: volume
+mountPath: "/var/nginx-data"
+- name: container2-tomcat
+image: tomcat
+ 
+                 In order to share a same volume to all containers running in a pod, we must use volumemounts option in all containers
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+name: ebay-app
+spec:
+selector:
+matchLabels:
+environment: dev
+app: ebay
+replicas: 1
+template:
+metadata:
+labels:
+environment: dev
+app: ebay
+spec:
+volumes:
+- name: volume
+hostPath:
+path: /mnt/data
+containers:
+- name: container1-nginx
+image: nginx
+volumeMounts:
+- name: volume
+mountPath: "/var/nginx-data"
+- name: container2-tomcat
+image: tomcat
+volumeMounts:
+- name: volume
+mountPath: "/var/tomcat-data"
+
+                 In order to assign a dedicated volumes to each containers running in a pod, we must use volumes and volumemounts option in all containers accordingly as per the example given below.
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+name: ebay-app
+spec:
+selector:
+matchLabels:
+environment: dev
+app: ebay
+replicas: 1
+template:
+metadata:
+labels:
+environment: dev
+app: ebay
+spec:
+volumes:
+- name: volume1
+hostPath:
+path: /mnt/data1
+- name: volume2
+hostPath:
+path: /mnt/data2
+containers:
+- name: container1-nginx
+image: nginx
+volumeMounts:
+- name: volume1
+mountPath: "/var/nginx-data"
+- name: container2-tomcat
+image: tomcat
+volumeMounts:
+- name: volume2
+mountPath: "/var/tomcat-data"
+
+                                   Kubernetes Networking
+
+
+
+                                    Kubernetes Ingress
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+name: demo-ingress
+spec:
+rules:
+- host: sales.learnitguide.net
+http:
+paths:
+- backend:
+serviceName: Sales-svc
+servicePort: 80
+- host: purchase.learnitguide.net
+http:
+paths:
+- backend:
+serviceName: Purchase-svc
+servicePort: 80
+- host: examples.site1.com
+http:
+paths:
+- backend:
+serviceName: Examples-svc
+servicePort: 80
+
+git clone https://github.com/kubernetes/ingress-nginx.git
+kubectl apply -f ingress-nginx/deploy/static/provider/aws/deploy.yaml
+kubectl get ns
+kubectl -n ingress-nginx get pods -o wide
+kubectl -n ingress-nginx get svc
+
+
+                                  Setup Haproxy Ingress Controller on Kubernetes
+git clone https://github.com/haproxytech/kubernetes-ingress.git
+kubectl apply -f kubernetes-ingress/deploy/haproxy-ingress.yaml
+kubectl get ns
+kubectl -n haproxy-controller get pods -o wide
+kubectl -n haproxy-controller get svc
+
+                                    Kubernetes Namespaces
+kubectl get ns
+kubectl -n test-namespace get pods
+kubectl -n test-namespace get svc
+ubectl create namespace develop
+
+Yaml method
+cat develop-ns.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+name: develop
+
+kubectl apply -f develop-ns.yaml
+
+
+                                  install Kubernetes Dashboard – Deploy Applications using UI
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+kubectl proxy
+kubectl -n kubernetes-dashboard edit svc kubernetes-dashboard
+kubectl -n kubernetes-dashboard get svc
+kubectl create serviceaccount dashboard -n default
+kubectl create clusterrolebinding dashboard-admin -n default  --clusterrole=cluster-admin  --serviceaccount=default:dashboard
+kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode

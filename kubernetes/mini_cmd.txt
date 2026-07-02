@@ -1,0 +1,70 @@
+##Minikube
+#Start a New Cluster with Multiple Nodes
+
+minikube start --nodes 3 -p multinode-demo (This sets up 1 control plane node and 2 worker nodes).
+minikube node add  (Add a Worker Node to an Existing Cluster)
+kubectl get nodes (LIST ONE OR MORE NODES)
+kubectl label node 'node_name' kubernetes.io/role=worker1 (Minikube assigns node roles automatically, but you can explicitly label a node to mark its specific worker responsibility for your deployment configurations)
+minikube node list -p multinode-demo 
+minikube ssh -n 'node_name' (Accessing the Worker Node)
+minikube status -p multinode-demo
+minikube tunnel (Minikube includes a built-in network router that maps LoadBalancer services directly to your local machine's localhost loopback adapter)
+
+#Hard Reset (If the cluster is corrupted)
+
+minikube logs -p 'node name 1' -n 'node name 2' (Debug the Underlying Worker Node)
+minikube delete -p multinode-demo 
+minikube start --nodes 2 -p multinode-demo
+minikube stop -p multinode-demo
+minikube start -p multinode-demo
+docker system prune -a --volumes (Prune backend resources (highly recommended if you are using the docker driver)
+minikube start --nodes 2 --memory 4096 --cpus 4 -p multinode-demo (Spin it back up with specific resources allocated)
+
+
+minikube profile list ()
+minikube status       (Verify and Label the Worker Nodes)
+minikube dashboard
+minikube version
+minikube start --driver=docker
+
+
+
+
+## Cluster Management
+
+* minikube start: Starts a local Kubernetes cluster.
+* minikube stop: Stops a running local Kubernetes cluster.
+* minikube pause: Pauses Kubernetes without impacting current data.
+* minikube unpause: Unpauses a paused Kubernetes cluster.
+* minikube delete: Deletes a local Kubernetes cluster entirely.
+* minikube status: Gets the status of a local Kubernetes cluster. [1, 2, 3, 4, 5] 
+
+## Multi-Node & Profile Management
+
+* minikube node add: Adds a new node to an existing cluster.
+* minikube node delete: Removes a node from an active cluster.
+* minikube node list: Lists all nodes in the current cluster.
+* minikube profile list: Lists all available minikube profiles.
+* minikube profile <name>: Sets the default active minikube profile. [6, 7, 8, 9, 10] 
+
+## Configuration & Environment
+
+* minikube config set <key> <value>: Sets a persistent configuration value (e.g., driver).
+* minikube config view: Displays the active persistent configuration properties.
+* minikube docker-env: Configures your terminal to point to minikube's Docker daemon.
+* minikube ip: Retrieves the IP address of the specified node.
+* minikube ssh: Logs into the underlying node via an interactive SSH terminal. [11, 12, 13, 14, 15] 
+
+## Application Networking & Addons
+
+* minikube service <name>: Connects to and opens a Kubernetes service in your browser.
+* minikube tunnel: Connects to LoadBalancer services via your local machine network.
+* minikube addons list: Lists all available minikube features and extensions.
+* minikube addons enable <name>: Activates a built-in addon (e.g., ingress, dashboard).
+* minikube dashboard: Launches the web-based Kubernetes user interface in your browser. [16, 17, 18, 19, 20] 
+
+## Troubleshooting & Logs
+
+* minikube logs: Returns the logs of the core cluster bootstrap system.
+* minikube update-context: Synchronizes the active kubectl context to match minikube.
+* minikube version: Prints the exact local minikube binary version.

@@ -1,0 +1,147 @@
+sudo apt-get install docker.io
+sudo systemctl start docker && sudo systemctl enable docker (TO ACTIVATE DOCKER)
+
+docker login -u sakthiprasanth
+prasad@121
+
+#Adding current user to the Docker group... without sudo user
+sudo apt install util-linux-extra
+sudo usermod -aG docker $USER
+newgrp docker
+echo ""
+
+sudo docker -v (TO DISPLAY VERSION)
+sudo systemctl status docker (TO SEE DOCKER ACTIVE)
+sudo docker info
+sudo docker system prune (REMOVE UNUSED DATA)
+free -m  (TO DISPLAY MEMORY)
+docker 'double tab' (TO DISPLAY DOCKER CMD ACTION)
+
+sudo docker stats (TO DISPLAY REALTIME CONTAINERS)
+sudo docker system df (TO DISPLAY TOTAL IMAGES & CONTS) 
+sudo docker ps -a (TO DIPLAY ALL CREATES CONTS)
+sudo docker system events (TO SEE DOCKER SYSTEM PROBLEMS)
+ip a  (TO DISPLAY IP ADDRESS)        
+                                                TO PULL A NEW DOCKER IMAGE
+
+sudo docker search 'image' (TO SEARCH A DOCKER IMAGES)
+sudo docker pull 'image' (TO INSTALL IMAGES)
+sudo docker images (TO DISPLAY IMAGES)
+
+                                                 TO RUN AND STOP A CONTAINER
+ 
+sudo docker run -d -it --name 'new cont name' -p 80:80 'image' (TO RUN A CONT)
+sudo docker run -d -it --name 'new cont name' -p 'image' (TO CHOOSE A RANDOM PORT)
+sudo docker run -d -it --name 'new cont name' -p 81:80 'image' /bin/bash (TO RUN A OS IMAGES)
+sudo docker run -d -it --name 'new cont name' -p 80:80 --mount source='volume name',destination=/data 'image' (TO ADD VOLUME IN CONT)
+sudo docker run -d -it --name 'new cont name' -p 80:80 -v /data:'destination new name' 'image' (TO BIND THE VOLUME)
+sudo docker ps (TO DIPLAY A PROCESSING CONT)
+sudo docker exec -it 'cont name' /bin/sh (TO EXECUTE THE CONTAINER)
+sudo docker stop 'cont name' (TO STOP THE CONT)
+sudo docker start 'cont name' (TO START THE CONT)
+sudo docker rm 'cont name' (to remove cont)   sudo docker rm -f 'cont name' (WARNING TO REMOVE FORCE WORKING CONT)
+sudo docker rmi 'image' (TO REMOVE IMAGES)
+sudo docker logs 'cont name' (TO DISPLAY LOGS OF THE CONT)
+sudo docker top 'cont name' (TO DISPLAY CONT PROCESS)
+sudo docker inspect 'image:tag' (TO DISPLAY THE OUTPUT)
+sudo docker history 'image:tag' (TO DIPLAY THE HISTORY)
+sudo docker save 'image id' > newfile.tar (TO BACKUP THE IMAGES)
+scp file.tar 'inet ip'://home/pc/ (TO MOVE ONE HOST TO ANOTHER HOST)
+sudo docker load -i 'file.tar' (TO EXRACT THE BACKUP FILE)
+sudo docker commit 'cont id' 'new image name:tag' (AFTER CHANGES IN CONT)
+
+
+
+
+                                                 TO CREATE A NEW DOCKER IMAGE 
+mkdir 'new dir' (TO CREATE NEW DIRECTORY)
+touch 'file.txt' (TO CREATE NEW FILE)
+vim or nano 'file name' (TO EDIT THE FILE)
+sudo docker buid -t 'new image name' . (TO BUILD AN IMAGE)
+
+                                       Instruction & arguments in Docker file
+
+Instruction	Description
+FROM
+ADD	        Add local or remote files and directories.
+ARG	        Use build-time variables.
+CMD	        Specify default commands.
+COPY	        Copy files and directories.
+ENTRYPOINT	Specify default executable.
+ENV	        Set environment variables.
+EXPOSE	        Describe which ports your application is listening on.
+FROM	        Create a new build stage from a base image.
+HEALTHCHECK	Check a container's health on startup.
+LABEL	        Add metadata to an image.
+MAINTAINER	Specify the author of an image.
+ONBUILD	        Specify instructions for when the image is used in a build.
+RUN	        Execute build commands.
+SHELL	        Set the default shell of an image.
+STOPSIGNAL	Specify the system call signal for exiting a container.
+USER	        Set user and group ID.
+VOLUME	        Create volume mounts.
+WORKDIR	        Change working DIRECTORY                                                                                                      
+
+
+                                             TO CREATE A VOLUME
+
+sudo docker volume create 'new name' (TO CREATE NEW VOLUME) 
+sudo docker volume ls (TO DISPLAY VOLUMES LIST)
+sudo docker volume inspect 'volum name' (TO DISPLAY LOCATION OF VOLUM)
+sudo docker volume rm 'volume name' (TO REMOVE THE VOLUME)                                                                                                                             
+sudo docker volume prune (TO REMOVE UNUSED VOLUMES)
+
+                                              TO CREATE SWARM
+sudo docker node ls (TO LIST ALL SWARM)
+sudo docker swarm init --advertise-addr 'net ip add'(TO ADD NODE)
+sudo docker service ls (TO LIST ALL SERVICE)
+sudo docker service ps 'cont name' (TO DISPLAY HOW MANY NODES ARE CONNECTED)
+sudo docker network ls (TO SEE DRIVERS)
+sudo docker network create -d overlay 'newoverlay' (TO CREATE A OVERLAY DRIVER)
+sudo docker service rm 'cont name' (TO STOP THE SERVICE)
+
+sudo docker node promote 'hostname' (TO PROMOTE THE HOST)
+sudo docker node demote 'hostname' (TO DEMOTE THE HOST)
+
+sudo docker service create --replicas 2 -p 80:80 --name 'cont' 'image' (TO CREATE 2 NODES )
+sudo docker service create --mode global -p 80:80 --name 'cont' 'image' (TO CREATE ALL NODES CONT) 
+
+sudo docker service scale 'cont=5' (TO SCALE UP THE CONTAINER)
+sudo docker service scale 'cont=2' (TO SCALE DOWN THE CONTAINER) 
+
+sudo docker service create --replicas 2 -p 80:80 --name 'cont' 'image:1.1' (TO ROLLBACK OLDER VERSION)
+sudo docker service update --image 'image:latest' 'cont name' (HIGHER VERSION ROLLING UPDATE)
+sudo docker service rollback 'cont name' (TO UPDATE PREVIOUS VERSION)
+
+sudo docker node update --availability drain 'hostname' (TO EMPTY THE HOST)
+sudo docker node update --availability pause 'hostname' (TO PAUSE THE HOST) 
+sudo docker node update --availability active 'hostname' (TO ACTIVATE THE HOST) 
+
+sudo docker stack deploy --compose-file 'file.yaml' 'cont name' (TO RUN A   
+                                                   
+                                                         DOCKER COMPOSE
+sudo apt-get install docker-compose
+
+sudo docker-compose -f 'file.yml' up -d (AUTOMATICALLY START THE APPLICATION)
+sudo docker-compose -f 'file.yml' down -d (TO STOP THE APPLICATION)
+sudo docker-compose -f 'file.yml' logs 'service name' (TO DISPLAY THE LOGS)
+sudo docker-compose -f 'file.yml' config (TO DISPLAY ANY ERRORS WITHOUT RUNNING)
+
+                                                    CPU AND MEMORY LIMIT
+
+               cpu request=256(example)  cpu limit=512(example)
+sudo docker run --memory-reservation=256 -m 512 -d --name 'new cont name' 'image'
+sudo docker run --cpus=1.2 -d --name 'new cont name' 'image'
+sudo docker run --cpu-shares=1000 --cpus=1.2 -d --name 'new cont name' 'image'
+
+sudo docker stack deploy --compose-file 'file.yaml' 'cont name'
+
+                                                    TO PUSH A DOCKER IMAGE
+
+sudo docker login (TO LOGIN DOCKER ACCOUNT)
+sudo docker tag 'image:tag' 'username/image:tag' (TO RENAME THE IMAGE FOR PUSH)
+sudo docker push 'username/image:tag' (IMAGE PUSHING TO DOCKER HUB)
+
+
+
+

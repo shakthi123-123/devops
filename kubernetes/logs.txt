@@ -1,0 +1,954 @@
+
+==> Audit <==
+┌─────────┬─────────────────────────────┬────────────────┬──────┬─────────┬─────────────────────┬─────────────────────┐
+│ COMMAND │            ARGS             │    PROFILE     │ USER │ VERSION │     START TIME      │      END TIME       │
+├─────────┼─────────────────────────────┼────────────────┼──────┼─────────┼─────────────────────┼─────────────────────┤
+│ start   │ --driver=docker             │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 06:37 UTC │ 01 Jul 26 06:43 UTC │
+│ start   │ --driver=docker             │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 07:13 UTC │ 01 Jul 26 07:14 UTC │
+│ start   │ --nodes 3 -p multinode-demo │ multinode-demo │ pc   │ v1.38.1 │ 01 Jul 26 09:49 UTC │                     │
+│ start   │ --nodes 3 -p multinode-demo │ multinode-demo │ pc   │ v1.38.1 │ 01 Jul 26 12:31 UTC │ 01 Jul 26 12:35 UTC │
+│ node    │ add                         │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 12:49 UTC │                     │
+│ ssh     │ -n multinode-demo-m02       │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 12:53 UTC │                     │
+│ start   │ -p multinode-demo --nodes=2 │ multinode-demo │ pc   │ v1.38.1 │ 01 Jul 26 12:54 UTC │ 01 Jul 26 12:58 UTC │
+│ kubectl │ -- get pods -A              │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 12:59 UTC │ 01 Jul 26 12:59 UTC │
+│ start   │                             │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 13:02 UTC │                     │
+│ node    │ delete minikube-m02         │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 13:05 UTC │                     │
+│ addons  │ list                        │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 13:07 UTC │ 01 Jul 26 13:07 UTC │
+│ ssh     │                             │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 13:08 UTC │ 01 Jul 26 13:09 UTC │
+│ stop    │                             │ minikube       │ pc   │ v1.38.1 │ 01 Jul 26 13:09 UTC │                     │
+└─────────┴─────────────────────────────┴────────────────┴──────┴─────────┴─────────────────────┴─────────────────────┘
+
+
+==> Last Start <==
+Log file created at: 2026/07/01 13:02:35
+Running on machine: DESKTOP-9D1CO5U
+Binary: Built with gc go1.25.5 for linux/amd64
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I0701 13:02:35.686046  312978 out.go:360] Setting OutFile to fd 1 ...
+I0701 13:02:35.686736  312978 out.go:413] isatty.IsTerminal(1) = true
+I0701 13:02:35.686745  312978 out.go:374] Setting ErrFile to fd 2...
+I0701 13:02:35.686756  312978 out.go:413] isatty.IsTerminal(2) = true
+I0701 13:02:35.687213  312978 root.go:338] Updating PATH: /home/pc/.minikube/bin
+W0701 13:02:35.687426  312978 root.go:314] Error reading config file at /home/pc/.minikube/config/config.json: open /home/pc/.minikube/config/config.json: no such file or directory
+I0701 13:02:35.687981  312978 out.go:368] Setting JSON to false
+I0701 13:02:35.690788  312978 start.go:134] hostinfo: {"hostname":"DESKTOP-9D1CO5U","uptime":25141,"bootTime":1782885815,"procs":159,"os":"linux","platform":"ubuntu","platformFamily":"debian","platformVersion":"26.04","kernelVersion":"6.18.33.2-microsoft-standard-WSL2","kernelArch":"x86_64","virtualizationSystem":"","virtualizationRole":"guest","hostId":"fc814a16-7159-48a2-9f04-32618641cd64"}
+I0701 13:02:35.690977  312978 start.go:144] virtualization:  guest
+I0701 13:02:35.707167  312978 out.go:179] 😄  minikube v1.38.1 on Ubuntu 26.04 (amd64)
+I0701 13:02:35.742717  312978 config.go:183] Loaded profile config "minikube": Driver=docker, ContainerRuntime=docker, KubernetesVersion=v1.35.1
+I0701 13:02:35.742988  312978 driver.go:422] Setting default libvirt URI to qemu:///system
+I0701 13:02:35.743439  312978 notify.go:220] Checking for updates...
+I0701 13:02:35.885418  312978 docker.go:125] docker version: linux-29.1.3:
+I0701 13:02:35.885570  312978 cli_runner.go:164] Run: docker system info --format "{{json .}}"
+I0701 13:02:36.039333  312978 info.go:266] docker info: {ID:5a4680db-4a3b-457a-9ff0-70b0ac684090 Containers:5 ContainersRunning:4 ContainersPaused:0 ContainersStopped:1 Images:2 Driver:overlayfs DriverStatus:[[driver-type io.containerd.snapshotter.v1]] SystemStatus:<nil> Plugins:{Volume:[local] Network:[bridge host ipvlan macvlan null overlay] Authorization:<nil> Log:[awslogs fluentd gcplogs gelf journald json-file local splunk syslog]} MemoryLimit:true SwapLimit:true KernelMemory:false KernelMemoryTCP:false CPUCfsPeriod:true CPUCfsQuota:true CPUShares:true CPUSet:true PidsLimit:true IPv4Forwarding:true BridgeNfIptables:false BridgeNfIP6Tables:false Debug:false NFd:73 OomKillDisable:false NGoroutines:85 SystemTime:2026-07-01 13:02:36.021246022 +0000 UTC LoggingDriver:json-file CgroupDriver:systemd NEventsListener:0 KernelVersion:6.18.33.2-microsoft-standard-WSL2 OperatingSystem:Ubuntu 26.04 LTS OSType:linux Architecture:x86_64 IndexServerAddress:https://index.docker.io/v1/ RegistryConfig:{AllowNondistributableArtifactsCIDRs:[] AllowNondistributableArtifactsHostnames:[] InsecureRegistryCIDRs:[::1/128 127.0.0.0/8] IndexConfigs:{DockerIo:{Name:docker.io Mirrors:[] Secure:true Official:true}} Mirrors:[]} NCPU:4 MemTotal:8275988480 GenericResources:<nil> DockerRootDir:/var/lib/docker HTTPProxy: HTTPSProxy: NoProxy: Name:DESKTOP-9D1CO5U Labels:[] ExperimentalBuild:false ServerVersion:29.1.3 ClusterStore: ClusterAdvertise: Runtimes:{Runc:{Path:runc}} DefaultRuntime:runc Swarm:{NodeID: NodeAddr: LocalNodeState:inactive ControlAvailable:false Error: RemoteManagers:<nil>} LiveRestoreEnabled:false Isolation: InitBinary:docker-init ContainerdCommit:{ID: Expected:} RuncCommit:{ID: Expected:} InitCommit:{ID: Expected:} SecurityOptions:[name=seccomp,profile=builtin name=cgroupns] ProductLicense: Warnings:<nil> ServerErrors:[] ClientInfo:{Debug:false Plugins:[map[Name:trust Path:/usr/libexec/docker/cli-plugins/docker-trust SchemaVersion:0.1.0 ShortDescription:Manage trust on Docker images Vendor:Docker Inc. Version:29.1.3]] Warnings:<nil>}}
+I0701 13:02:36.039462  312978 docker.go:320] overlay module found
+I0701 13:02:36.064682  312978 out.go:179] ✨  Using the docker driver based on existing profile
+I0701 13:02:36.081976  312978 start.go:310] selected driver: docker
+I0701 13:02:36.081994  312978 start.go:935] validating driver "docker" against &{Name:minikube KeepContext:false EmbedCerts:false MinikubeISO: KicBaseImage:gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 Memory:2200 CPUs:2 DiskSize:20000 Driver:docker HyperkitVpnKitSock: HyperkitVSockPorts:[] DockerEnv:[] ContainerVolumeMounts:[] InsecureRegistry:[] RegistryMirror:[] HostOnlyCIDR:192.168.59.1/24 HypervVirtualSwitch: HypervUseExternalSwitch:false HypervExternalAdapter: KVMNetwork:default KVMQemuURI:qemu:///system KVMGPU:false KVMHidden:false KVMNUMACount:1 APIServerPort:8443 DockerOpt:[] DisableDriverMounts:false NFSShare:[] NFSSharesRoot:/nfsshares UUID: NoVTXCheck:false DNSProxy:false HostDNSResolver:true HostOnlyNicType:virtio NatNicType:virtio SSHIPAddress: SSHUser:root SSHKey: SSHPort:22 KubernetesConfig:{KubernetesVersion:v1.35.1 ClusterName:minikube Namespace:default APIServerHAVIP: APIServerName:minikubeCA APIServerNames:[] APIServerIPs:[] DNSDomain:cluster.local ContainerRuntime:docker CRISocket: NetworkPlugin:cni FeatureGates: ServiceCIDR:10.96.0.0/12 ImageRepository: LoadBalancerStartIP: LoadBalancerEndIP: CustomIngressCert: RegistryAliases: ExtraOptions:[] ShouldLoadCachedImages:true EnableDefaultCNI:false CNI:} Nodes:[{Name: IP:192.168.49.2 Port:8443 KubernetesVersion:v1.35.1 ContainerRuntime:docker ControlPlane:true Worker:true} {Name:m02 IP: Port:0 KubernetesVersion:v1.35.1 ContainerRuntime: ControlPlane:false Worker:true}] Addons:map[default-storageclass:true storage-provisioner:true] CustomAddonImages:map[] CustomAddonRegistries:map[] VerifyComponents:map[apiserver:true system_pods:true] StartHostTimeout:6m0s ScheduledStop:<nil> ExposedPorts:[] ListenAddress: Network: Subnet: MultiNodeRequested:false ExtraDisks:0 CertExpiration:26280h0m0s MountString: Mount9PVersion:9p2000.L MountGID:docker MountIP: MountMSize:262144 MountOptions:[] MountPort:0 MountType:9p MountUID:docker BinaryMirror: DisableOptimizations:false DisableMetrics:false DisableCoreDNSLog:false CustomQemuFirmwarePath: SocketVMnetClientPath: SocketVMnetPath: StaticIP: SSHAuthSock: SSHAgentPID:0 GPUs: AutoPauseInterval:1m0s Rosetta:false}
+I0701 13:02:36.082171  312978 start.go:946] status for docker: {Installed:true Healthy:true Running:false NeedsImprovement:false Error:<nil> Reason: Fix: Doc: Version:}
+I0701 13:02:36.082365  312978 cli_runner.go:164] Run: docker system info --format "{{json .}}"
+I0701 13:02:36.205193  312978 info.go:266] docker info: {ID:5a4680db-4a3b-457a-9ff0-70b0ac684090 Containers:5 ContainersRunning:4 ContainersPaused:0 ContainersStopped:1 Images:2 Driver:overlayfs DriverStatus:[[driver-type io.containerd.snapshotter.v1]] SystemStatus:<nil> Plugins:{Volume:[local] Network:[bridge host ipvlan macvlan null overlay] Authorization:<nil> Log:[awslogs fluentd gcplogs gelf journald json-file local splunk syslog]} MemoryLimit:true SwapLimit:true KernelMemory:false KernelMemoryTCP:false CPUCfsPeriod:true CPUCfsQuota:true CPUShares:true CPUSet:true PidsLimit:true IPv4Forwarding:true BridgeNfIptables:false BridgeNfIP6Tables:false Debug:false NFd:73 OomKillDisable:false NGoroutines:85 SystemTime:2026-07-01 13:02:36.183232324 +0000 UTC LoggingDriver:json-file CgroupDriver:systemd NEventsListener:0 KernelVersion:6.18.33.2-microsoft-standard-WSL2 OperatingSystem:Ubuntu 26.04 LTS OSType:linux Architecture:x86_64 IndexServerAddress:https://index.docker.io/v1/ RegistryConfig:{AllowNondistributableArtifactsCIDRs:[] AllowNondistributableArtifactsHostnames:[] InsecureRegistryCIDRs:[::1/128 127.0.0.0/8] IndexConfigs:{DockerIo:{Name:docker.io Mirrors:[] Secure:true Official:true}} Mirrors:[]} NCPU:4 MemTotal:8275988480 GenericResources:<nil> DockerRootDir:/var/lib/docker HTTPProxy: HTTPSProxy: NoProxy: Name:DESKTOP-9D1CO5U Labels:[] ExperimentalBuild:false ServerVersion:29.1.3 ClusterStore: ClusterAdvertise: Runtimes:{Runc:{Path:runc}} DefaultRuntime:runc Swarm:{NodeID: NodeAddr: LocalNodeState:inactive ControlAvailable:false Error: RemoteManagers:<nil>} LiveRestoreEnabled:false Isolation: InitBinary:docker-init ContainerdCommit:{ID: Expected:} RuncCommit:{ID: Expected:} InitCommit:{ID: Expected:} SecurityOptions:[name=seccomp,profile=builtin name=cgroupns] ProductLicense: Warnings:<nil> ServerErrors:[] ClientInfo:{Debug:false Plugins:[map[Name:trust Path:/usr/libexec/docker/cli-plugins/docker-trust SchemaVersion:0.1.0 ShortDescription:Manage trust on Docker images Vendor:Docker Inc. Version:29.1.3]] Warnings:<nil>}}
+I0701 13:02:36.206041  312978 cni.go:83] Creating CNI manager for ""
+I0701 13:02:36.206146  312978 cni.go:135] multinode detected (2 nodes found), recommending kindnet
+I0701 13:02:36.206578  312978 start.go:358] cluster config:
+{Name:minikube KeepContext:false EmbedCerts:false MinikubeISO: KicBaseImage:gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 Memory:2200 CPUs:2 DiskSize:20000 Driver:docker HyperkitVpnKitSock: HyperkitVSockPorts:[] DockerEnv:[] ContainerVolumeMounts:[] InsecureRegistry:[] RegistryMirror:[] HostOnlyCIDR:192.168.59.1/24 HypervVirtualSwitch: HypervUseExternalSwitch:false HypervExternalAdapter: KVMNetwork:default KVMQemuURI:qemu:///system KVMGPU:false KVMHidden:false KVMNUMACount:1 APIServerPort:8443 DockerOpt:[] DisableDriverMounts:false NFSShare:[] NFSSharesRoot:/nfsshares UUID: NoVTXCheck:false DNSProxy:false HostDNSResolver:true HostOnlyNicType:virtio NatNicType:virtio SSHIPAddress: SSHUser:root SSHKey: SSHPort:22 KubernetesConfig:{KubernetesVersion:v1.35.1 ClusterName:minikube Namespace:default APIServerHAVIP: APIServerName:minikubeCA APIServerNames:[] APIServerIPs:[] DNSDomain:cluster.local ContainerRuntime:docker CRISocket: NetworkPlugin:cni FeatureGates: ServiceCIDR:10.96.0.0/12 ImageRepository: LoadBalancerStartIP: LoadBalancerEndIP: CustomIngressCert: RegistryAliases: ExtraOptions:[] ShouldLoadCachedImages:true EnableDefaultCNI:false CNI:} Nodes:[{Name: IP:192.168.49.2 Port:8443 KubernetesVersion:v1.35.1 ContainerRuntime:docker ControlPlane:true Worker:true} {Name:m02 IP: Port:0 KubernetesVersion:v1.35.1 ContainerRuntime:docker ControlPlane:false Worker:true}] Addons:map[default-storageclass:true storage-provisioner:true] CustomAddonImages:map[] CustomAddonRegistries:map[] VerifyComponents:map[apiserver:true system_pods:true] StartHostTimeout:6m0s ScheduledStop:<nil> ExposedPorts:[] ListenAddress: Network: Subnet: MultiNodeRequested:false ExtraDisks:0 CertExpiration:26280h0m0s MountString: Mount9PVersion:9p2000.L MountGID:docker MountIP: MountMSize:262144 MountOptions:[] MountPort:0 MountType:9p MountUID:docker BinaryMirror: DisableOptimizations:false DisableMetrics:false DisableCoreDNSLog:false CustomQemuFirmwarePath: SocketVMnetClientPath: SocketVMnetPath: StaticIP: SSHAuthSock: SSHAgentPID:0 GPUs: AutoPauseInterval:1m0s Rosetta:false}
+I0701 13:02:36.252879  312978 out.go:179] 👍  Starting "minikube" primary control-plane node in "minikube" cluster
+I0701 13:02:36.275641  312978 cache.go:135] Beginning downloading kic base image for docker with docker
+I0701 13:02:36.291987  312978 out.go:179] 🚜  Pulling base image v0.0.50 ...
+I0701 13:02:36.310880  312978 preload.go:187] Checking if preload exists for k8s version v1.35.1 and runtime docker
+I0701 13:02:36.311008  312978 preload.go:202] Found local preload: /home/pc/.minikube/cache/preloaded-tarball/preloaded-images-k8s-v18-v1.35.1-docker-overlay2-amd64.tar.lz4
+I0701 13:02:36.311030  312978 cache.go:66] Caching tarball of preloaded images
+I0701 13:02:36.311021  312978 image.go:82] Checking for gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 in local docker daemon
+I0701 13:02:36.311402  312978 preload.go:250] Found /home/pc/.minikube/cache/preloaded-tarball/preloaded-images-k8s-v18-v1.35.1-docker-overlay2-amd64.tar.lz4 in cache, skipping download
+I0701 13:02:36.311460  312978 cache.go:69] Finished verifying existence of preloaded tar for v1.35.1 on docker
+I0701 13:02:36.311756  312978 profile.go:143] Saving config to /home/pc/.minikube/profiles/minikube/config.json ...
+I0701 13:02:36.540241  312978 cache.go:164] Downloading gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 to local cache
+I0701 13:02:36.540617  312978 image.go:66] Checking for gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 in local cache directory
+I0701 13:02:36.540691  312978 image.go:69] Found gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 in local cache directory, skipping pull
+I0701 13:02:36.540729  312978 image.go:138] gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 exists in cache, skipping pull
+I0701 13:02:36.540849  312978 cache.go:167] successfully saved gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 as a tarball
+I0701 13:02:36.540862  312978 cache.go:177] Loading gcr.io/k8s-minikube/kicbase:v0.0.50@sha256:eb4fec00e8ad70adf8e6436f195cc429825ffb85f95afcdb5d8d9deb576f3e93 from local cache
+
+
+==> Docker <==
+Jul 01 07:13:48 minikube dockerd[177]: time="2026-07-01T07:13:48.876072437Z" level=error msg="Failed to get event" error="rpc error: code = Unavailable desc = error reading from server: EOF" module=libcontainerd namespace=plugins.moby
+Jul 01 07:13:48 minikube dockerd[177]: time="2026-07-01T07:13:48.876162737Z" level=info msg="Waiting for containerd to be ready to restart event processing" module=libcontainerd namespace=plugins.moby
+Jul 01 07:13:49 minikube dockerd[177]: time="2026-07-01T07:13:49.878124845Z" level=info msg="Processing signal 'terminated'"
+Jul 01 07:13:49 minikube systemd[1]: Stopping docker.service - Docker Application Container Engine...
+Jul 01 07:13:49 minikube dockerd[177]: time="2026-07-01T07:13:49.881212845Z" level=warning msg="Error while testing if containerd API is ready" error="Canceled: grpc: the client connection is closing"
+Jul 01 07:13:49 minikube dockerd[177]: time="2026-07-01T07:13:49.882702445Z" level=info msg="Daemon shutdown complete"
+Jul 01 07:13:49 minikube dockerd[177]: time="2026-07-01T07:13:49.882758845Z" level=info msg="stopping event stream following graceful shutdown" error="context canceled" module=libcontainerd namespace=moby
+Jul 01 07:13:49 minikube systemd[1]: docker.service: Deactivated successfully.
+Jul 01 07:13:49 minikube systemd[1]: Stopped docker.service - Docker Application Container Engine.
+Jul 01 07:13:49 minikube systemd[1]: docker.service: Consumed 1.266s CPU time.
+Jul 01 07:13:50 minikube systemd[1]: Starting docker.service - Docker Application Container Engine...
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.119401847Z" level=info msg="Starting up"
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.127594347Z" level=info msg="OTEL tracing is not configured, using no-op tracer provider"
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.127981947Z" level=info msg="CDI directory does not exist, skipping: failed to monitor for changes: no such file or directory" dir=/etc/cdi
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.128068147Z" level=info msg="CDI directory does not exist, skipping: failed to monitor for changes: no such file or directory" dir=/var/run/cdi
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.154354247Z" level=info msg="Creating a containerd client" address=/run/containerd/containerd.sock timeout=1m0s
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.183611648Z" level=info msg="Loading containers: start."
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.187871748Z" level=info msg="NRI is disabled"
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.187997548Z" level=info msg="[graphdriver] trying configured driver: overlay2"
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.268551748Z" level=info msg="Restoring containers: start."
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.498778150Z" level=info msg="Deleting nftables IPv4 rules" error="exit status 1"
+Jul 01 07:13:50 minikube dockerd[777]: time="2026-07-01T07:13:50.537029051Z" level=info msg="Deleting nftables IPv6 rules" error="exit status 1"
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.704215460Z" level=info msg="Loading containers: done."
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.753446260Z" level=info msg="Docker daemon" commit=6bc6209 containerd-snapshotter=false storage-driver=overlay2 version=29.2.1
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.753629660Z" level=info msg="Initializing buildkit"
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.772596661Z" level=info msg="Completed buildkit initialization"
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.783631961Z" level=info msg="Daemon has completed initialization"
+Jul 01 07:13:51 minikube systemd[1]: Started docker.service - Docker Application Container Engine.
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.784114861Z" level=info msg="API listen on /run/docker.sock"
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.784225261Z" level=info msg="API listen on [::]:2376"
+Jul 01 07:13:51 minikube dockerd[777]: time="2026-07-01T07:13:51.784823961Z" level=info msg="API listen on /var/run/docker.sock"
+Jul 01 07:13:53 minikube systemd[1]: Starting cri-docker.service - CRI Interface for Docker Application Container Engine...
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Starting cri-dockerd dev (HEAD)"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Connecting to docker on the Endpoint unix:///var/run/docker.sock"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Start docker client with request timeout 0s"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Hairpin mode is set to hairpin-veth"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Loaded network plugin cni"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Docker cri networking managed by network plugin cni"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Setting cgroupDriver systemd"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Docker cri received runtime config &RuntimeConfig{NetworkConfig:&NetworkConfig{PodCidr:,},}"
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Starting the GRPC backend for the Docker CRI interface."
+Jul 01 07:13:53 minikube cri-dockerd[1079]: time="2026-07-01T07:13:53Z" level=info msg="Start cri-dockerd grpc backend"
+Jul 01 07:13:53 minikube systemd[1]: Started cri-docker.service - CRI Interface for Docker Application Container Engine.
+Jul 01 07:13:55 minikube cri-dockerd[1079]: time="2026-07-01T07:13:55Z" level=info msg="Failed to read pod IP from plugin/docker: networkPlugin cni failed on the status hook for pod \"coredns-7d764666f9-mcmd2_kube-system\": CNI failed to retrieve network namespace path: cannot find network namespace for the terminated container \"ea89d752cfdb24b5dca08ca4dea4ea89c71aced7f2a1c16b9d26a4746d81ea9c\""
+Jul 01 07:13:57 minikube dockerd[777]: time="2026-07-01T07:13:57.044719195Z" level=info msg="sbJoin: gwep4 ''->'', gwep6 ''->''" eid=6bba6074be06 ep=k8s_POD_kube-controller-manager-minikube_kube-system_740363cf4388c2d0df59fc97f96b889c_1 net=host nid=682e31973525
+Jul 01 07:13:57 minikube dockerd[777]: time="2026-07-01T07:13:57.113010796Z" level=info msg="sbJoin: gwep4 ''->'', gwep6 ''->''" eid=8285be7e2ccb ep=k8s_POD_etcd-minikube_kube-system_5ff8e3b06bbaa8cb7ebc2bf531e48a2f_1 net=host nid=682e31973525
+Jul 01 07:13:57 minikube dockerd[777]: time="2026-07-01T07:13:57.291370797Z" level=info msg="sbJoin: gwep4 ''->'', gwep6 ''->''" eid=c81ea61d2e51 ep=k8s_POD_kube-apiserver-minikube_kube-system_a6dc00f40d27725f15407f95751ce5f7_1 net=host nid=682e31973525
+Jul 01 07:13:57 minikube dockerd[777]: time="2026-07-01T07:13:57.430022598Z" level=info msg="sbJoin: gwep4 ''->'', gwep6 ''->''" eid=dc44c578c7b8 ep=k8s_POD_kube-scheduler-minikube_kube-system_1c7123a121598343200ffd5b015ca580_1 net=host nid=682e31973525
+Jul 01 07:13:57 minikube cri-dockerd[1079]: time="2026-07-01T07:13:57Z" level=info msg="Will attempt to re-write config file /var/lib/docker/containers/cfd7134cdf03657cbd4fb6c1cd91759bb0c8a130c2440fb0edcede3cd3156326/resolv.conf as [nameserver 192.168.49.1 options ndots:0]"
+Jul 01 07:13:57 minikube cri-dockerd[1079]: time="2026-07-01T07:13:57Z" level=info msg="Will attempt to re-write config file /var/lib/docker/containers/299b69054ee4b138207e0109df5e974d0e06f0fe7ca748cc4312caf0c13c7e7c/resolv.conf as [nameserver 192.168.49.1 options ndots:0]"
+Jul 01 07:13:57 minikube cri-dockerd[1079]: time="2026-07-01T07:13:57Z" level=info msg="Will attempt to re-write config file /var/lib/docker/containers/c401d5ff1158743c0dd0f7c3b571080647cee2a105e0c88b5d10053d8b6facd6/resolv.conf as [nameserver 192.168.49.1 options ndots:0]"
+Jul 01 07:13:57 minikube cri-dockerd[1079]: time="2026-07-01T07:13:57Z" level=info msg="Will attempt to re-write config file /var/lib/docker/containers/4bffdacc2ae89cad2ac7d02ea99cceadfb5d5eb677bd3b0e85a66f2f7332d66a/resolv.conf as [nameserver 192.168.49.1 options ndots:0]"
+Jul 01 07:14:03 minikube cri-dockerd[1079]: time="2026-07-01T07:14:03Z" level=info msg="Docker cri received runtime config &RuntimeConfig{NetworkConfig:&NetworkConfig{PodCidr:10.244.0.0/24,},}"
+Jul 01 07:14:07 minikube dockerd[777]: time="2026-07-01T07:14:07.361654174Z" level=info msg="sbJoin: gwep4 ''->'', gwep6 ''->''" eid=3d70290e2dd2 ep=k8s_POD_kube-proxy-m7lnm_kube-system_0d02501e-a425-40eb-bf1e-891b830c7329_1 net=host nid=682e31973525
+Jul 01 07:14:07 minikube dockerd[777]: time="2026-07-01T07:14:07.388957073Z" level=info msg="sbJoin: gwep4 ''->'', gwep6 ''->''" eid=40cf0f1a186d ep=k8s_POD_storage-provisioner_kube-system_91db4af5-cf69-4b7d-a8a5-d34008b6e47c_1 net=host nid=682e31973525
+Jul 01 07:14:07 minikube dockerd[777]: time="2026-07-01T07:14:07.464817873Z" level=info msg="sbJoin: gwep4 ''->'', gwep6 ''->''" eid=c9a9dbb73baf ep=k8s_POD_coredns-7d764666f9-mcmd2_kube-system_5c809dc8-69d6-41de-bf90-c9beedf56367_1 net=none nid=75307e58b8f5
+Jul 01 07:14:07 minikube cri-dockerd[1079]: time="2026-07-01T07:14:07Z" level=info msg="Will attempt to re-write config file /var/lib/docker/containers/e3488187f4bba9b7579769b9083b3e93230170b04e55ba91cc8cb7aa21fa3046/resolv.conf as [nameserver 192.168.49.1 options ndots:0]"
+Jul 01 07:14:07 minikube cri-dockerd[1079]: time="2026-07-01T07:14:07Z" level=info msg="Will attempt to re-write config file /var/lib/docker/containers/82282991fa3e931fd1df212516344f250a834c22b244c41308c3fa48b80df8a7/resolv.conf as [nameserver 192.168.49.1 options ndots:0]"
+Jul 01 07:14:07 minikube cri-dockerd[1079]: time="2026-07-01T07:14:07Z" level=info msg="Will attempt to re-write config file /var/lib/docker/containers/f68c97d59bf3eecf591506e57103b9c1de3d945f1b4bfb54619f4ede0fc1161f/resolv.conf as [nameserver 192.168.49.1 options ndots:0]"
+Jul 01 07:14:38 minikube dockerd[777]: time="2026-07-01T07:14:38.156296339Z" level=info msg="ignoring event" container=f8424a76496830d4a5c804a27a7182f9096829ad918ec8174d244a9491d2267d module=libcontainerd namespace=moby topic=/tasks/delete type="*events.TaskDelete"
+
+
+==> container status <==
+CONTAINER           IMAGE               CREATED             STATE               NAME                      ATTEMPT             POD ID              POD                                NAMESPACE
+780037e50e900       6e38f40d628db       6 hours ago         Running             storage-provisioner       3                   e3488187f4bba       storage-provisioner                kube-system
+f2b064521f1f9       aa5e3ebc0dfed       6 hours ago         Running             coredns                   1                   f68c97d59bf3e       coredns-7d764666f9-mcmd2           kube-system
+f8424a7649683       6e38f40d628db       6 hours ago         Exited              storage-provisioner       2                   e3488187f4bba       storage-provisioner                kube-system
+5355224f5db5a       6521110cdb017       6 hours ago         Running             kube-proxy                1                   82282991fa3e9       kube-proxy-m7lnm                   kube-system
+c045acef76ebc       5f2a969bc7a43       6 hours ago         Running             kube-scheduler            1                   4bffdacc2ae89       kube-scheduler-minikube            kube-system
+26831573f210d       6f9eeb0cff981       6 hours ago         Running             kube-apiserver            1                   c401d5ff11587       kube-apiserver-minikube            kube-system
+8a36ecb8273be       8d7002962c484       6 hours ago         Running             kube-controller-manager   1                   299b69054ee4b       kube-controller-manager-minikube   kube-system
+1332553dc56d6       0a108f7189562       6 hours ago         Running             etcd                      1                   cfd7134cdf036       etcd-minikube                      kube-system
+b7145b96d9e08       aa5e3ebc0dfed       6 hours ago         Exited              coredns                   0                   ea89d752cfdb2       coredns-7d764666f9-mcmd2           kube-system
+fec5438528a19       6521110cdb017       6 hours ago         Exited              kube-proxy                0                   c061ec89a0684       kube-proxy-m7lnm                   kube-system
+c81c33296d53f       8d7002962c484       6 hours ago         Exited              kube-controller-manager   0                   588433463a4b9       kube-controller-manager-minikube   kube-system
+43d6af5f36066       5f2a969bc7a43       6 hours ago         Exited              kube-scheduler            0                   a3395796de276       kube-scheduler-minikube            kube-system
+a4636d7d36f73       6f9eeb0cff981       6 hours ago         Exited              kube-apiserver            0                   6a3166cdf64b1       kube-apiserver-minikube            kube-system
+48c7bb0d616f1       0a108f7189562       6 hours ago         Exited              etcd                      0                   ada847424c5bc       etcd-minikube                      kube-system
+
+
+==> coredns [b7145b96d9e0] <==
+maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[WARNING] plugin/kubernetes: starting server with unsynced Kubernetes API
+.:53
+[INFO] plugin/reload: Running configuration SHA512 = 9e2996f8cb67ac53e0259ab1f8d615d07d1beb0bd07e6a1e39769c3bf486a905bb991cc47f8d2f14d0d3a90a87dfc625a0b4c524fed169d8158c40657c0694b1
+CoreDNS-1.13.1
+linux/amd64, go1.25.2, 1db4568
+[INFO] 127.0.0.1:35650 - 28662 "HINFO IN 8609453987055895414.6650388099756638795. udp 57 false 512" NXDOMAIN qr,rd,ra 132 0.014167301s
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[ERROR] plugin/kubernetes: Failed to watch
+[ERROR] plugin/kubernetes: Failed to watch
+[ERROR] plugin/kubernetes: Failed to watch
+[INFO] SIGTERM: Shutting down servers then terminating
+[INFO] plugin/health: Going into lameduck mode for 5s
+
+
+==> coredns [f2b064521f1f] <==
+maxprocs: Leaving GOMAXPROCS=4: CPU quota undefined
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[INFO] plugin/kubernetes: waiting for Kubernetes API before starting server
+[WARNING] plugin/kubernetes: starting server with unsynced Kubernetes API
+.:53
+[INFO] plugin/reload: Running configuration SHA512 = 9e2996f8cb67ac53e0259ab1f8d615d07d1beb0bd07e6a1e39769c3bf486a905bb991cc47f8d2f14d0d3a90a87dfc625a0b4c524fed169d8158c40657c0694b1
+CoreDNS-1.13.1
+linux/amd64, go1.25.2, 1db4568
+[INFO] 127.0.0.1:57366 - 904 "HINFO IN 2907782574498920877.8949423126641905420. udp 57 false 512" NXDOMAIN qr,rd,ra 132 0.0115395s
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[INFO] plugin/ready: Plugins not ready: "kubernetes"
+[ERROR] plugin/kubernetes: Failed to watch
+[ERROR] plugin/kubernetes: Failed to watch
+[ERROR] plugin/kubernetes: Failed to watch
+
+
+==> describe nodes <==
+Name:               minikube
+Roles:              control-plane
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/arch=amd64
+                    kubernetes.io/hostname=minikube
+                    kubernetes.io/os=linux
+                    minikube.k8s.io/commit=c93a4cb9311efc66b90d33ea03f75f2c4120e9b0
+                    minikube.k8s.io/name=minikube
+                    minikube.k8s.io/primary=true
+                    minikube.k8s.io/updated_at=2026_07_01T06_43_21_0700
+                    minikube.k8s.io/version=v1.38.1
+                    node-role.kubernetes.io/control-plane=
+                    node.kubernetes.io/exclude-from-external-load-balancers=
+Annotations:        node.alpha.kubernetes.io/ttl: 0
+                    volumes.kubernetes.io/controller-managed-attach-detach: true
+CreationTimestamp:  Wed, 01 Jul 2026 06:43:14 +0000
+Taints:             <none>
+Unschedulable:      false
+Lease:
+  HolderIdentity:  minikube
+  AcquireTime:     <unset>
+  RenewTime:       Wed, 01 Jul 2026 13:10:12 +0000
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  MemoryPressure   False   Wed, 01 Jul 2026 13:08:27 +0000   Wed, 01 Jul 2026 06:43:11 +0000   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Wed, 01 Jul 2026 13:08:27 +0000   Wed, 01 Jul 2026 06:43:11 +0000   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  PIDPressure      False   Wed, 01 Jul 2026 13:08:27 +0000   Wed, 01 Jul 2026 06:43:11 +0000   KubeletHasSufficientPID      kubelet has sufficient PID available
+  Ready            True    Wed, 01 Jul 2026 13:08:27 +0000   Wed, 01 Jul 2026 06:43:24 +0000   KubeletReady                 kubelet is posting ready status
+Addresses:
+  InternalIP:  192.168.49.2
+  Hostname:    minikube
+Capacity:
+  cpu:                4
+  ephemeral-storage:  1055762868Ki
+  hugepages-2Mi:      0
+  memory:             8082020Ki
+  pods:               110
+Allocatable:
+  cpu:                4
+  ephemeral-storage:  1055762868Ki
+  hugepages-2Mi:      0
+  memory:             8082020Ki
+  pods:               110
+System Info:
+  Machine ID:                 86e0bfeb3f77427722393c2969964edb
+  System UUID:                86e0bfeb3f77427722393c2969964edb
+  Boot ID:                    ca3329a6-93c4-4ea1-a494-27e15caabb1f
+  Kernel Version:             6.18.33.2-microsoft-standard-WSL2
+  OS Image:                   Debian GNU/Linux 12 (bookworm)
+  Operating System:           linux
+  Architecture:               amd64
+  Container Runtime Version:  docker://29.2.1
+  Kubelet Version:            v1.35.1
+  Kube-Proxy Version:         
+PodCIDR:                      10.244.0.0/24
+PodCIDRs:                     10.244.0.0/24
+Non-terminated Pods:          (7 in total)
+  Namespace                   Name                                CPU Requests  CPU Limits  Memory Requests  Memory Limits  Age
+  ---------                   ----                                ------------  ----------  ---------------  -------------  ---
+  kube-system                 coredns-7d764666f9-mcmd2            100m (2%)     0 (0%)      70Mi (0%)        170Mi (2%)     6h26m
+  kube-system                 etcd-minikube                       100m (2%)     0 (0%)      100Mi (1%)       0 (0%)         6h27m
+  kube-system                 kube-apiserver-minikube             250m (6%)     0 (0%)      0 (0%)           0 (0%)         6h27m
+  kube-system                 kube-controller-manager-minikube    200m (5%)     0 (0%)      0 (0%)           0 (0%)         6h27m
+  kube-system                 kube-proxy-m7lnm                    0 (0%)        0 (0%)      0 (0%)           0 (0%)         6h26m
+  kube-system                 kube-scheduler-minikube             100m (2%)     0 (0%)      0 (0%)           0 (0%)         6h27m
+  kube-system                 storage-provisioner                 0 (0%)        0 (0%)      0 (0%)           0 (0%)         6h26m
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  Resource           Requests    Limits
+  --------           --------    ------
+  cpu                750m (18%)  0 (0%)
+  memory             170Mi (2%)  170Mi (2%)
+  ephemeral-storage  0 (0%)      0 (0%)
+  hugepages-2Mi      0 (0%)      0 (0%)
+Events:              <none>
+
+
+==> dmesg <==
+[Jul 1 06:03] MDS CPU bug present and SMT on, data leak possible. See https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html for more details.
+[  +0.039407] PCI: Fatal: No config space access function found
+[  +0.067923] PCI: System does not support PCI
+[  +0.268086] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
+[  +2.082334] hv_balloon: Cold memory discard hypercall failed with status 1800000005
+[  +0.001003] hv_balloon: Underlying Hyper-V does not support order less than 9. Hypercall failed
+[  +0.000909] hv_balloon: Defaulting to page_reporting_order 9
+[  +3.305591] WSL (2 - init-systemd(Ubuntu)) WARNING: /usr/share/zoneinfo/Asia/Calcutta not found. Is the tzdata package installed?
+[  +0.461058] WSL (108) ERROR: CheckConnection: getaddrinfo() failed: -5
+[Jul 1 06:04] Exception: 
+[  +0.001087] Operation canceled @p9io.cpp:258 (AcceptAsync)
+
+[  +0.002609] WSL (1 - init()) ERROR: InitEntryUtilityVm:2555: Init has exited. Terminating distribution
+[  +6.427574] WSL (2 - init-systemd(Ubuntu)) WARNING: /usr/share/zoneinfo/Asia/Calcutta not found. Is the tzdata package installed?
+[  +0.437101] Failed to connect to system scope bus via local transport: No such file or directory
+[  +0.259273] Failed to connect to system scope bus via local transport: No such file or directory
+[  +0.256876] Failed to connect to system scope bus via local transport: No such file or directory
+[  +0.257350] Failed to connect to system scope bus via local transport: No such file or directory
+[  +0.258651] Failed to connect to system scope bus via local transport: No such file or directory
+[  +0.419463] systemd-journald[58]: File /var/log/journal/fc814a16715948a29f0432618641cd64/system.journal corrupted or uncleanly shut down, renaming and replacing.
+[  +7.096747] systemd-journald[58]: File /var/log/journal/fc814a16715948a29f0432618641cd64/user-1000.journal corrupted or uncleanly shut down, renaming and replacing.
+[Jul 1 06:08] TCP: eth0: Driver has suspect GRO implementation, TCP performance may be compromised.
+[Jul 1 07:06] hrtimer: interrupt took 3226699 ns
+
+
+==> etcd [1332553dc56d] <==
+{"level":"info","ts":"2026-07-01T12:57:23.072574Z","caller":"traceutil/trace.go:172","msg":"trace[296895481] linearizableReadLoop","detail":"{readStateIndex:22715; appliedIndex:22715; }","duration":"582.608098ms","start":"2026-07-01T12:57:22.489939Z","end":"2026-07-01T12:57:23.072547Z","steps":["trace[296895481] 'read index received'  (duration: 582.597798ms)","trace[296895481] 'applied index is now lower than readState.Index'  (duration: 9µs)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T12:57:23.083315Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"593.657498ms","expected-duration":"100ms","prefix":"read-only range ","request":"limit:1 serializable:true keys_only:true ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T12:57:23.090020Z","caller":"traceutil/trace.go:172","msg":"trace[1298041774] range","detail":"{range_begin:; range_end:; response_count:0; response_revision:18156; }","duration":"600.361998ms","start":"2026-07-01T12:57:22.489628Z","end":"2026-07-01T12:57:23.089990Z","steps":["trace[1298041774] 'range keys from in-memory index tree'  (duration: 593.632298ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T12:57:23.095306Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"605.343198ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/namespaces\" limit:1 ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T12:57:23.095412Z","caller":"traceutil/trace.go:172","msg":"trace[947600522] range","detail":"{range_begin:/registry/namespaces; range_end:; response_count:0; response_revision:18156; }","duration":"605.457998ms","start":"2026-07-01T12:57:22.489933Z","end":"2026-07-01T12:57:23.095391Z","steps":["trace[947600522] 'agreement among raft nodes before linearized reading'  (duration: 582.881298ms)","trace[947600522] 'range keys from in-memory index tree'  (duration: 22.404ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T12:57:23.095475Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T12:57:22.489910Z","time spent":"605.547498ms","remote":"127.0.0.1:55716","response type":"/etcdserverpb.KV/Range","request count":0,"request size":24,"response count":0,"response size":30,"request content":"key:\"/registry/namespaces\" limit:1 "}
+{"level":"warn","ts":"2026-07-01T12:57:23.136424Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"277.5135ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath\" limit:1 ","response":"range_response_count:1 size:1111"}
+{"level":"info","ts":"2026-07-01T12:57:23.137448Z","caller":"traceutil/trace.go:172","msg":"trace[1384639524] range","detail":"{range_begin:/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath; range_end:; response_count:1; response_revision:18156; }","duration":"278.5443ms","start":"2026-07-01T12:57:22.858877Z","end":"2026-07-01T12:57:23.137421Z","steps":["trace[1384639524] 'agreement among raft nodes before linearized reading'  (duration: 277.4014ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T12:57:23.136931Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"638.403198ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/health\" ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T12:57:23.137991Z","caller":"traceutil/trace.go:172","msg":"trace[2060744876] range","detail":"{range_begin:/registry/health; range_end:; response_count:0; response_revision:18156; }","duration":"639.460698ms","start":"2026-07-01T12:57:22.498508Z","end":"2026-07-01T12:57:23.137969Z","steps":["trace[2060744876] 'agreement among raft nodes before linearized reading'  (duration: 638.361398ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T12:57:23.137020Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"507.296699ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/resourceclaims\" limit:1 ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T12:57:23.138520Z","caller":"traceutil/trace.go:172","msg":"trace[1444128218] range","detail":"{range_begin:/registry/resourceclaims; range_end:; response_count:0; response_revision:18156; }","duration":"508.790299ms","start":"2026-07-01T12:57:22.629711Z","end":"2026-07-01T12:57:23.138501Z","steps":["trace[1444128218] 'agreement among raft nodes before linearized reading'  (duration: 507.272599ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T12:57:23.138794Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T12:57:22.629689Z","time spent":"508.994199ms","remote":"127.0.0.1:56634","response type":"/etcdserverpb.KV/Range","request count":0,"request size":28,"response count":0,"response size":30,"request content":"key:\"/registry/resourceclaims\" limit:1 "}
+{"level":"warn","ts":"2026-07-01T12:57:23.138290Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T12:57:22.498484Z","time spent":"639.776598ms","remote":"127.0.0.1:55572","response type":"/etcdserverpb.KV/Range","request count":0,"request size":18,"response count":0,"response size":30,"request content":"key:\"/registry/health\" "}
+{"level":"info","ts":"2026-07-01T12:57:27.005848Z","caller":"traceutil/trace.go:172","msg":"trace[1499403712] transaction","detail":"{read_only:false; response_revision:18160; number_of_response:1; }","duration":"132.128599ms","start":"2026-07-01T12:57:26.873692Z","end":"2026-07-01T12:57:27.005821Z","steps":["trace[1499403712] 'process raft request'  (duration: 90.473299ms)","trace[1499403712] 'compare'  (duration: 41.4972ms)"],"step_count":2}
+{"level":"info","ts":"2026-07-01T12:57:53.849617Z","caller":"traceutil/trace.go:172","msg":"trace[1394450100] transaction","detail":"{read_only:false; response_revision:18181; number_of_response:1; }","duration":"126.652211ms","start":"2026-07-01T12:57:53.722938Z","end":"2026-07-01T12:57:53.849590Z","steps":["trace[1394450100] 'process raft request'  (duration: 126.314511ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T12:58:35.364485Z","caller":"traceutil/trace.go:172","msg":"trace[1079559218] linearizableReadLoop","detail":"{readStateIndex:22787; appliedIndex:22787; }","duration":"394.240701ms","start":"2026-07-01T12:58:34.970224Z","end":"2026-07-01T12:58:35.364465Z","steps":["trace[1079559218] 'read index received'  (duration: 394.234201ms)","trace[1079559218] 'applied index is now lower than readState.Index'  (duration: 5.7µs)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T12:58:35.364614Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"394.376001ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/health\" ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T12:58:35.364671Z","caller":"traceutil/trace.go:172","msg":"trace[869098445] range","detail":"{range_begin:/registry/health; range_end:; response_count:0; response_revision:18213; }","duration":"394.445001ms","start":"2026-07-01T12:58:34.970219Z","end":"2026-07-01T12:58:35.364664Z","steps":["trace[869098445] 'agreement among raft nodes before linearized reading'  (duration: 394.352301ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T12:58:35.364626Z","caller":"traceutil/trace.go:172","msg":"trace[165624781] transaction","detail":"{read_only:false; response_revision:18214; number_of_response:1; }","duration":"459.063301ms","start":"2026-07-01T12:58:34.905553Z","end":"2026-07-01T12:58:35.364616Z","steps":["trace[165624781] 'process raft request'  (duration: 458.954801ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T12:58:35.364700Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T12:58:34.970195Z","time spent":"394.498901ms","remote":"127.0.0.1:55572","response type":"/etcdserverpb.KV/Range","request count":0,"request size":18,"response count":0,"response size":30,"request content":"key:\"/registry/health\" "}
+{"level":"warn","ts":"2026-07-01T12:58:35.364744Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T12:58:34.905529Z","time spent":"459.169001ms","remote":"127.0.0.1:55824","response type":"/etcdserverpb.KV/Txn","request count":1,"request size":1093,"response count":0,"response size":42,"request content":"compare:<target:MOD key:\"/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath\" mod_revision:18213 > success:<request_put:<key:\"/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath\" value_size:1020 >> failure:<request_range:<key:\"/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath\" > >"}
+{"level":"warn","ts":"2026-07-01T12:59:06.055652Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"117.3337ms","expected-duration":"100ms","prefix":"","request":"header:<ID:8128046372370289056 username:\"kube-apiserver-etcd-client\" auth_revision:1 > compaction:<revision:18004 > ","response":"size:6"}
+{"level":"info","ts":"2026-07-01T12:59:06.055911Z","caller":"mvcc/index.go:194","msg":"compact tree index","revision":18004}
+{"level":"info","ts":"2026-07-01T12:59:06.056014Z","caller":"traceutil/trace.go:172","msg":"trace[1288453616] compact","detail":"{revision:18004; response_revision:18238; }","duration":"141.9549ms","start":"2026-07-01T12:59:05.914036Z","end":"2026-07-01T12:59:06.055991Z","steps":["trace[1288453616] 'check and update compact revision'  (duration: 117.2333ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T12:59:06.087470Z","caller":"mvcc/kvstore_compaction.go:70","msg":"finished scheduled compaction","compact-revision":18004,"took":"31.0183ms","hash":4132077665,"current-db-size-bytes":2043904,"current-db-size":"2.0 MB","current-db-size-in-use-bytes":1351680,"current-db-size-in-use":"1.4 MB"}
+{"level":"info","ts":"2026-07-01T12:59:06.087641Z","caller":"mvcc/hash.go:157","msg":"storing new hash","hash":4132077665,"revision":18004,"compact-revision":17771}
+{"level":"warn","ts":"2026-07-01T12:59:07.129878Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"131.7429ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/services/endpoints/default/kubernetes\" limit:1 ","response":"range_response_count:1 size:421"}
+{"level":"info","ts":"2026-07-01T12:59:07.131042Z","caller":"traceutil/trace.go:172","msg":"trace[2004520658] range","detail":"{range_begin:/registry/services/endpoints/default/kubernetes; range_end:; response_count:1; response_revision:18240; }","duration":"132.2154ms","start":"2026-07-01T12:59:06.998110Z","end":"2026-07-01T12:59:07.130325Z","steps":["trace[2004520658] 'range keys from in-memory index tree'  (duration: 131.1778ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T12:59:08.259026Z","caller":"traceutil/trace.go:172","msg":"trace[2075965288] transaction","detail":"{read_only:false; response_revision:18241; number_of_response:1; }","duration":"129.8196ms","start":"2026-07-01T12:59:08.129177Z","end":"2026-07-01T12:59:08.258996Z","steps":["trace[2075965288] 'process raft request'  (duration: 129.6619ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T13:03:02.574036Z","caller":"etcdserver/v3_server.go:911","msg":"waiting for ReadIndex response took too long, retrying","sent-request-id":8128046372370290309,"retry-timeout":"500ms"}
+{"level":"warn","ts":"2026-07-01T13:03:02.926073Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"1.538323982s","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/replicasets/\" range_end:\"/registry/replicasets0\" limit:10000 revision:18423 ","response":"range_response_count:1 size:4179"}
+{"level":"info","ts":"2026-07-01T13:03:02.927946Z","caller":"traceutil/trace.go:172","msg":"trace[1520442070] range","detail":"{range_begin:/registry/replicasets/; range_end:/registry/replicasets0; response_count:1; response_revision:18424; }","duration":"1.539990182s","start":"2026-07-01T13:03:01.387715Z","end":"2026-07-01T13:03:02.927705Z","steps":["trace[1520442070] 'range keys from bolt db'  (duration: 1.538194782s)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T13:03:02.928077Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T13:03:01.387682Z","time spent":"1.540350782s","remote":"127.0.0.1:56484","response type":"/etcdserverpb.KV/Range","request count":0,"request size":55,"response count":1,"response size":4203,"request content":"key:\"/registry/replicasets/\" range_end:\"/registry/replicasets0\" limit:10000 revision:18423 "}
+{"level":"warn","ts":"2026-07-01T13:03:03.074767Z","caller":"etcdserver/v3_server.go:911","msg":"waiting for ReadIndex response took too long, retrying","sent-request-id":8128046372370290309,"retry-timeout":"500ms"}
+{"level":"warn","ts":"2026-07-01T13:03:03.307424Z","caller":"wal/wal.go:845","msg":"slow fdatasync","took":"1.234389786s","expected-duration":"1s"}
+{"level":"info","ts":"2026-07-01T13:03:03.307725Z","caller":"traceutil/trace.go:172","msg":"trace[1862881342] linearizableReadLoop","detail":"{readStateIndex:23052; appliedIndex:23052; }","duration":"1.234445686s","start":"2026-07-01T13:03:02.073249Z","end":"2026-07-01T13:03:03.307694Z","steps":["trace[1862881342] 'read index received'  (duration: 1.234436786s)","trace[1862881342] 'applied index is now lower than readState.Index'  (duration: 8µs)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T13:03:03.307991Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"1.234714986s","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath\" limit:1 ","response":"range_response_count:1 size:1111"}
+{"level":"info","ts":"2026-07-01T13:03:03.308068Z","caller":"traceutil/trace.go:172","msg":"trace[16074458] range","detail":"{range_begin:/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath; range_end:; response_count:1; response_revision:18424; }","duration":"1.234802286s","start":"2026-07-01T13:03:02.073241Z","end":"2026-07-01T13:03:03.308044Z","steps":["trace[16074458] 'agreement among raft nodes before linearized reading'  (duration: 1.234638486s)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T13:03:03.308152Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T13:03:02.073217Z","time spent":"1.234905486s","remote":"127.0.0.1:55824","response type":"/etcdserverpb.KV/Range","request count":0,"request size":69,"response count":1,"response size":1135,"request content":"key:\"/registry/services/endpoints/kube-system/k8s.io-minikube-hostpath\" limit:1 "}
+{"level":"warn","ts":"2026-07-01T13:03:03.538337Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"228.609797ms","expected-duration":"100ms","prefix":"","request":"header:<ID:8128046372370290310 > lease_revoke:<id:70cc9f1c87089638>","response":"size:30"}
+{"level":"info","ts":"2026-07-01T13:03:03.538624Z","caller":"traceutil/trace.go:172","msg":"trace[245314654] linearizableReadLoop","detail":"{readStateIndex:23053; appliedIndex:23052; }","duration":"230.817897ms","start":"2026-07-01T13:03:03.307783Z","end":"2026-07-01T13:03:03.538601Z","steps":["trace[245314654] 'read index received'  (duration: 34µs)","trace[245314654] 'applied index is now lower than readState.Index'  (duration: 230.781497ms)"],"step_count":2}
+{"level":"info","ts":"2026-07-01T13:03:03.538898Z","caller":"traceutil/trace.go:172","msg":"trace[1712382507] transaction","detail":"{read_only:false; response_revision:18425; number_of_response:1; }","duration":"223.053797ms","start":"2026-07-01T13:03:03.315826Z","end":"2026-07-01T13:03:03.538880Z","steps":["trace[1712382507] 'process raft request'  (duration: 222.655197ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T13:03:03.576920Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"142.141999ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/validatingadmissionpolicybindings/\" range_end:\"/registry/validatingadmissionpolicybindings0\" limit:10000 revision:18423 ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T13:03:03.576995Z","caller":"traceutil/trace.go:172","msg":"trace[1508671726] range","detail":"{range_begin:/registry/validatingadmissionpolicybindings/; range_end:/registry/validatingadmissionpolicybindings0; response_count:0; response_revision:18425; }","duration":"142.235599ms","start":"2026-07-01T13:03:03.434742Z","end":"2026-07-01T13:03:03.576978Z","steps":["trace[1508671726] 'agreement among raft nodes before linearized reading'  (duration: 104.819299ms)","trace[1508671726] 'range keys from in-memory index tree'  (duration: 37.2968ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T13:03:03.577330Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"610.633593ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/health\" ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T13:03:03.577469Z","caller":"traceutil/trace.go:172","msg":"trace[103219634] range","detail":"{range_begin:/registry/health; range_end:; response_count:0; response_revision:18425; }","duration":"610.686393ms","start":"2026-07-01T13:03:02.966678Z","end":"2026-07-01T13:03:03.577364Z","steps":["trace[103219634] 'agreement among raft nodes before linearized reading'  (duration: 572.070793ms)","trace[103219634] 'range keys from in-memory index tree'  (duration: 38.5386ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T13:03:03.577532Z","caller":"v3rpc/interceptor.go:202","msg":"request stats","start time":"2026-07-01T13:03:02.966652Z","time spent":"610.860193ms","remote":"127.0.0.1:55572","response type":"/etcdserverpb.KV/Range","request count":0,"request size":18,"response count":0,"response size":30,"request content":"key:\"/registry/health\" "}
+{"level":"warn","ts":"2026-07-01T13:03:03.577863Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"649.374793ms","expected-duration":"100ms","prefix":"read-only range ","request":"limit:1 keys_only:true ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T13:03:03.578016Z","caller":"traceutil/trace.go:172","msg":"trace[1110743408] range","detail":"{range_begin:; range_end:; response_count:0; response_revision:18425; }","duration":"649.435193ms","start":"2026-07-01T13:03:02.928465Z","end":"2026-07-01T13:03:03.577900Z","steps":["trace[1110743408] 'agreement among raft nodes before linearized reading'  (duration: 610.300593ms)","trace[1110743408] 'range keys from in-memory index tree'  (duration: 39.0568ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T13:03:03.578882Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"154.335798ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/leases\" limit:1 ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T13:03:03.578948Z","caller":"traceutil/trace.go:172","msg":"trace[1140491395] range","detail":"{range_begin:/registry/leases; range_end:; response_count:0; response_revision:18425; }","duration":"154.410698ms","start":"2026-07-01T13:03:03.424519Z","end":"2026-07-01T13:03:03.578930Z","steps":["trace[1140491395] 'agreement among raft nodes before linearized reading'  (duration: 115.026498ms)","trace[1140491395] 'range keys from in-memory index tree'  (duration: 39.2801ms)"],"step_count":2}
+{"level":"info","ts":"2026-07-01T13:04:06.088075Z","caller":"mvcc/index.go:194","msg":"compact tree index","revision":18238}
+{"level":"info","ts":"2026-07-01T13:04:06.127199Z","caller":"mvcc/kvstore_compaction.go:70","msg":"finished scheduled compaction","compact-revision":18238,"took":"38.6817ms","hash":3509923501,"current-db-size-bytes":2043904,"current-db-size":"2.0 MB","current-db-size-in-use-bytes":1351680,"current-db-size-in-use":"1.4 MB"}
+{"level":"info","ts":"2026-07-01T13:04:06.127299Z","caller":"mvcc/hash.go:157","msg":"storing new hash","hash":3509923501,"revision":18238,"compact-revision":18004}
+{"level":"warn","ts":"2026-07-01T13:05:19.098438Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"184.998001ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/clusterrolebindings\" limit:1 ","response":"range_response_count:0 size:6"}
+{"level":"info","ts":"2026-07-01T13:05:19.098635Z","caller":"traceutil/trace.go:172","msg":"trace[1413181996] range","detail":"{range_begin:/registry/clusterrolebindings; range_end:; response_count:0; response_revision:18535; }","duration":"185.234201ms","start":"2026-07-01T13:05:18.913363Z","end":"2026-07-01T13:05:19.098597Z","steps":["trace[1413181996] 'range keys from in-memory index tree'  (duration: 184.831801ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T13:09:06.130604Z","caller":"mvcc/index.go:194","msg":"compact tree index","revision":18476}
+{"level":"info","ts":"2026-07-01T13:09:06.161182Z","caller":"mvcc/kvstore_compaction.go:70","msg":"finished scheduled compaction","compact-revision":18476,"took":"30.206902ms","hash":2708882189,"current-db-size-bytes":2043904,"current-db-size":"2.0 MB","current-db-size-in-use-bytes":1380352,"current-db-size-in-use":"1.4 MB"}
+{"level":"info","ts":"2026-07-01T13:09:06.161291Z","caller":"mvcc/hash.go:157","msg":"storing new hash","hash":2708882189,"revision":18476,"compact-revision":18238}
+
+
+==> etcd [48c7bb0d616f] <==
+{"level":"info","ts":"2026-07-01T06:43:11.596472Z","caller":"api/capability.go:76","msg":"enabled capabilities for version","cluster-version":"3.6"}
+{"level":"info","ts":"2026-07-01T06:43:11.596919Z","caller":"etcdserver/server.go:2440","msg":"cluster version is updated","cluster-version":"3.6"}
+{"level":"info","ts":"2026-07-01T06:43:11.597221Z","caller":"version/monitor.go:116","msg":"cluster version differs from storage version.","cluster-version":"3.6.0","storage-version":"3.5.0"}
+{"level":"info","ts":"2026-07-01T06:43:11.597892Z","caller":"schema/migration.go:65","msg":"updated storage version","new-storage-version":"3.6.0"}
+{"level":"info","ts":"2026-07-01T06:43:11.604872Z","caller":"embed/serve.go:283","msg":"serving client traffic securely","traffic":"grpc+http","address":"192.168.49.2:2379"}
+{"level":"info","ts":"2026-07-01T06:43:11.610512Z","caller":"v3rpc/health.go:63","msg":"grpc service status changed","service":"","status":"SERVING"}
+{"level":"info","ts":"2026-07-01T06:43:11.612961Z","caller":"embed/serve.go:283","msg":"serving client traffic securely","traffic":"grpc+http","address":"127.0.0.1:2379"}
+{"level":"warn","ts":"2026-07-01T06:43:17.026740Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"197.247915ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/health\" ","response":"range_response_count:0 size:4"}
+{"level":"info","ts":"2026-07-01T06:43:17.026916Z","caller":"traceutil/trace.go:172","msg":"trace[72626783] range","detail":"{range_begin:/registry/health; range_end:; response_count:0; response_revision:109; }","duration":"197.431215ms","start":"2026-07-01T06:43:16.829461Z","end":"2026-07-01T06:43:17.026892Z","steps":["trace[72626783] 'range keys from in-memory index tree'  (duration: 189.714815ms)"],"step_count":1}
+{"level":"warn","ts":"2026-07-01T06:43:17.027705Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"189.969315ms","expected-duration":"100ms","prefix":"","request":"header:<ID:8128046371897068365 username:\"kube-apiserver-etcd-client\" auth_revision:1 > txn:<compare:<target:MOD key:\"/registry/clusterroles/system:controller:endpointslicemirroring-controller\" mod_revision:0 > success:<request_put:<key:\"/registry/clusterroles/system:controller:endpointslicemirroring-controller\" value_size:753 >> failure:<>>","response":"size:14"}
+{"level":"info","ts":"2026-07-01T06:43:17.027882Z","caller":"traceutil/trace.go:172","msg":"trace[299182711] transaction","detail":"{read_only:false; response_revision:110; number_of_response:1; }","duration":"223.231217ms","start":"2026-07-01T06:43:16.804628Z","end":"2026-07-01T06:43:17.027860Z","steps":["trace[299182711] 'process raft request'  (duration: 32.318002ms)","trace[299182711] 'compare'  (duration: 189.600315ms)"],"step_count":2}
+2026/07/01 06:43:20 WARNING: [core] [Server #6]grpc: Server.processUnaryRPC failed to write status: connection error: desc = "transport is closing"
+2026/07/01 06:43:20 WARNING: [core] [Server #6]grpc: Server.processUnaryRPC failed to write status: connection error: desc = "transport is closing"
+{"level":"warn","ts":"2026-07-01T06:43:20.573826Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"101.357708ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/health\" ","response":"range_response_count:0 size:5"}
+{"level":"info","ts":"2026-07-01T06:43:20.573956Z","caller":"traceutil/trace.go:172","msg":"trace[1423354733] range","detail":"{range_begin:/registry/health; range_end:; response_count:0; response_revision:263; }","duration":"101.499108ms","start":"2026-07-01T06:43:20.472434Z","end":"2026-07-01T06:43:20.573933Z","steps":["trace[1423354733] 'agreement among raft nodes before linearized reading'  (duration: 73.045805ms)","trace[1423354733] 'range keys from in-memory index tree'  (duration: 28.279403ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T06:43:24.647235Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"107.247111ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/minions/minikube\" limit:1 ","response":"range_response_count:1 size:4286"}
+{"level":"info","ts":"2026-07-01T06:43:24.647355Z","caller":"traceutil/trace.go:172","msg":"trace[494447376] range","detail":"{range_begin:/registry/minions/minikube; range_end:; response_count:1; response_revision:330; }","duration":"107.372411ms","start":"2026-07-01T06:43:24.539964Z","end":"2026-07-01T06:43:24.647336Z","steps":["trace[494447376] 'agreement among raft nodes before linearized reading'  (duration: 60.413706ms)","trace[494447376] 'range keys from in-memory index tree'  (duration: 46.692205ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T06:43:24.647673Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"108.523111ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/pods/kube-system/kube-scheduler-minikube\" limit:1 ","response":"range_response_count:1 size:4791"}
+{"level":"info","ts":"2026-07-01T06:43:24.647711Z","caller":"traceutil/trace.go:172","msg":"trace[85593857] transaction","detail":"{read_only:false; response_revision:331; number_of_response:1; }","duration":"101.77841ms","start":"2026-07-01T06:43:24.545914Z","end":"2026-07-01T06:43:24.647692Z","steps":["trace[85593857] 'process raft request'  (duration: 54.243905ms)","trace[85593857] 'compare'  (duration: 46.960805ms)"],"step_count":2}
+{"level":"info","ts":"2026-07-01T06:43:24.647778Z","caller":"traceutil/trace.go:172","msg":"trace[266660817] range","detail":"{range_begin:/registry/pods/kube-system/kube-scheduler-minikube; range_end:; response_count:1; response_revision:330; }","duration":"108.611611ms","start":"2026-07-01T06:43:24.539133Z","end":"2026-07-01T06:43:24.647745Z","steps":["trace[266660817] 'agreement among raft nodes before linearized reading'  (duration: 61.252806ms)","trace[266660817] 'range keys from in-memory index tree'  (duration: 46.697105ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T06:43:24.648036Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"109.134411ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/leases/kube-node-lease/minikube\" limit:1 ","response":"range_response_count:1 size:536"}
+{"level":"info","ts":"2026-07-01T06:43:24.648079Z","caller":"traceutil/trace.go:172","msg":"trace[1588707897] range","detail":"{range_begin:/registry/leases/kube-node-lease/minikube; range_end:; response_count:1; response_revision:330; }","duration":"109.180011ms","start":"2026-07-01T06:43:24.538886Z","end":"2026-07-01T06:43:24.648066Z","steps":["trace[1588707897] 'agreement among raft nodes before linearized reading'  (duration: 61.514006ms)","trace[1588707897] 'range keys from in-memory index tree'  (duration: 46.692905ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T06:43:24.648621Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"110.079411ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/pods/kube-system/kube-controller-manager-minikube\" limit:1 ","response":"range_response_count:1 size:7291"}
+{"level":"info","ts":"2026-07-01T06:43:24.648857Z","caller":"traceutil/trace.go:172","msg":"trace[802314424] range","detail":"{range_begin:/registry/pods/kube-system/kube-controller-manager-minikube; range_end:; response_count:1; response_revision:330; }","duration":"110.187111ms","start":"2026-07-01T06:43:24.538522Z","end":"2026-07-01T06:43:24.648709Z","steps":["trace[802314424] 'agreement among raft nodes before linearized reading'  (duration: 61.890606ms)","trace[802314424] 'range keys from in-memory index tree'  (duration: 46.658405ms)"],"step_count":2}
+{"level":"warn","ts":"2026-07-01T06:43:24.649777Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"110.651911ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/pods/kube-system/etcd-minikube\" limit:1 ","response":"range_response_count:1 size:5799"}
+{"level":"info","ts":"2026-07-01T06:43:24.649923Z","caller":"traceutil/trace.go:172","msg":"trace[1378792091] range","detail":"{range_begin:/registry/pods/kube-system/etcd-minikube; range_end:; response_count:1; response_revision:330; }","duration":"110.777111ms","start":"2026-07-01T06:43:24.539095Z","end":"2026-07-01T06:43:24.649872Z","steps":["trace[1378792091] 'agreement among raft nodes before linearized reading'  (duration: 61.298906ms)","trace[1378792091] 'range keys from in-memory index tree'  (duration: 46.699205ms)"],"step_count":2}
+{"level":"info","ts":"2026-07-01T06:53:11.963007Z","caller":"mvcc/index.go:194","msg":"compact tree index","revision":622}
+{"level":"info","ts":"2026-07-01T06:53:12.006750Z","caller":"mvcc/kvstore_compaction.go:70","msg":"finished scheduled compaction","compact-revision":622,"took":"43.3645ms","hash":2949507598,"current-db-size-bytes":1339392,"current-db-size":"1.3 MB","current-db-size-in-use-bytes":1339392,"current-db-size-in-use":"1.3 MB"}
+{"level":"info","ts":"2026-07-01T06:53:12.006833Z","caller":"mvcc/hash.go:157","msg":"storing new hash","hash":2949507598,"revision":622,"compact-revision":-1}
+{"level":"info","ts":"2026-07-01T06:55:43.450059Z","caller":"traceutil/trace.go:172","msg":"trace[341340299] transaction","detail":"{read_only:false; response_revision:981; number_of_response:1; }","duration":"110.444501ms","start":"2026-07-01T06:55:43.339585Z","end":"2026-07-01T06:55:43.450029Z","steps":["trace[341340299] 'process raft request'  (duration: 110.228801ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T06:58:11.997754Z","caller":"mvcc/index.go:194","msg":"compact tree index","revision":860}
+{"level":"info","ts":"2026-07-01T06:58:12.014027Z","caller":"mvcc/kvstore_compaction.go:70","msg":"finished scheduled compaction","compact-revision":860,"took":"15.9603ms","hash":3393365152,"current-db-size-bytes":1339392,"current-db-size":"1.3 MB","current-db-size-in-use-bytes":929792,"current-db-size-in-use":"930 kB"}
+{"level":"info","ts":"2026-07-01T06:58:12.014138Z","caller":"mvcc/hash.go:157","msg":"storing new hash","hash":3393365152,"revision":860,"compact-revision":622}
+{"level":"info","ts":"2026-07-01T07:03:12.029472Z","caller":"mvcc/index.go:194","msg":"compact tree index","revision":1099}
+{"level":"info","ts":"2026-07-01T07:03:12.046345Z","caller":"mvcc/kvstore_compaction.go:70","msg":"finished scheduled compaction","compact-revision":1099,"took":"16.4841ms","hash":1350474287,"current-db-size-bytes":1339392,"current-db-size":"1.3 MB","current-db-size-in-use-bytes":913408,"current-db-size-in-use":"913 kB"}
+{"level":"info","ts":"2026-07-01T07:03:12.046436Z","caller":"mvcc/hash.go:157","msg":"storing new hash","hash":1350474287,"revision":1099,"compact-revision":860}
+{"level":"info","ts":"2026-07-01T07:08:12.069096Z","caller":"mvcc/index.go:194","msg":"compact tree index","revision":1338}
+{"level":"info","ts":"2026-07-01T07:08:12.085586Z","caller":"mvcc/kvstore_compaction.go:70","msg":"finished scheduled compaction","compact-revision":1338,"took":"16.1176ms","hash":195010173,"current-db-size-bytes":1339392,"current-db-size":"1.3 MB","current-db-size-in-use-bytes":905216,"current-db-size-in-use":"905 kB"}
+{"level":"info","ts":"2026-07-01T07:08:12.085688Z","caller":"mvcc/hash.go:157","msg":"storing new hash","hash":195010173,"revision":1338,"compact-revision":1099}
+{"level":"warn","ts":"2026-07-01T07:10:10.242266Z","caller":"txn/util.go:93","msg":"apply request took too long","took":"245.743302ms","expected-duration":"100ms","prefix":"read-only range ","request":"key:\"/registry/csistoragecapacities\" limit:1 ","response":"range_response_count:0 size:5"}
+{"level":"info","ts":"2026-07-01T07:10:10.242384Z","caller":"traceutil/trace.go:172","msg":"trace[1954415005] range","detail":"{range_begin:/registry/csistoragecapacities; range_end:; response_count:0; response_revision:1672; }","duration":"245.869902ms","start":"2026-07-01T07:10:09.996495Z","end":"2026-07-01T07:10:10.242364Z","steps":["trace[1954415005] 'range keys from in-memory index tree'  (duration: 245.643402ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T07:10:12.149991Z","caller":"traceutil/trace.go:172","msg":"trace[1313756479] transaction","detail":"{read_only:false; response_revision:1673; number_of_response:1; }","duration":"156.9409ms","start":"2026-07-01T07:10:11.993025Z","end":"2026-07-01T07:10:12.149966Z","steps":["trace[1313756479] 'process raft request'  (duration: 156.655ms)"],"step_count":1}
+{"level":"info","ts":"2026-07-01T07:12:02.450058Z","caller":"osutil/interrupt_unix.go:65","msg":"received signal; shutting down","signal":"terminated"}
+{"level":"info","ts":"2026-07-01T07:12:02.450174Z","caller":"embed/etcd.go:426","msg":"closing etcd server","name":"minikube","data-dir":"/var/lib/minikube/etcd","advertise-peer-urls":["https://192.168.49.2:2380"],"advertise-client-urls":["https://192.168.49.2:2379"]}
+{"level":"error","ts":"2026-07-01T07:12:02.450384Z","caller":"embed/etcd.go:912","msg":"setting up serving from embedded etcd failed.","error":"http: Server closed","stacktrace":"go.etcd.io/etcd/server/v3/embed.(*Etcd).errHandler\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:912\ngo.etcd.io/etcd/server/v3/embed.(*serveCtx).startHandler.func1\n\tgo.etcd.io/etcd/server/v3/embed/serve.go:90"}
+{"level":"error","ts":"2026-07-01T07:12:09.458669Z","caller":"embed/etcd.go:912","msg":"setting up serving from embedded etcd failed.","error":"http: Server closed","stacktrace":"go.etcd.io/etcd/server/v3/embed.(*Etcd).errHandler\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:912\ngo.etcd.io/etcd/server/v3/embed.(*serveCtx).startHandler.func1\n\tgo.etcd.io/etcd/server/v3/embed/serve.go:90"}
+{"level":"error","ts":"2026-07-01T07:12:09.458826Z","caller":"embed/etcd.go:912","msg":"setting up serving from embedded etcd failed.","error":"accept tcp 127.0.0.1:2381: use of closed network connection","stacktrace":"go.etcd.io/etcd/server/v3/embed.(*Etcd).errHandler\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:912\ngo.etcd.io/etcd/server/v3/embed.(*Etcd).startHandler.func1\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:906"}
+{"level":"info","ts":"2026-07-01T07:12:09.458874Z","caller":"etcdserver/server.go:1297","msg":"skipped leadership transfer for single voting member cluster","local-member-id":"aec36adc501070cc","current-leader-member-id":"aec36adc501070cc"}
+{"level":"info","ts":"2026-07-01T07:12:09.459286Z","caller":"etcdserver/server.go:2335","msg":"server has stopped; stopping cluster version's monitor"}
+{"level":"info","ts":"2026-07-01T07:12:09.459443Z","caller":"etcdserver/server.go:2358","msg":"server has stopped; stopping storage version's monitor"}
+{"level":"warn","ts":"2026-07-01T07:12:09.459528Z","caller":"embed/serve.go:245","msg":"stopping secure grpc server due to error","error":"accept tcp 127.0.0.1:2379: use of closed network connection"}
+{"level":"warn","ts":"2026-07-01T07:12:09.459589Z","caller":"embed/serve.go:247","msg":"stopped secure grpc server due to error","error":"accept tcp 127.0.0.1:2379: use of closed network connection"}
+{"level":"error","ts":"2026-07-01T07:12:09.459628Z","caller":"embed/etcd.go:912","msg":"setting up serving from embedded etcd failed.","error":"accept tcp 127.0.0.1:2379: use of closed network connection","stacktrace":"go.etcd.io/etcd/server/v3/embed.(*Etcd).errHandler\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:912\ngo.etcd.io/etcd/server/v3/embed.(*Etcd).startHandler.func1\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:906"}
+{"level":"warn","ts":"2026-07-01T07:12:09.459528Z","caller":"embed/serve.go:245","msg":"stopping secure grpc server due to error","error":"accept tcp 192.168.49.2:2379: use of closed network connection"}
+{"level":"warn","ts":"2026-07-01T07:12:09.459702Z","caller":"embed/serve.go:247","msg":"stopped secure grpc server due to error","error":"accept tcp 192.168.49.2:2379: use of closed network connection"}
+{"level":"error","ts":"2026-07-01T07:12:09.459725Z","caller":"embed/etcd.go:912","msg":"setting up serving from embedded etcd failed.","error":"accept tcp 192.168.49.2:2379: use of closed network connection","stacktrace":"go.etcd.io/etcd/server/v3/embed.(*Etcd).errHandler\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:912\ngo.etcd.io/etcd/server/v3/embed.(*Etcd).startHandler.func1\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:906"}
+{"level":"info","ts":"2026-07-01T07:12:09.479256Z","caller":"embed/etcd.go:621","msg":"stopping serving peer traffic","address":"192.168.49.2:2380"}
+{"level":"error","ts":"2026-07-01T07:12:09.479504Z","caller":"embed/etcd.go:912","msg":"setting up serving from embedded etcd failed.","error":"accept tcp 192.168.49.2:2380: use of closed network connection","stacktrace":"go.etcd.io/etcd/server/v3/embed.(*Etcd).errHandler\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:912\ngo.etcd.io/etcd/server/v3/embed.(*Etcd).startHandler.func1\n\tgo.etcd.io/etcd/server/v3/embed/etcd.go:906"}
+{"level":"info","ts":"2026-07-01T07:12:09.479551Z","caller":"embed/etcd.go:626","msg":"stopped serving peer traffic","address":"192.168.49.2:2380"}
+{"level":"info","ts":"2026-07-01T07:12:09.479632Z","caller":"embed/etcd.go:428","msg":"closed etcd server","name":"minikube","data-dir":"/var/lib/minikube/etcd","advertise-peer-urls":["https://192.168.49.2:2380"],"advertise-client-urls":["https://192.168.49.2:2379"]}
+
+
+==> kernel <==
+ 13:10:22 up  7:06,  0 user,  load average: 2.72, 2.58, 3.57
+Linux minikube 6.18.33.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun 18 21:54:43 UTC 2026 x86_64 GNU/Linux
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+
+
+==> kube-apiserver [26831573f210] <==
+I0701 07:14:03.549630       1 cache.go:39] Caches are synced for LocalAvailability controller
+I0701 07:14:03.550145       1 shared_informer.go:356] "Caches are synced" controller="node_authorizer"
+I0701 07:14:03.550334       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:03.549244       1 shared_informer.go:356] "Caches are synced" controller="ipallocator-repair-controller"
+I0701 07:14:03.552241       1 cache.go:39] Caches are synced for APIServiceRegistrationController controller
+I0701 07:14:03.556997       1 cache.go:39] Caches are synced for RemoteAvailability controller
+I0701 07:14:03.566848       1 shared_informer.go:356] "Caches are synced" controller="crd-autoregister"
+I0701 07:14:03.568541       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:03.570848       1 aggregator.go:187] initial CRD sync complete...
+I0701 07:14:03.572900       1 autoregister_controller.go:144] Starting autoregister controller
+I0701 07:14:03.573095       1 cache.go:32] Waiting for caches to sync for autoregister controller
+I0701 07:14:03.573201       1 cache.go:39] Caches are synced for autoregister controller
+I0701 07:14:03.574463       1 cidrallocator.go:302] created ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 07:14:03.597553       1 handler_discovery.go:451] Starting ResourceDiscoveryManager
+I0701 07:14:03.606257       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:03.606708       1 policy_source.go:248] refreshing policies
+I0701 07:14:03.631448       1 controller.go:667] quota admission added evaluator for: leases.coordination.k8s.io
+I0701 07:14:04.273779       1 storage_scheduling.go:139] all system priority classes are created successfully or already exist.
+I0701 07:14:04.682689       1 controller.go:667] quota admission added evaluator for: endpoints
+I0701 07:14:05.611059       1 controller.go:667] quota admission added evaluator for: serviceaccounts
+I0701 07:14:06.882689       1 controller.go:667] quota admission added evaluator for: replicasets.apps
+I0701 07:14:07.042464       1 controller.go:667] quota admission added evaluator for: daemonsets.apps
+I0701 07:14:07.133700       1 controller.go:667] quota admission added evaluator for: endpointslices.discovery.k8s.io
+I0701 07:14:07.238144       1 controller.go:667] quota admission added evaluator for: deployments.apps
+I0701 07:24:03.501308       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 07:34:03.502033       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 07:44:03.503226       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 07:54:03.504100       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 08:04:03.505154       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 08:14:03.505956       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 08:24:03.506692       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 08:34:03.507655       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 08:44:03.507837       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 08:54:03.508908       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 09:04:03.509668       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 09:14:03.510448       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 09:24:03.511617       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 09:34:03.512105       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 09:44:03.512590       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 09:54:03.520263       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+{"level":"warn","ts":"2026-07-01T09:56:14.488362Z","logger":"etcd-client","caller":"v3@v3.6.5/retry_interceptor.go:65","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc000f18000/127.0.0.1:2379","method":"/etcdserverpb.KV/Range","attempt":0,"error":"rpc error: code = DeadlineExceeded desc = context deadline exceeded"}
+I0701 10:04:03.521089       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 10:14:03.522186       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 10:24:03.522484       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 10:34:03.523807       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 10:44:03.527465       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 10:54:03.527791       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 11:04:03.533182       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 11:14:03.533876       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 11:24:03.534914       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 11:34:03.536510       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 11:44:03.537093       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 11:54:03.537131       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 12:04:03.538686       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 12:14:03.539026       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 12:24:03.539931       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 12:34:03.540859       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 12:44:03.541155       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 12:54:03.546077       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+I0701 13:04:03.542759       1 cidrallocator.go:278] updated ClusterIP allocator for Service CIDR 10.96.0.0/12
+
+
+==> kube-apiserver [a4636d7d36f7] <==
+W0701 07:12:07.899146       1 logging.go:55] [core] [Channel #131 SubChannel #133]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:07.907515       1 logging.go:55] [core] [Channel #79 SubChannel #81]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:07.952440       1 logging.go:55] [core] [Channel #55 SubChannel #57]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:07.965736       1 logging.go:55] [core] [Channel #151 SubChannel #153]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:07.990871       1 logging.go:55] [core] [Channel #2 SubChannel #5]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.025533       1 logging.go:55] [core] [Channel #35 SubChannel #37]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.029389       1 logging.go:55] [core] [Channel #231 SubChannel #233]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.070550       1 logging.go:55] [core] [Channel #171 SubChannel #173]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.164123       1 logging.go:55] [core] [Channel #155 SubChannel #157]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.164806       1 logging.go:55] [core] [Channel #211 SubChannel #213]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.288121       1 logging.go:55] [core] [Channel #207 SubChannel #209]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.304938       1 logging.go:55] [core] [Channel #115 SubChannel #117]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:08.371667       1 logging.go:55] [core] [Channel #235 SubChannel #237]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.355093       1 logging.go:55] [core] [Channel #99 SubChannel #101]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.450544       1 logging.go:55] [core] [Channel #199 SubChannel #201]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.598094       1 logging.go:55] [core] [Channel #95 SubChannel #97]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.690435       1 logging.go:55] [core] [Channel #167 SubChannel #169]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.764705       1 logging.go:55] [core] [Channel #147 SubChannel #149]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.787400       1 logging.go:55] [core] [Channel #183 SubChannel #185]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.926259       1 logging.go:55] [core] [Channel #227 SubChannel #229]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.958059       1 logging.go:55] [core] [Channel #107 SubChannel #109]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:10.964894       1 logging.go:55] [core] [Channel #13 SubChannel #15]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.071498       1 logging.go:55] [core] [Channel #219 SubChannel #221]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.073153       1 logging.go:55] [core] [Channel #195 SubChannel #197]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.175056       1 logging.go:55] [core] [Channel #191 SubChannel #193]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.175074       1 logging.go:55] [core] [Channel #103 SubChannel #105]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.187392       1 logging.go:55] [core] [Channel #163 SubChannel #165]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.215697       1 logging.go:55] [core] [Channel #127 SubChannel #129]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.243132       1 logging.go:55] [core] [Channel #87 SubChannel #89]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.313661       1 logging.go:55] [core] [Channel #9 SubChannel #11]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.324083       1 logging.go:55] [core] [Channel #175 SubChannel #177]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.363935       1 logging.go:55] [core] [Channel #39 SubChannel #41]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.383360       1 logging.go:55] [core] [Channel #239 SubChannel #241]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.411962       1 logging.go:55] [core] [Channel #75 SubChannel #77]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.440820       1 logging.go:55] [core] [Channel #179 SubChannel #181]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.599406       1 logging.go:55] [core] [Channel #35 SubChannel #37]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.608443       1 logging.go:55] [core] [Channel #63 SubChannel #65]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.609151       1 logging.go:55] [core] [Channel #119 SubChannel #121]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.662517       1 logging.go:55] [core] [Channel #251 SubChannel #253]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.688618       1 logging.go:55] [core] [Channel #159 SubChannel #161]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.786517       1 logging.go:55] [core] [Channel #223 SubChannel #225]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.795421       1 logging.go:55] [core] [Channel #235 SubChannel #237]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.802407       1 logging.go:55] [core] [Channel #71 SubChannel #73]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.872065       1 logging.go:55] [core] [Channel #83 SubChannel #85]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.882757       1 logging.go:55] [core] [Channel #131 SubChannel #133]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.889506       1 logging.go:55] [core] [Channel #135 SubChannel #137]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.889503       1 logging.go:55] [core] [Channel #247 SubChannel #249]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.899269       1 logging.go:55] [core] [Channel #151 SubChannel #153]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.903911       1 logging.go:55] [core] [Channel #21 SubChannel #23]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.939405       1 logging.go:55] [core] [Channel #143 SubChannel #145]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.948272       1 logging.go:55] [core] [Channel #243 SubChannel #245]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.973140       1 logging.go:55] [core] [Channel #171 SubChannel #173]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.973567       1 logging.go:55] [core] [Channel #203 SubChannel #205]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.977447       1 logging.go:55] [core] [Channel #67 SubChannel #69]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:11.995435       1 logging.go:55] [core] [Channel #187 SubChannel #189]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:12.016173       1 logging.go:55] [core] [Channel #47 SubChannel #49]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:12.016721       1 logging.go:55] [core] [Channel #43 SubChannel #45]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:12.123322       1 logging.go:55] [core] [Channel #31 SubChannel #33]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:12.186883       1 logging.go:55] [core] [Channel #155 SubChannel #157]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+W0701 07:12:12.222804       1 logging.go:55] [core] [Channel #255 SubChannel #257]grpc: addrConn.createTransport failed to connect to {Addr: "127.0.0.1:2379", ServerName: "127.0.0.1:2379", BalancerAttributes: {"<%!p(pickfirstleaf.managedByPickfirstKeyType={})>": "<%!p(bool=true)>" }}. Err: connection error: desc = "transport: Error while dialing: dial tcp 127.0.0.1:2379: connect: connection refused"
+
+
+==> kube-controller-manager [8a36ecb8273b] <==
+I0701 07:14:06.534850       1 namespace_controller.go:202] "Starting namespace controller"
+I0701 07:14:06.546109       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 07:14:06.550341       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 07:14:06.613052       1 actual_state_of_world.go:541] "Failed to update statusUpdateNeeded field in actual state of world" logger="persistentvolume-attach-detach-controller" err="Failed to set statusUpdateNeeded to needed true, because nodeName=\"minikube\" does not exist"
+I0701 07:14:06.633775       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.638127       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.643813       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.644687       1 range_allocator.go:177] "Sending events to api server"
+I0701 07:14:06.645260       1 range_allocator.go:181] "Starting range CIDR allocator"
+I0701 07:14:06.645615       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 07:14:06.645904       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.644229       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.644264       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.644277       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.649379       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.649401       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.713165       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 07:14:06.737748       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.737818       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.737905       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.738272       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.738488       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.738641       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.740373       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.740515       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.740593       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.740657       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.741566       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.741778       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.741922       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.742043       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.742338       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.742556       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.743762       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.744980       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745191       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745273       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745569       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745952       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.746232       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.746508       1 node_lifecycle_controller.go:1234] "Initializing eviction metric for zone" zone=""
+I0701 07:14:06.746701       1 node_lifecycle_controller.go:886] "Missing timestamp for Node. Assuming now as a timestamp" node="minikube"
+I0701 07:14:06.746852       1 node_lifecycle_controller.go:1080] "Controller detected that zone is now in new state" zone="" newState="Normal"
+I0701 07:14:06.747023       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.747629       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.747842       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745253       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745369       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745392       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745226       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.745345       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.773770       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.778180       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.778461       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.784032       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.841787       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:06.841850       1 garbagecollector.go:166] "Garbage collector: all resource monitors have synced"
+I0701 07:14:06.841865       1 garbagecollector.go:169] "Proceeding to collect garbage"
+I0701 07:14:06.914217       1 shared_informer.go:377] "Caches are synced"
+I0701 08:14:06.540287       1 cleaner.go:189] "Cleaning CSR as it is more than approvedExpiration duration old and approved." csr="csr-vqwv2" approvedExpiration="1h0m0s"
+
+
+==> kube-controller-manager [c81c33296d53] <==
+I0701 06:43:24.234386       1 graph_builder.go:386] "Running" component="GraphBuilder"
+I0701 06:43:24.244935       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 06:43:24.256285       1 actual_state_of_world.go:541] "Failed to update statusUpdateNeeded field in actual state of world" logger="persistentvolume-attach-detach-controller" err="Failed to set statusUpdateNeeded to needed true, because nodeName=\"minikube\" does not exist"
+I0701 06:43:24.311454       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.328237       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.329094       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.329206       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.328924       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.328900       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.329023       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.329048       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.328934       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.331515       1 range_allocator.go:177] "Sending events to api server"
+I0701 06:43:24.331609       1 range_allocator.go:181] "Starting range CIDR allocator"
+I0701 06:43:24.331632       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 06:43:24.332305       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.328983       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.371994       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.382881       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.384366       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.384403       1 range_allocator.go:433] "Set node PodCIDR" node="minikube" podCIDRs=["10.244.0.0/24"]
+I0701 06:43:24.385514       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.386063       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.388878       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.390951       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.428416       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.428698       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.429984       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.430053       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.430073       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.430156       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.430374       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.430720       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.430749       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.432973       1 node_lifecycle_controller.go:1234] "Initializing eviction metric for zone" zone=""
+I0701 06:43:24.439270       1 node_lifecycle_controller.go:886] "Missing timestamp for Node. Assuming now as a timestamp" node="minikube"
+I0701 06:43:24.440139       1 node_lifecycle_controller.go:1038] "Controller detected that all Nodes are not-Ready. Entering master disruption mode"
+I0701 06:43:24.433244       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.433210       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.433229       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.433256       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.433270       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.434014       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.434035       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.434054       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.437959       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.437987       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.438003       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.438017       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.438029       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.438041       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.438072       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.433282       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.433940       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 06:43:24.446517       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.529530       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:24.529594       1 garbagecollector.go:166] "Garbage collector: all resource monitors have synced"
+I0701 06:43:24.529609       1 garbagecollector.go:169] "Proceeding to collect garbage"
+I0701 06:43:24.557051       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:29.441558       1 node_lifecycle_controller.go:1057] "Controller detected that some Nodes are Ready. Exiting master disruption mode"
+
+
+==> kube-proxy [5355224f5db5] <==
+I0701 07:14:08.219942       1 server_linux.go:53] "Using iptables proxy"
+I0701 07:14:08.348532       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 07:14:08.459520       1 shared_informer.go:377] "Caches are synced"
+I0701 07:14:08.459625       1 server.go:218] "Successfully retrieved NodeIPs" NodeIPs=["192.168.49.2"]
+E0701 07:14:08.459774       1 server.go:255] "Kube-proxy configuration may be incomplete or incorrect" err="nodePortAddresses is unset; NodePort connections will be accepted on all local IPs. Consider using `--nodeport-addresses primary`"
+I0701 07:14:08.527422       1 server.go:264] "kube-proxy running in dual-stack mode" primary ipFamily="IPv4"
+I0701 07:14:08.527548       1 server_linux.go:136] "Using iptables Proxier"
+I0701 07:14:08.543887       1 proxier.go:242] "Setting route_localnet=1 to allow node-ports on localhost; to change this either disable iptables.localhostNodePorts (--iptables-localhost-nodeports) or set nodePortAddresses (--nodeport-addresses) to filter loopback addresses" ipFamily="IPv4"
+I0701 07:14:08.544956       1 server.go:529] "Version info" version="v1.35.1"
+I0701 07:14:08.545069       1 server.go:531] "Golang settings" GOGC="" GOMAXPROCS="" GOTRACEBACK=""
+I0701 07:14:08.548267       1 config.go:403] "Starting serviceCIDR config controller"
+I0701 07:14:08.548386       1 shared_informer.go:349] "Waiting for caches to sync" controller="serviceCIDR config"
+I0701 07:14:08.548444       1 config.go:200] "Starting service config controller"
+I0701 07:14:08.548458       1 shared_informer.go:349] "Waiting for caches to sync" controller="service config"
+I0701 07:14:08.548513       1 config.go:106] "Starting endpoint slice config controller"
+I0701 07:14:08.548527       1 shared_informer.go:349] "Waiting for caches to sync" controller="endpoint slice config"
+I0701 07:14:08.548744       1 config.go:309] "Starting node config controller"
+I0701 07:14:08.548815       1 shared_informer.go:349] "Waiting for caches to sync" controller="node config"
+I0701 07:14:08.549425       1 shared_informer.go:356] "Caches are synced" controller="node config"
+I0701 07:14:08.649244       1 shared_informer.go:356] "Caches are synced" controller="endpoint slice config"
+I0701 07:14:08.649357       1 shared_informer.go:356] "Caches are synced" controller="service config"
+I0701 07:14:08.649328       1 shared_informer.go:356] "Caches are synced" controller="serviceCIDR config"
+
+
+==> kube-proxy [fec5438528a1] <==
+I0701 06:43:27.709402       1 server_linux.go:53] "Using iptables proxy"
+I0701 06:43:27.841411       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 06:43:27.941791       1 shared_informer.go:377] "Caches are synced"
+I0701 06:43:27.941905       1 server.go:218] "Successfully retrieved NodeIPs" NodeIPs=["192.168.49.2"]
+E0701 06:43:27.941990       1 server.go:255] "Kube-proxy configuration may be incomplete or incorrect" err="nodePortAddresses is unset; NodePort connections will be accepted on all local IPs. Consider using `--nodeport-addresses primary`"
+I0701 06:43:27.998596       1 server.go:264] "kube-proxy running in dual-stack mode" primary ipFamily="IPv4"
+I0701 06:43:27.998685       1 server_linux.go:136] "Using iptables Proxier"
+I0701 06:43:28.011792       1 proxier.go:242] "Setting route_localnet=1 to allow node-ports on localhost; to change this either disable iptables.localhostNodePorts (--iptables-localhost-nodeports) or set nodePortAddresses (--nodeport-addresses) to filter loopback addresses" ipFamily="IPv4"
+I0701 06:43:28.031528       1 server.go:529] "Version info" version="v1.35.1"
+I0701 06:43:28.031574       1 server.go:531] "Golang settings" GOGC="" GOMAXPROCS="" GOTRACEBACK=""
+I0701 06:43:28.050467       1 config.go:200] "Starting service config controller"
+I0701 06:43:28.050631       1 shared_informer.go:349] "Waiting for caches to sync" controller="service config"
+I0701 06:43:28.050699       1 config.go:106] "Starting endpoint slice config controller"
+I0701 06:43:28.050711       1 shared_informer.go:349] "Waiting for caches to sync" controller="endpoint slice config"
+I0701 06:43:28.050826       1 config.go:403] "Starting serviceCIDR config controller"
+I0701 06:43:28.050840       1 shared_informer.go:349] "Waiting for caches to sync" controller="serviceCIDR config"
+I0701 06:43:28.052154       1 config.go:309] "Starting node config controller"
+I0701 06:43:28.052271       1 shared_informer.go:349] "Waiting for caches to sync" controller="node config"
+I0701 06:43:28.052343       1 shared_informer.go:356] "Caches are synced" controller="node config"
+I0701 06:43:28.151896       1 shared_informer.go:356] "Caches are synced" controller="serviceCIDR config"
+I0701 06:43:28.151915       1 shared_informer.go:356] "Caches are synced" controller="service config"
+I0701 06:43:28.152020       1 shared_informer.go:356] "Caches are synced" controller="endpoint slice config"
+
+
+==> kube-scheduler [43d6af5f3606] <==
+W0701 06:43:14.417267       1 requestheader_controller.go:204] Unable to get configmap/extension-apiserver-authentication in kube-system.  Usually fixed by 'kubectl create rolebinding -n kube-system ROLEBINDING_NAME --role=extension-apiserver-authentication-reader --serviceaccount=YOUR_NS:YOUR_SA'
+W0701 06:43:14.417331       1 authentication.go:397] Error looking up in-cluster authentication configuration: configmaps "extension-apiserver-authentication" is forbidden: User "system:kube-scheduler" cannot get resource "configmaps" in API group "" in the namespace "kube-system"
+W0701 06:43:14.417354       1 authentication.go:398] Continuing without authentication configuration. This may treat all requests as anonymous.
+W0701 06:43:14.417373       1 authentication.go:399] To require authentication configuration lookup to succeed, set --authentication-tolerate-lookup-failure=false
+I0701 06:43:14.583431       1 server.go:175] "Starting Kubernetes Scheduler" version="v1.35.1"
+I0701 06:43:14.583520       1 server.go:177] "Golang settings" GOGC="" GOMAXPROCS="" GOTRACEBACK=""
+I0701 06:43:14.588652       1 configmap_cafile_content.go:205] "Starting controller" name="client-ca::kube-system::extension-apiserver-authentication::client-ca-file"
+I0701 06:43:14.588749       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 06:43:14.590189       1 secure_serving.go:211] Serving securely on 127.0.0.1:10259
+I0701 06:43:14.590348       1 tlsconfig.go:243] "Starting DynamicServingCertificateController"
+E0701 06:43:14.600332       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ConfigMap: configmaps \"extension-apiserver-authentication\" is forbidden: User \"system:kube-scheduler\" cannot list resource \"configmaps\" in API group \"\" in the namespace \"kube-system\"" logger="UnhandledError" reflector="runtime/asm_amd64.s:1693" type="*v1.ConfigMap"
+E0701 06:43:14.624962       1 reflector.go:204] "Failed to watch" err="failed to list *v1.StorageClass: storageclasses.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"storageclasses\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.StorageClass"
+E0701 06:43:14.630188       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ReplicaSet: replicasets.apps is forbidden: User \"system:kube-scheduler\" cannot list resource \"replicasets\" in API group \"apps\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ReplicaSet"
+E0701 06:43:14.635173       1 reflector.go:204] "Failed to watch" err="failed to list *v1.VolumeAttachment: volumeattachments.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"volumeattachments\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.VolumeAttachment"
+E0701 06:43:14.635957       1 reflector.go:204] "Failed to watch" err="failed to list *v1.PersistentVolumeClaim: persistentvolumeclaims is forbidden: User \"system:kube-scheduler\" cannot list resource \"persistentvolumeclaims\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.PersistentVolumeClaim"
+E0701 06:43:14.636565       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ResourceClaim: resourceclaims.resource.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"resourceclaims\" in API group \"resource.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ResourceClaim"
+E0701 06:43:14.638711       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Pod: pods is forbidden: User \"system:kube-scheduler\" cannot list resource \"pods\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Pod"
+E0701 06:43:14.642345       1 reflector.go:204] "Failed to watch" err="failed to list *v1.PersistentVolume: persistentvolumes is forbidden: User \"system:kube-scheduler\" cannot list resource \"persistentvolumes\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.PersistentVolume"
+E0701 06:43:14.643230       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Node: nodes is forbidden: User \"system:kube-scheduler\" cannot list resource \"nodes\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Node"
+E0701 06:43:14.643431       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ResourceSlice: resourceslices.resource.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"resourceslices\" in API group \"resource.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ResourceSlice"
+E0701 06:43:14.639238       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Service: services is forbidden: User \"system:kube-scheduler\" cannot list resource \"services\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Service"
+E0701 06:43:14.644228       1 reflector.go:204] "Failed to watch" err="failed to list *v1.CSINode: csinodes.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"csinodes\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.CSINode"
+E0701 06:43:14.645467       1 reflector.go:204] "Failed to watch" err="failed to list *v1.DeviceClass: deviceclasses.resource.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"deviceclasses\" in API group \"resource.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.DeviceClass"
+E0701 06:43:14.645514       1 reflector.go:204] "Failed to watch" err="failed to list *v1.StatefulSet: statefulsets.apps is forbidden: User \"system:kube-scheduler\" cannot list resource \"statefulsets\" in API group \"apps\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.StatefulSet"
+E0701 06:43:14.645913       1 reflector.go:204] "Failed to watch" err="failed to list *v1.PodDisruptionBudget: poddisruptionbudgets.policy is forbidden: User \"system:kube-scheduler\" cannot list resource \"poddisruptionbudgets\" in API group \"policy\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.PodDisruptionBudget"
+E0701 06:43:14.650230       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Namespace: namespaces is forbidden: User \"system:kube-scheduler\" cannot list resource \"namespaces\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Namespace"
+E0701 06:43:14.653063       1 reflector.go:204] "Failed to watch" err="failed to list *v1.CSIDriver: csidrivers.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"csidrivers\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.CSIDriver"
+E0701 06:43:14.653231       1 reflector.go:204] "Failed to watch" err="failed to list *v1.CSIStorageCapacity: csistoragecapacities.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"csistoragecapacities\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.CSIStorageCapacity"
+E0701 06:43:14.654044       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ReplicationController: replicationcontrollers is forbidden: User \"system:kube-scheduler\" cannot list resource \"replicationcontrollers\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ReplicationController"
+E0701 06:43:15.470876       1 reflector.go:204] "Failed to watch" err="failed to list *v1.PodDisruptionBudget: poddisruptionbudgets.policy is forbidden: User \"system:kube-scheduler\" cannot list resource \"poddisruptionbudgets\" in API group \"policy\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.PodDisruptionBudget"
+E0701 06:43:15.580376       1 reflector.go:204] "Failed to watch" err="failed to list *v1.CSIDriver: csidrivers.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"csidrivers\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.CSIDriver"
+E0701 06:43:15.591401       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ReplicationController: replicationcontrollers is forbidden: User \"system:kube-scheduler\" cannot list resource \"replicationcontrollers\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ReplicationController"
+E0701 06:43:15.670481       1 reflector.go:204] "Failed to watch" err="failed to list *v1.PersistentVolumeClaim: persistentvolumeclaims is forbidden: User \"system:kube-scheduler\" cannot list resource \"persistentvolumeclaims\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.PersistentVolumeClaim"
+E0701 06:43:15.701148       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Pod: pods is forbidden: User \"system:kube-scheduler\" cannot list resource \"pods\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Pod"
+E0701 06:43:15.736472       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ReplicaSet: replicasets.apps is forbidden: User \"system:kube-scheduler\" cannot list resource \"replicasets\" in API group \"apps\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ReplicaSet"
+E0701 06:43:15.879891       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Node: nodes is forbidden: User \"system:kube-scheduler\" cannot list resource \"nodes\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Node"
+E0701 06:43:15.906185       1 reflector.go:204] "Failed to watch" err="failed to list *v1.StatefulSet: statefulsets.apps is forbidden: User \"system:kube-scheduler\" cannot list resource \"statefulsets\" in API group \"apps\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.StatefulSet"
+E0701 06:43:15.907160       1 reflector.go:204] "Failed to watch" err="failed to list *v1.PersistentVolume: persistentvolumes is forbidden: User \"system:kube-scheduler\" cannot list resource \"persistentvolumes\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.PersistentVolume"
+E0701 06:43:15.909815       1 reflector.go:204] "Failed to watch" err="failed to list *v1.CSIStorageCapacity: csistoragecapacities.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"csistoragecapacities\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.CSIStorageCapacity"
+E0701 06:43:15.949109       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Namespace: namespaces is forbidden: User \"system:kube-scheduler\" cannot list resource \"namespaces\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Namespace"
+E0701 06:43:15.974237       1 reflector.go:204] "Failed to watch" err="failed to list *v1.StorageClass: storageclasses.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"storageclasses\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.StorageClass"
+E0701 06:43:15.988987       1 reflector.go:204] "Failed to watch" err="failed to list *v1.DeviceClass: deviceclasses.resource.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"deviceclasses\" in API group \"resource.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.DeviceClass"
+E0701 06:43:16.086136       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ResourceClaim: resourceclaims.resource.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"resourceclaims\" in API group \"resource.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ResourceClaim"
+E0701 06:43:16.098039       1 reflector.go:204] "Failed to watch" err="failed to list *v1.VolumeAttachment: volumeattachments.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"volumeattachments\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.VolumeAttachment"
+E0701 06:43:16.117905       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Service: services is forbidden: User \"system:kube-scheduler\" cannot list resource \"services\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Service"
+E0701 06:43:16.129194       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ConfigMap: configmaps \"extension-apiserver-authentication\" is forbidden: User \"system:kube-scheduler\" cannot list resource \"configmaps\" in API group \"\" in the namespace \"kube-system\"" logger="UnhandledError" reflector="runtime/asm_amd64.s:1693" type="*v1.ConfigMap"
+E0701 06:43:16.156220       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ResourceSlice: resourceslices.resource.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"resourceslices\" in API group \"resource.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.ResourceSlice"
+E0701 06:43:16.173585       1 reflector.go:204] "Failed to watch" err="failed to list *v1.CSINode: csinodes.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"csinodes\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.CSINode"
+E0701 06:43:17.406570       1 reflector.go:204] "Failed to watch" err="failed to list *v1.CSIDriver: csidrivers.storage.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"csidrivers\" in API group \"storage.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.CSIDriver"
+E0701 06:43:17.742202       1 reflector.go:204] "Failed to watch" err="failed to list *v1.Node: nodes is forbidden: User \"system:kube-scheduler\" cannot list resource \"nodes\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.Node"
+E0701 06:43:17.774355       1 reflector.go:204] "Failed to watch" err="failed to list *v1.PersistentVolumeClaim: persistentvolumeclaims is forbidden: User \"system:kube-scheduler\" cannot list resource \"persistentvolumeclaims\" in API group \"\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.PersistentVolumeClaim"
+E0701 06:43:17.847855       1 reflector.go:204] "Failed to watch" err="failed to list *v1.DeviceClass: deviceclasses.resource.k8s.io is forbidden: User \"system:kube-scheduler\" cannot list resource \"deviceclasses\" in API group \"resource.k8s.io\" at the cluster scope" logger="UnhandledError" reflector="k8s.io/client-go/informers/factory.go:161" type="*v1.DeviceClass"
+E0701 06:43:18.090893       1 reflector.go:204] "Failed to watch" err="failed to list *v1.ConfigMap: configmaps \"extension-apiserver-authentication\" is forbidden: User \"system:kube-scheduler\" cannot list resource \"configmaps\" in API group \"\" in the namespace \"kube-system\"" logger="UnhandledError" reflector="runtime/asm_amd64.s:1693" type="*v1.ConfigMap"
+I0701 06:43:23.591403       1 shared_informer.go:377] "Caches are synced"
+I0701 07:12:02.471576       1 secure_serving.go:259] Stopped listening on 127.0.0.1:10259
+I0701 07:12:02.471689       1 server.go:263] "[graceful-termination] secure server has stopped listening"
+I0701 07:12:02.471730       1 configmap_cafile_content.go:226] "Shutting down controller" name="client-ca::kube-system::extension-apiserver-authentication::client-ca-file"
+I0701 07:12:02.471829       1 tlsconfig.go:258] "Shutting down DynamicServingCertificateController"
+I0701 07:12:02.476949       1 server.go:265] "[graceful-termination] secure server is exiting"
+E0701 07:12:02.477115       1 run.go:72] "command failed" err="finished without leader elect"
+
+
+==> kube-scheduler [c045acef76eb] <==
+I0701 07:14:00.375301       1 serving.go:386] Generated self-signed cert in-memory
+W0701 07:14:03.443787       1 requestheader_controller.go:204] Unable to get configmap/extension-apiserver-authentication in kube-system.  Usually fixed by 'kubectl create rolebinding -n kube-system ROLEBINDING_NAME --role=extension-apiserver-authentication-reader --serviceaccount=YOUR_NS:YOUR_SA'
+W0701 07:14:03.444319       1 authentication.go:397] Error looking up in-cluster authentication configuration: configmaps "extension-apiserver-authentication" is forbidden: User "system:kube-scheduler" cannot get resource "configmaps" in API group "" in the namespace "kube-system"
+W0701 07:14:03.444664       1 authentication.go:398] Continuing without authentication configuration. This may treat all requests as anonymous.
+W0701 07:14:03.445174       1 authentication.go:399] To require authentication configuration lookup to succeed, set --authentication-tolerate-lookup-failure=false
+I0701 07:14:03.548371       1 server.go:175] "Starting Kubernetes Scheduler" version="v1.35.1"
+I0701 07:14:03.548592       1 server.go:177] "Golang settings" GOGC="" GOMAXPROCS="" GOTRACEBACK=""
+I0701 07:14:03.554599       1 configmap_cafile_content.go:205] "Starting controller" name="client-ca::kube-system::extension-apiserver-authentication::client-ca-file"
+I0701 07:14:03.554826       1 shared_informer.go:370] "Waiting for caches to sync"
+I0701 07:14:03.556355       1 tlsconfig.go:243] "Starting DynamicServingCertificateController"
+I0701 07:14:03.556279       1 secure_serving.go:211] Serving securely on 127.0.0.1:10259
+I0701 07:14:03.657353       1 shared_informer.go:377] "Caches are synced"
+
+
+==> kubelet <==
+Jul 01 07:13:56 minikube kubelet[1292]: E0701 07:13:56.685941    1292 kubelet_node_status.go:106] "Unable to register node with API server" err="Post \"https://192.168.49.2:8443/api/v1/nodes\": dial tcp 192.168.49.2:8443: connect: connection refused" node="minikube"
+Jul 01 07:13:57 minikube kubelet[1292]: I0701 07:13:57.689769    1292 pod_container_deletor.go:80] "Container not found in pod's containers" containerID="c401d5ff1158743c0dd0f7c3b571080647cee2a105e0c88b5d10053d8b6facd6"
+Jul 01 07:13:57 minikube kubelet[1292]: I0701 07:13:57.748598    1292 pod_container_deletor.go:80] "Container not found in pod's containers" containerID="cfd7134cdf03657cbd4fb6c1cd91759bb0c8a130c2440fb0edcede3cd3156326"
+Jul 01 07:13:57 minikube kubelet[1292]: I0701 07:13:57.853223    1292 pod_container_deletor.go:80] "Container not found in pod's containers" containerID="4bffdacc2ae89cad2ac7d02ea99cceadfb5d5eb677bd3b0e85a66f2f7332d66a"
+Jul 01 07:13:57 minikube kubelet[1292]: I0701 07:13:57.894411    1292 pod_container_deletor.go:80] "Container not found in pod's containers" containerID="299b69054ee4b138207e0109df5e974d0e06f0fe7ca748cc4312caf0c13c7e7c"
+Jul 01 07:13:57 minikube kubelet[1292]: E0701 07:13:57.979584    1292 controller.go:201] "Failed to ensure lease exists, will retry" err="Get \"https://192.168.49.2:8443/apis/coordination.k8s.io/v1/namespaces/kube-node-lease/leases/minikube?timeout=10s\": dial tcp 192.168.49.2:8443: connect: connection refused" interval="3.2s"
+Jul 01 07:13:58 minikube kubelet[1292]: I0701 07:13:58.289254    1292 kubelet_node_status.go:74] "Attempting to register node" node="minikube"
+Jul 01 07:13:58 minikube kubelet[1292]: E0701 07:13:58.292036    1292 kubelet_node_status.go:106] "Unable to register node with API server" err="Post \"https://192.168.49.2:8443/api/v1/nodes\": dial tcp 192.168.49.2:8443: connect: connection refused" node="minikube"
+Jul 01 07:13:59 minikube kubelet[1292]: E0701 07:13:59.375769    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:13:59 minikube kubelet[1292]: E0701 07:13:59.495928    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:00 minikube kubelet[1292]: E0701 07:14:00.573862    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:00 minikube kubelet[1292]: E0701 07:14:00.630989    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:00 minikube kubelet[1292]: E0701 07:14:00.680114    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:00 minikube kubelet[1292]: E0701 07:14:00.680662    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:01 minikube kubelet[1292]: I0701 07:14:01.493821    1292 kubelet_node_status.go:74] "Attempting to register node" node="minikube"
+Jul 01 07:14:01 minikube kubelet[1292]: E0701 07:14:01.701638    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:01 minikube kubelet[1292]: E0701 07:14:01.701834    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:01 minikube kubelet[1292]: E0701 07:14:01.702537    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:01 minikube kubelet[1292]: E0701 07:14:01.703018    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:02 minikube kubelet[1292]: E0701 07:14:02.716036    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:02 minikube kubelet[1292]: E0701 07:14:02.717119    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:02 minikube kubelet[1292]: E0701 07:14:02.719415    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:02 minikube kubelet[1292]: E0701 07:14:02.901280    1292 kubelet.go:3336] "No need to create a mirror pod, since failed to get node info from the cluster" err="node \"minikube\" not found" node="minikube"
+Jul 01 07:14:03 minikube kubelet[1292]: I0701 07:14:03.710848    1292 kubelet_node_status.go:123] "Node was previously registered" node="minikube"
+Jul 01 07:14:03 minikube kubelet[1292]: I0701 07:14:03.711801    1292 kubelet_node_status.go:77] "Successfully registered node" node="minikube"
+Jul 01 07:14:03 minikube kubelet[1292]: E0701 07:14:03.711857    1292 kubelet_node_status.go:474] "Error updating node status, will retry" err="error getting node \"minikube\": node \"minikube\" not found"
+Jul 01 07:14:03 minikube kubelet[1292]: I0701 07:14:03.734868    1292 kuberuntime_manager.go:2062] "Updating runtime config through cri with podcidr" CIDR="10.244.0.0/24"
+Jul 01 07:14:03 minikube kubelet[1292]: I0701 07:14:03.736954    1292 kubelet_network.go:47] "Updating Pod CIDR" originalPodCIDR="" newPodCIDR="10.244.0.0/24"
+Jul 01 07:14:03 minikube kubelet[1292]: E0701 07:14:03.795041    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:03 minikube kubelet[1292]: E0701 07:14:03.896201    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:03 minikube kubelet[1292]: E0701 07:14:03.997175    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.097379    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.198176    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.298662    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.400914    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.501166    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.601966    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.703007    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.804317    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:04 minikube kubelet[1292]: E0701 07:14:04.905067    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:05 minikube kubelet[1292]: E0701 07:14:05.005636    1292 kubelet_node_status.go:392] "Error getting the current node from lister" err="node \"minikube\" not found"
+Jul 01 07:14:05 minikube kubelet[1292]: I0701 07:14:05.162526    1292 kubelet.go:3340] "Creating a mirror pod for static pod" pod="kube-system/etcd-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: E0701 07:14:05.222059    1292 kubelet.go:3342] "Failed creating a mirror pod" err="pods \"etcd-minikube\" already exists" pod="kube-system/etcd-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: I0701 07:14:05.222141    1292 kubelet.go:3340] "Creating a mirror pod for static pod" pod="kube-system/kube-apiserver-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: E0701 07:14:05.255913    1292 kubelet.go:3342] "Failed creating a mirror pod" err="pods \"kube-apiserver-minikube\" already exists" pod="kube-system/kube-apiserver-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: I0701 07:14:05.255976    1292 kubelet.go:3340] "Creating a mirror pod for static pod" pod="kube-system/kube-controller-manager-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: E0701 07:14:05.283316    1292 kubelet.go:3342] "Failed creating a mirror pod" err="pods \"kube-controller-manager-minikube\" already exists" pod="kube-system/kube-controller-manager-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: I0701 07:14:05.283435    1292 kubelet.go:3340] "Creating a mirror pod for static pod" pod="kube-system/kube-scheduler-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: E0701 07:14:05.305401    1292 kubelet.go:3342] "Failed creating a mirror pod" err="pods \"kube-scheduler-minikube\" already exists" pod="kube-system/kube-scheduler-minikube"
+Jul 01 07:14:05 minikube kubelet[1292]: I0701 07:14:05.921290    1292 apiserver.go:52] "Watching apiserver"
+Jul 01 07:14:05 minikube kubelet[1292]: I0701 07:14:05.965429    1292 desired_state_of_world_populator.go:154] "Finished populating initial desired state of world"
+Jul 01 07:14:06 minikube kubelet[1292]: I0701 07:14:06.042033    1292 reconciler_common.go:251] "operationExecutor.VerifyControllerAttachedVolume started for volume \"xtables-lock\" (UniqueName: \"kubernetes.io/host-path/0d02501e-a425-40eb-bf1e-891b830c7329-xtables-lock\") pod \"kube-proxy-m7lnm\" (UID: \"0d02501e-a425-40eb-bf1e-891b830c7329\") " pod="kube-system/kube-proxy-m7lnm"
+Jul 01 07:14:06 minikube kubelet[1292]: I0701 07:14:06.042212    1292 reconciler_common.go:251] "operationExecutor.VerifyControllerAttachedVolume started for volume \"lib-modules\" (UniqueName: \"kubernetes.io/host-path/0d02501e-a425-40eb-bf1e-891b830c7329-lib-modules\") pod \"kube-proxy-m7lnm\" (UID: \"0d02501e-a425-40eb-bf1e-891b830c7329\") " pod="kube-system/kube-proxy-m7lnm"
+Jul 01 07:14:06 minikube kubelet[1292]: I0701 07:14:06.042341    1292 reconciler_common.go:251] "operationExecutor.VerifyControllerAttachedVolume started for volume \"tmp\" (UniqueName: \"kubernetes.io/host-path/91db4af5-cf69-4b7d-a8a5-d34008b6e47c-tmp\") pod \"storage-provisioner\" (UID: \"91db4af5-cf69-4b7d-a8a5-d34008b6e47c\") " pod="kube-system/storage-provisioner"
+Jul 01 07:14:38 minikube kubelet[1292]: I0701 07:14:38.747105    1292 scope.go:122] "RemoveContainer" containerID="9406b13adc479fa967a486ae1ae7142ec449fa60b0dce0dfd8b3bd0f969ad697"
+Jul 01 07:14:38 minikube kubelet[1292]: I0701 07:14:38.747836    1292 scope.go:122] "RemoveContainer" containerID="f8424a76496830d4a5c804a27a7182f9096829ad918ec8174d244a9491d2267d"
+Jul 01 07:14:38 minikube kubelet[1292]: E0701 07:14:38.748080    1292 pod_workers.go:1324] "Error syncing pod, skipping" err="failed to \"StartContainer\" for \"storage-provisioner\" with CrashLoopBackOff: \"back-off 10s restarting failed container=storage-provisioner pod=storage-provisioner_kube-system(91db4af5-cf69-4b7d-a8a5-d34008b6e47c)\"" pod="kube-system/storage-provisioner" podUID="91db4af5-cf69-4b7d-a8a5-d34008b6e47c"
+Jul 01 07:14:53 minikube kubelet[1292]: I0701 07:14:53.065112    1292 scope.go:122] "RemoveContainer" containerID="f8424a76496830d4a5c804a27a7182f9096829ad918ec8174d244a9491d2267d"
+Jul 01 11:21:53 minikube kubelet[1292]: E0701 11:21:53.145434    1292 kubelet.go:2691] "Housekeeping took longer than expected" err="housekeeping took too long" expected="1s" actual="2.926s"
+Jul 01 11:21:54 minikube kubelet[1292]: E0701 11:21:54.425635    1292 kubelet.go:2691] "Housekeeping took longer than expected" err="housekeeping took too long" expected="1s" actual="1.197s"
+
+
+==> storage-provisioner [780037e50e90] <==
+W0701 13:09:23.407122       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:23.425305       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:25.429565       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:25.445240       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:27.449923       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:27.464938       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:29.471019       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:29.501351       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:31.508577       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:31.523270       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:33.529282       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:33.558959       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:35.563645       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:35.576100       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:37.580539       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:37.605785       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:39.611834       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:39.634148       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:41.639883       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:41.657158       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:43.666879       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:43.700594       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:45.709081       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:45.739841       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:47.747978       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:47.790159       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:49.800049       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:49.832398       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:51.848020       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:51.888839       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:53.898410       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:53.920743       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:55.925650       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:55.942768       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:57.949632       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:57.975641       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:59.982910       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:09:59.999373       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:02.004637       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:02.032675       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:04.039193       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:04.058127       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:06.063039       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:06.091392       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:08.098647       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:08.116620       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:10.122527       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:10.154850       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:12.160925       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:12.176898       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:14.181891       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:14.197886       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:16.204211       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:16.223400       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:18.228879       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:18.241510       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:20.250744       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:20.301380       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:22.315385       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+W0701 13:10:22.335845       1 warnings.go:70] v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+
+
+==> storage-provisioner [f8424a764968] <==
+I0701 07:14:08.114736       1 storage_provisioner.go:116] Initializing the minikube storage provisioner...
+F0701 07:14:38.122180       1 main.go:39] error getting server version: Get "https://10.96.0.1:443/version?timeout=32s": dial tcp 10.96.0.1:443: i/o timeout
+
