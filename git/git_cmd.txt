@@ -2,7 +2,7 @@ git config --global user.name " "
 git config --global user.email " "
 git config --list
 ##pranavi@121##
-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
+##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##
 
 git clone 'repo link' (TO CLONE REPO FROM GITHUB)
 cd ' '                (TO CHANGE WORKING DIR)
