@@ -1,8 +1,8 @@
-git config --global user.name " "
-git config --global user.email " "
-git config --list
-
-git clone 'repo link' (TO CLONE REPO FROM GITHUB)
+    git config --global user.name " "
+    git config --global user.email " "
+    git config --list
+TO CLONE REPO FROM GITHUB
+    git clone 'repo link' 
 cd ' '                (TO CHANGE WORKING DIR)
 git status            (CHECK STATUS)
 
