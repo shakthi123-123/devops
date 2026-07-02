@@ -1,5 +1,8 @@
 git config --global user.name " "
 git config --global user.email " "
+git config --list
+##pranavi@121##
+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
 
 git clone 'repo link' (TO CLONE REPO FROM GITHUB)
 cd ' '                (TO CHANGE WORKING DIR)
@@ -34,3 +37,56 @@ git diff 'current branch'    (DIFF JUST UNSTAGED CHANGE)
 git diff --staged            (DIFF JUST STAGED CHANGE)		 
 git merge 'new branch name'  (TO MERGE A NEW BRANCH FROM MAIN)
 git branch 'new branch name' (TO CREATE A NEW BRANCH)
+
+
+
+The absolute most essential Git commands you need for your daily workflow are git init, git clone, git add, git commit, git push, and git pull. These core commands allow you to set up repositories, track your file changes, and safely sync your work with remote platforms like GitHub, GitLab, or Bitbucket. [1, 2] 
+
+
+
+## 1. Setup & Configuration
+Run these when initializing a project or establishing your environment identity. [1] 
+
+* git init                                   Initializes a brand new, empty local Git repository in your current directory.
+* git clone <url>                            Downloads an existing remote repository onto your local system.
+* git config --global user.name "Your Name": Sets your profile name globally across all repositories.
+* git config --global user.email "your@email.com": Sets your profile email address globally. [1, 2, 3, 4] 
+
+## 2. The Core Workflow (Stage & Commit)
+Use this cycle repeatedly to save and document changes on your computer. [1] 
+
+* git status                    : Displays the active file states, tracking modified, untracked, and staged files.
+* git add <file>                : Moves specific file modifications into your staging area.
+* git add .                     : Moves every single file change in your project into the staging area.
+* git commit -m "your message"  :  Permanently saves your staged snapshot with a descriptive note.
+* git commit -am "your message" : Automatically stages tracked modified files and commits them at once. [1, 3, 5, 6] 
+
+## 3. Branching & Merging
+Isolate features, test ideas, and combine separate lines of work safely. [1, 7] 
+
+* git branch                  : Lists every available branch in your local repository.
+* git branch <branch-name>    : Generates a completely new branch pointing to your current history.
+* git switch <branch-name>    : Safely changes your working directory context over to another branch.
+* git switch -c <branch-name> : Creates a new branch and immediately jumps you over to it.
+* git merge <branch-name>     : Integrates the targeted branch's history directly into your active branch.
+* git branch -d <branch-name> : Safely deletes a branch that has already been successfully merged. [1, 2, 3, 5, 8] 
+
+## 4. Working with Remotes
+Sync your local history with cloud-hosted platforms. [1] 
+
+* git remote add origin <url>    : Pairs your local environment up to a remote repository URL.
+* git push origin <branch-name>  : Uploads your local branch commits to the remote storage.
+* git pull                       : Downloads the latest remote history and merges it automatically into your branch.
+* git fetch                      : Downloads metadata and changes from the server without altering local files. [1, 3, 6, 9, 10, 11] 
+ 
+## 5. Inspecting History & Undoing Mistakes
+Look back in time to fix bugs, analyze changes, or roll back code mistakes. [1, 5] 
+
+* git log --oneline  : Condenses your historical timeline into readable single-line entries.
+* git diff           : Reveals line-by-line differences in your unstaged files compared to your last commit.
+* git restore <file> : Discards all uncommitted changes made to a specified file.
+* git stash          : Temporarily stores modified files so you can shift branches without committing.
+* git stash pop      : Restores the latest hidden changes you previously shelved.
+* git reset HEAD~1   : Rewinds your branch by one commit, keeping all those changes safely in your project folder. [1, 3, 5, 9, 12] 
+
+
