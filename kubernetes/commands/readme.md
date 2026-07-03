@@ -11,7 +11,6 @@ Required on host machines before initializing or running a cluster
 ```bash
 sudo swapoff -a
 ```
-
 ### Get Built-in Tool Help
 ```bash
 kubectl -h
