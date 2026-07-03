@@ -10,6 +10,9 @@ git clone 'github repo code'
 ```bash
 cd 'git folder'
 ```
+```bash
+git pull 'remote' or 'branch'
+
 ---
 ### Folder To Push GitHub
 ```bash
