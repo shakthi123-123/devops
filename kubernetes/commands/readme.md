@@ -3,6 +3,58 @@
 A comprehensive, production-ready reference guide for managing Kubernetes clusters, nodes, pods, deployments, services, namespaces, and configurations.
 
 ---
+## Creating, Depolying & Maintaing A Yaml file
+#### Create or Update a New File
+```bash
+vi deploy.yaml
+```
+#### Deploy a File
+```bash
+kubectl apply -f deploy.yaml
+```
+#### List All Active Deployments
+```bash
+kubectl get deploy
+```
+#### List All Active Deployments with NS
+```bash
+kubectl get deploy -n 'ns name'
+```
+#### List All Active Pods
+```bash
+kubectl get pods
+```
+#### List All Active Pods with NS
+```bash
+kubectl get pods -n 'ns name'
+```
+#### List Pods with IP and Target Node Details
+```bash
+kubectl get pod -o wide
+```
+#### List Pods with IP and Target Node Details with NS
+```bash
+kubectl get pod -n 'ns name' -o wide
+```
+#### List All Services
+```bash
+kubectl get svc
+```
+#### List All Services with NS
+```bash
+kubectl get svc -n 'ns name'
+```
+#### Get Access url in Minikube
+```bash
+minikube service -n 'ns name' 'svc name' --url
+```
+#### Find the IP address of a domain (Forward Lookup)
+```bash
+nslookup 'url'
+```
+####
+```bash
+
 
 ## 1. 🖥️ Cluster Management
 
