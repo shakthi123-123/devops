@@ -1,16 +1,49 @@
 # 🐙 The Ultimate Git Version Control & Deployment Manual
 
 A comprehensive, production-grade command playbook and historical tracking reference sheet for Git engine configuration, local staging workflows, branching architectures, remote synchronization, and advanced state restoration.
-
+## Any Modificaton >> Add >> Commit >> Push
+```bash
+git init
+```
+```bash
+git remote 'github repo code'
+```
+```bash
+git branch -m main
+```
+```bash
+git checkout 'branch name'
+```
+---
+```bash
+git clone 'github repo code' 
+```
+```bash
+cd 'git folder'
+```
+```bash
+git add "file.txt"
+```
+```bash
+git add .
+```
+```bash
+git commit -m "file.txt added"
+```
+```
+git push origin main
+```
+---
+---
 ## 1. ⚙️ Setup & Configuration
 
 #### Set Global Commit Author Profiling Username
 ```bash
-git config --global user.name "Your Name"
+git config --global user.name "user name"
 ```
 #### Set Global Commit Author Profiling Email Address
 ```bash
-git config --global user.email "you@example.com"
+git config --global user.email "gmail"
 ```
 #### Set Default Visual Studio Code Interface Text Editor Engine
 ```bash
@@ -56,21 +89,19 @@ git add .
 ```bash
 git add -p
 ```
-
 #### Evict File and Discard Tracking From Staging and Disk
 ```bash
 git rm file.txt
 ```
-
 #### Remove File Tracking Indexes While Retaining Files On Local Disk
 ```bash
 git rm --cached file.txt
 ```
-
 #### Re-route File Path Locations or Rename Assets and Stage Instantly
 ```bash
 git mv old_path.txt new_path.txt
 ```
+---
 
 ## 4. 💾 Immutable Snapshot Archiving (Committing)
 
