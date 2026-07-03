@@ -2,6 +2,15 @@
 
 A comprehensive, production-grade command playbook and historical tracking reference sheet for Git engine configuration, local staging workflows, branching architectures, remote synchronization, and advanced state restoration.
 ## Any Modificaton >> Add >> Commit >> Push
+
+### Clone Folder From GitHub
+```bash
+git clone 'github repo code' 
+```
+```bash
+cd 'git folder'
+```
+---
 ### Folder To Push GitHub
 ```bash
 git init
@@ -21,14 +30,6 @@ git branch -m main
 ```bash
 git checkout 'branch name'
 ```
----
-### Clone Folder From GitHub
-```bash
-git clone 'github repo code' 
-```
-```bash
-cd 'git folder'
-```
 ```bash
 git add "file.txt"
 ```
@@ -46,6 +47,7 @@ git push origin main
 ```
 ---
 ---
+
 ## 1. ⚙️ Setup & Configuration
 
 #### Set Global Commit Author Profiling Username
