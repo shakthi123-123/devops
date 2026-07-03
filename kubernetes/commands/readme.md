@@ -4,7 +4,7 @@ A comprehensive, production-ready reference guide for managing Kubernetes cluste
 
 ---
 ## Creating, Depolying & Maintaing A Yaml file
-#### Create or Update a New File
+#### Create or Update a File
 ```bash
 vi deploy.yaml
 ```
