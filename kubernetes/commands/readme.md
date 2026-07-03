@@ -15,7 +15,6 @@ sudo swapoff -a
 ```bash
 kubectl -h
 ```
-
 ### Check Kubelet Service Status
 ```bash
 systemctl status kubelet
