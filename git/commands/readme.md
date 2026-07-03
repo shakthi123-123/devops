@@ -7,7 +7,10 @@ A comprehensive, production-grade command playbook and historical tracking refer
 git init
 ```
 ```bash
-git remote 'github repo code'
+git add README.md
+```
+```bash
+git remote add origin 'https://github.com/'
 ```
 ```bash
 git branch
@@ -76,6 +79,10 @@ git init
 #### Clone a Complete Remote Project Architecture and History
 ```bash
 git clone https://github.com
+```
+#### List remotes with their URLs
+```bash
+git remote -v
 ```
 ---
 
