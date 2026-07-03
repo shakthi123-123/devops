@@ -4,25 +4,25 @@ A comprehensive, production-ready reference guide for managing Kubernetes cluste
 
 ---
 
-### 1. 🖥️ Cluster Management
+## 1. 🖥️ Cluster Management
 
-** Disable Swap Space **
+# Disable Swap Space **
 Required on host machines before initializing or running a cluster
 ```bash
 sudo swapoff -a
 ```
 
-**Get Built-in Tool Help
+#Get Built-in Tool Help
 ```bash
 kubectl -h
 ```
 
-** Check Kubelet Service Status
+# Check Kubelet Service Status
 ```bash
 systemctl status kubelet
 ```
 
-** View Cluster Information
+# View Cluster Information
 ```bash
 kubectl cluster-info
 ```
