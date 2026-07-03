@@ -2,7 +2,7 @@
 
 A comprehensive, production-grade command playbook and historical tracking reference sheet for Git engine configuration, local staging workflows, branching architectures, remote synchronization, and advanced state restoration.
 ## Any Modificaton >> Add >> Commit >> Push
-### Current Folder In System To Push GitHub
+### Folder To Push GitHub
 ```bash
 git init
 ```
