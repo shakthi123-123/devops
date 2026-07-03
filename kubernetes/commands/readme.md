@@ -66,33 +66,33 @@ kubectl get all --all-namespaces
 ```
 ---
 
-##2. 🔌 Node Administration
+## 2. 🔌 Node Administration
 
-####List All Cluster Nodes
+#### List All Cluster Nodes
 ```bash
 kubectl get nodes
 ```
-####List Nodes with IP and OS Details
+#### List Nodes with IP and OS Details
 ```bash
 kubectl get nodes -o wide
 ```
-####View Detailed Node Metrics and Status
+#### View Detailed Node Metrics and Status
 ```bash
 kubectl describe node "node_name"
 ```
-####View Real-Time Node CPU/Memory Usage
+#### View Real-Time Node CPU/Memory Usage
 ```bash
 kubectl top node "node_name"
 ```
-####Find Pods Running on a Specific Node
+#### Find Pods Running on a Specific Node
 ```bash
 kubectl get pods -o wide | grep "node_name"
 ```
-####Add metadata Annotation to a Node
+#### Add metadata Annotation to a Node
 ```bash
 kubectl annotate node "node_name" comment="maintenance_pending"
 ```
-####Apply a Label to a Node
+#### Apply a Label to a Node
 ```bash
 kubectl label node "node_name" kubernetes.io/role=worker1
 ```
@@ -126,7 +126,7 @@ kubectl delete node "node_name"
 ```
 ---
 
-##3. 🚀 Deployment Controls
+## 3. 🚀 Deployment Controls
 
 #### Create Resources from a Directory or File
 ```bash
@@ -182,7 +182,7 @@ kubectl delete deployment "deployment_name"
 ```
 ---
 
-##4. 📦 Pod Management
+## 4. 📦 Pod Management
 
 #### List Pods in Active Namespace
 ```bash
@@ -278,7 +278,7 @@ kubectl delete pod "pod_name" --grace-period=0 --force
 ```
 ---
 
-##5. 🔌 Service Discovery & Networking
+## 5. 🔌 Service Discovery & Networking
 
 #### List All Services
 ```bash
@@ -298,7 +298,7 @@ kubectl delete service "service_name"
 ```
 ---
 
-##6. 📂 Namespaces & Configuration
+## 6. 📂 Namespaces & Configuration
 
 #### Create a Namespace Layer
 ```bash
@@ -338,7 +338,7 @@ kubectl get pods -n "namespace_name"
 ```
 ---
 
-##7. 🔐 Configuration Management (Secrets & ConfigMaps)
+## 7. 🔐 Configuration Management (Secrets & ConfigMaps)
 
 #### Create a ConfigMap from a Local File
 ```bash
@@ -378,7 +378,7 @@ kubectl delete secret "secret_name"
 ```
 ---
 
-##8. 💾 Storage & Volume Management
+## 8. 💾 Storage & Volume Management
 
 #### List All Persistent Volumes
 ```bash
@@ -398,7 +398,7 @@ kubectl describe pvc "pvc_name"
 ```
 ---
 
-##9. 🏥 Container Health Checks
+## 9. 🏥 Container Health Checks
 > **Note:** Readiness and Liveness probes are properties defined within a Pod's YAML manifest. They do not have unique top-level get commands.
 
 #### Inspect Container Probe Configuration, State, and Failures
@@ -407,7 +407,7 @@ kubectl describe pod "pod_name"
 ```
 ---
 
-##10. 🚀 Advanced Operations
+## 10. 🚀 Advanced Operations
 
 #### Apply or Update Infrastructure from a Manifest File
 ```bash
@@ -419,7 +419,7 @@ kubectl explain pods.spec.containers
 ```
 ---
 
-##11. 📄 Log Management
+## 11. 📄 Log Management
 
 #### Print Logs for a Single-Container Pod
 ```bash
@@ -459,7 +459,7 @@ kubectl logs -l app="label_name"
 ```
 ---
 
-##12. 👹 DaemonSets Administration
+## 12. 👹 DaemonSets Administration
 
 #### Create or Update a DaemonSet Infrastructure Layer
 ```bash
@@ -495,7 +495,7 @@ kubectl describe ds "daemonset_name" -n "namespace_name"
 ```
 ---
 
-##13. 🔔 Event Monitoring & Troubleshooting
+## 13. 🔔 Event Monitoring & Troubleshooting
 
 #### List Recent Activity Logs and System Events for All Namespace Resources
 ```bash
