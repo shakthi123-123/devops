@@ -52,9 +52,9 @@ minikube service -n 'ns name' 'svc name' --url
 ```bash
 nslookup 'url'
 ```
-####
+#### To Execute the Terminal
 ```bash
-
+kubectl exec -it 'pod name' /bin/bash
 ```
 
 ## 1. 🖥️ Cluster Management
