@@ -1,1 +1,2 @@
-[📜 Commands](commands.md) • [🤝 kubernetes](kubernetes.md)
+- [Commands](commands.md)
+- [Kubernetes](kubernetes.md)
