@@ -1,65 +1,140 @@
-A Kubernetes (K8s) cluster relies on a highly decoupled, client-server architecture,
-It splits responsibilities between a management layer and an execution layer 
+# Kubernetes Architecture
 
-The Two Core Layers+-------------------------------------------------------------+
+Kubernetes follows a **master-worker (control plane / data plane)** architecture. A cluster consists of a **Control Plane** that makes global decisions about the cluster, and one or more **Worker Nodes** that run the actual application workloads.
 
-|                        CONTROL PLANE                        |
-|   +------------------+                   +--------------+   |
-|   |  kube-apiserver  |<----------------->|     etcd     |   |
-|   +--------+---------+                   +--------------+   |
-|            |                                                |
-|            v                                                |
-|   +------------------+                   +--------------+   |
-|   |  kube-scheduler  |                   |  controller  |   |
-|   +------------------+                   +--------------+   |
-+------------+------------------------------------------------+
-             |
-             | (Communicates via TLS)
-             v
-+-------------------------------------------------------------+
+---
 
-|                        WORKER NODE                          |
-|   +------------------+                   +--------------+   |
-|   |     kubelet      |                   |  kube-proxy  |   |
-|   +--------+---------+                   +--------------+   |
-|            |                                                |
-|            v                                                |
-|   +------------------+                                      |
-|   |Container Runtime |                                      |
-|   |  +------------+  |                                      |
-|   |  |   Pods     |  |                                      |
-|   |  +------------+  |                                      |
-|   +------------------+                                      |
-+-------------------------------------------------------------+
+## High-Level Diagram
 
-1. The Control Plane (The Brain) The control plane makes global decisions about the cluster. It detects and responds to cluster events to maintain your desired configuration. 
+```mermaid
+flowchart TB
+    subgraph CP["Control Plane"]
+        API["API Server"]
+        ETCD["etcd (cluster store)"]
+        SCHED["Scheduler"]
+        CM["Controller Manager"]
+        CCM["Cloud Controller Manager"]
+    end
 
-• : The front door for all communications. It exposes the HTTP REST API used by external users and internal components. 
-• : A highly available, distributed key-value database. It serves as the single source of truth for all cluster state and data. 
-• : The matchmaker for workloads. It watches for newly created Pods and assigns them to a healthy node based on resource requirements. 
-• : The core driving force. It runs distinct background controller processes to continuously drive the current state toward the desired state. 
-• : The cloud infrastructure bridge. It embeds cloud-specific control logic to manage resources like cloud load balancers and storage volumes. 
+    subgraph N1["Worker Node 1"]
+        KUBELET1["kubelet"]
+        PROXY1["kube-proxy"]
+        RUNTIME1["Container Runtime"]
+        POD1A["Pod"]
+        POD1B["Pod"]
+    end
 
-2. Worker Nodes (The Muscle) Worker nodes maintain running workloads and provide the active Kubernetes runtime environment. 
+    subgraph N2["Worker Node 2"]
+        KUBELET2["kubelet"]
+        PROXY2["kube-proxy"]
+        RUNTIME2["Container Runtime"]
+        POD2A["Pod"]
+        POD2B["Pod"]
+    end
 
-• : The on-site manager. It is an agent running on every node that ensures containers described in configurations are running and healthy. 
-• : The network operator. It maintains network rules on nodes to allow network communication to Pods from inside or outside the cluster. 
-• Container Runtime: The software that executes containers. Kubernetes supports industry runtimes like  and . [4, 5, 7, 8, 9]  
+    USER["kubectl / CI-CD / API clients"] --> API
+    API --> ETCD
+    API --> SCHED
+    API --> CM
+    API --> CCM
+    API <--> KUBELET1
+    API <--> KUBELET2
+    KUBELET1 --> RUNTIME1
+    RUNTIME1 --> POD1A
+    RUNTIME1 --> POD1B
+    KUBELET2 --> RUNTIME2
+    RUNTIME2 --> POD2A
+    RUNTIME2 --> POD2B
+    PROXY1 -.network rules.- POD1A
+    PROXY2 -.network rules.- POD2A
+```
 
-Core Data Unit: The Pod 
-A Pod is the smallest deployable unit you can create and manage in Kubernetes. 
+---
 
-• It wraps one or more tightly coupled containers. 
-• Containers within a single Pod share the same network IP, port space, and storage volumes. [9, 10, 11]  
+## 1. Control Plane Components
 
-Crucial Cluster Add-ons 
-Add-ons use Kubernetes resources to extend the capabilities of your cluster. 
+The control plane manages the overall state of the cluster: scheduling, scaling, and responding to cluster events.
 
-• CoreDNS: Provides flexible name resolution and service discovery across the cluster. 
-• CNI Plugin: Software like Calico or Cilium that implements the Container Network Interface to handle cross-node network routing. 
-• Metrics Server: Aggregates resource usage data to assist with auto-scaling metrics. [3, 5, 12, 13, 14]  
+| Component | Responsibility |
+|---|---|
+| **API Server** (`kube-apiserver`) | Front door to the cluster. Exposes the Kubernetes REST API. All communication (kubectl, controllers, kubelets) goes through it. |
+| **etcd** | Consistent, highly-available key-value store. Holds all cluster state and configuration data. The single source of truth. |
+| **Scheduler** (`kube-scheduler`) | Watches for newly created Pods with no assigned node, and picks a node for them to run on based on resource needs, constraints, and policies. |
+| **Controller Manager** (`kube-controller-manager`) | Runs controller processes (Node controller, Replication controller, Endpoints controller, etc.) that continuously drive actual cluster state toward the desired state. |
+| **Cloud Controller Manager** | Integrates with the underlying cloud provider (AWS, GCP, Azure) for things like load balancers, storage volumes, and node lifecycle. |
 
-Why This Design Works 
-The components never talk directly to each other. They rely exclusively on the central  to store state in  and watch for state changes. This decoupling ensures high availability and fault tolerance, as any broken component can be safely restarted without crashing the rest of the cluster. 
-For complete implementations and structural variations, you can view the official documentation on Kubernetes Cluster Architecture. 
-If you want to dive deeper, let me know if you would like to explore how a deployment flows through these components, look at high-availability setup patterns, or choose a CNI plugin. 
+---
+
+## 2. Worker Node Components
+
+Worker nodes run the actual application containers, packaged inside Pods.
+
+| Component | Responsibility |
+|---|---|
+| **kubelet** | Agent running on every node. Ensures containers described in PodSpecs are running and healthy. Talks to the API server. |
+| **kube-proxy** | Maintains network rules on nodes, enabling network communication to Pods from inside or outside the cluster. |
+| **Container Runtime** | Software responsible for actually running containers (e.g., containerd, CRI-O). |
+| **Pod** | Smallest deployable unit in Kubernetes. Wraps one or more tightly-coupled containers that share network/storage. |
+
+---
+
+## 3. Core Objects & Abstractions
+
+```mermaid
+flowchart LR
+    DEPLOY["Deployment"] --> RS["ReplicaSet"] --> POD["Pod(s)"]
+    SVC["Service"] -.routes traffic to.-> POD
+    ING["Ingress"] --> SVC
+    CM2["ConfigMap / Secret"] -.injected into.-> POD
+    PVC["PersistentVolumeClaim"] --> PV["PersistentVolume"] -.mounted by.-> POD
+```
+
+| Object | Purpose |
+|---|---|
+| **Pod** | Smallest unit; one or more containers sharing network/storage. |
+| **ReplicaSet** | Ensures a specified number of Pod replicas are running at all times. |
+| **Deployment** | Declarative way to manage ReplicaSets/Pods — supports rolling updates and rollbacks. |
+| **Service** | Stable network endpoint (virtual IP/DNS name) that load-balances traffic across a set of Pods. |
+| **Ingress** | Manages external HTTP/HTTPS access to Services, typically with routing rules and TLS. |
+| **ConfigMap / Secret** | Externalized configuration and sensitive data injected into Pods. |
+| **PersistentVolume (PV) / PersistentVolumeClaim (PVC)** | Abstraction for storage that outlives individual Pods. |
+| **Namespace** | Virtual cluster within a cluster — used to divide resources between teams/environments. |
+
+---
+
+## 4. Request Flow Example
+
+```mermaid
+sequenceDiagram
+    participant U as User (kubectl apply)
+    participant A as API Server
+    participant E as etcd
+    participant S as Scheduler
+    participant C as Controller Manager
+    participant K as kubelet (Node)
+    participant R as Container Runtime
+
+    U->>A: Submit Deployment manifest
+    A->>E: Persist desired state
+    A->>C: Notify Controller Manager
+    C->>A: Create ReplicaSet + Pod objects
+    A->>E: Persist Pod (unscheduled)
+    S->>A: Watch for unscheduled Pods
+    S->>A: Assign Pod to Node
+    A->>E: Update Pod with Node binding
+    K->>A: Watch for Pods assigned to its Node
+    K->>R: Instruct runtime to start container(s)
+    R-->>K: Container running
+    K->>A: Report Pod status = Running
+```
+
+---
+
+## 5. Summary
+
+- **Control Plane** = brain of the cluster (API Server, etcd, Scheduler, Controller Manager, Cloud Controller Manager).
+- **Worker Nodes** = muscle of the cluster (kubelet, kube-proxy, container runtime, Pods).
+- Everything is **declarative**: you describe desired state, and controllers continuously reconcile actual state to match it.
+- **etcd** is the single source of truth — losing it means losing the cluster's state.
+
+> Note: GitHub and most modern Markdown renderers (including this file) support **Mermaid diagrams** natively in `.md` files — no extra plugins needed when viewed on GitHub.
