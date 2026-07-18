@@ -1,5 +1,5 @@
 A Kubernetes (K8s) cluster relies on a highly decoupled, client-server architecture,
-It splits responsibilities between a management layer and an execution layer
+It splits responsibilities between a management layer and an execution layer 
 
 The Two Core Layers+-------------------------------------------------------------+
 
