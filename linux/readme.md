@@ -1,6 +1,35 @@
 # Linux Command Reference Guide
 This comprehensive documentation covers essential Linux system commands categorized by function.
+## Table of Contents
+1. [High-Level Architecture](#1-high-level-architecture)
+2. [Core Kernel Subsystems](#2-core-kernel-subsystems)
+   - [2.1 Process Scheduler](#21-process-scheduler)
+   - [2.2 Memory Manager](#22-memory-manager)
+   - [2.3 Virtual File System (VFS)](#23-virtual-file-system-vfs)
+   - [2.4 Network Stack](#24-network-stack)
+   - [2.5 Device Drivers](#25-device-drivers)
+   - [2.6 IPC, Namespaces & cgroups](#26-ipc-namespaces--cgroups)
+3. [Boot Process](#3-boot-process)
+4. [Filesystem Hierarchy Standard (FHS)](#4-filesystem-hierarchy-standard-fhs)
+5. [Process & Memory Model](#5-process--memory-model)
+6. [Essential Commands by Category](#6-essential-commands-by-category)
+   - [6.1 File & Directory Management](#61-file--directory-management)
+   - [6.2 File Viewing & Editing](#62-file-viewing--editing)
+   - [6.3 Permissions & Ownership](#63-permissions--ownership)
+   - [6.4 Process Management](#64-process-management)
+   - [6.5 Disk & Filesystem](#65-disk--filesystem)
+   - [6.6 Networking](#66-networking)
+   - [6.7 Users & Groups](#67-users--groups)
+   - [6.8 Package Management](#68-package-management)
+   - [6.9 Compression & Archiving](#69-compression--archiving)
+   - [6.10 System Monitoring & Info](#610-system-monitoring--info)
+   - [6.11 Text/Data Processing Pipeline Example](#611-textdata-processing-pipeline-example)
+   - [6.12 Scheduling](#612-scheduling)
+7. [Init Systems Compared](#7-init-systems-compared)
+8. [Permissions & Security Model](#8-permissions--security-model)
+9. [Summary: Full Stack View](#9-summary-full-stack-view)
 
+---
 ### 📂 File & Directory Management
 * **List contents detailed**: `ls -lah`
 * **Change current directory**: `cd /path/to/folder`
