@@ -128,12 +128,12 @@ aws iam list-users
 
 **Create a user:**
 ```bash
-aws iam create-user --user-name myuser
+aws iam create-user --user-name 'newuser'
 ```
 
 **Delete a user:**
 ```bash
-aws iam delete-user --user-name myuser
+aws iam delete-user --user-name 'user'
 ```
 
 **Create an access key for a user:**
