@@ -11,7 +11,10 @@ sudo usermod -aG docker $USER
 ```bash
 newgrp docker
 ```
-
+###To Remove from group
+```bash
+sudo gpasswd -d "$USER" docker
+```
 ---
 
 ## 1. 📊 System Diagnostics & Resource Tuning
