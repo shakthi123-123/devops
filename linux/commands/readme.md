@@ -6,7 +6,7 @@ A comprehensive, categorized reference of essential Linux commands with syntax, 
 
 ## Table of Contents
 
-1. [File & Directory Management]()
+1. [File & Directory Management](#1-File-&-Directory-Management)
 2. File Permissions & Ownership
 3. Viewing & Editing Files
 4. Text Processing & Searching
