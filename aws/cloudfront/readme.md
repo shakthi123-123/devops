@@ -1,4 +1,3 @@
-[aws-cloudfront-creation-guide.md](https://github.com/user-attachments/files/30575622/aws-cloudfront-creation-guide.md)
 # Setting Up CloudFront in AWS — Complete Step-by-Step Guide
 
 Amazon CloudFront is AWS's global content delivery network (CDN) — it caches content at edge locations worldwide for low-latency delivery, and also provides HTTPS termination, DDoS protection (via AWS Shield), and request routing for both static and dynamic content.
