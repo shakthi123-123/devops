@@ -1,6 +1,6 @@
 # AWS Foundations — Complete Setup Guide
 
-A combined, ordered reference for provisioning a secure AWS environment from scratch: networking, identity, compute, storage, databases, serverless functions, APIs, monitoring, NoSQL, containers, DNS, CDN, messaging, security, secrets, CI/CD, Kubernetes, multi-VPC networking, and multi-account governance/cost control.
+A combined, ordered reference for provisioning a secure AWS environment from scratch: networking, identity, compute, storage, databases, serverless functions, APIs, monitoring, NoSQL, containers, DNS, CDN, messaging, security, secrets, CI/CD, Kubernetes, multi-VPC networking, multi-account governance, and core DevOps tooling (IaC, ops automation, source control/deployment, orchestration, and observability).
 
 ## Recommended Build Order
 
@@ -25,6 +25,11 @@ This document follows the sequence a real deployment typically uses — each cha
 17. **[EKS (Kubernetes)](#chapter-17-eks)** — managed Kubernetes as an alternative to ECS for container orchestration
 18. **[VPC Peering & Transit Gateway](#chapter-18-vpc-peering-tgw)** — connecting multiple VPCs, point-to-point or hub-and-spoke
 19. **[Organizations, Cost Explorer & Budgets](#chapter-19-organizations-cost)** — multi-account governance and spend visibility/control
+20. **[CloudFormation](#chapter-20-cloudformation)** — native Infrastructure as Code for repeatable, versioned deployments
+21. **[Systems Manager (SSM)](#chapter-21-ssm)** — fleet management, secure shell access, patching, and parameter storage
+22. **[CodeCommit & CodeDeploy](#chapter-22-codecommit-codedeploy)** — managed Git hosting and automated deployment with rollback
+23. **[Step Functions & EventBridge](#chapter-23-stepfunctions-eventbridge)** — workflow orchestration and event-driven automation
+24. **[CloudTrail & X-Ray](#chapter-24-cloudtrail-xray)** — API audit logging and distributed request tracing
 
 Each chapter is self-contained with its own prerequisites, verification checklist, cleanup steps, and troubleshooting table, so you can also jump directly to the service you need.
 
@@ -6070,3 +6075,1264 @@ Organizations, Cost Explorer, and Budgets themselves have **no direct cost** —
 - **Backup Policies** — centrally enforce AWS Backup plans across accounts
 - **Resource Access Manager (RAM)** — share resources like Transit Gateways or subnets across accounts within the organization
 - **Infrastructure as Code** — manage OUs, accounts, and SCPs via Terraform (`aws_organizations_*` resources) or AWS CloudFormation StackSets for cross-account deployments
+
+
+---
+
+<a id="chapter-20-cloudformation"></a>
+
+# Setting Up AWS CloudFormation — Complete Step-by-Step Guide
+
+AWS CloudFormation is AWS's native Infrastructure as Code (IaC) service — define resources in a YAML/JSON template, and CloudFormation provisions, updates, and tears them down as a single managed unit called a **stack**.
+
+---
+
+## Architecture Overview
+
+```
+        template.yaml (VPC, EC2, RDS, IAM...)
+                    │
+              CloudFormation
+                    │
+        ┌───────────┴────────────┐
+        │         Stack            │
+        │  ┌────┐ ┌────┐ ┌────┐   │
+        │  │VPC  │ │EC2  │ │RDS  │   │
+        │  └────┘ └────┘ └────┘   │
+        │                          │
+        │  Change Sets → preview    │
+        │  Drift Detection           │
+        │  Stack Outputs → cross-ref │
+        └─────────────────────────┘
+```
+
+---
+
+## Prerequisites
+
+- Active AWS account
+- IAM user/role with `AWSCloudFormationFullAccess` plus permissions for the resource types you'll create
+- Basic YAML familiarity
+
+---
+
+## Step 1: Sign In and Select Region
+
+1. Go to [https://console.aws.amazon.com](https://console.aws.amazon.com)
+2. Sign in with IAM credentials
+3. Select your target **region**
+4. In the search bar, type `CloudFormation` and select **CloudFormation**
+
+---
+
+## Step 2: Write a Template
+
+Create `template.yaml`:
+
+```yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Simple VPC and EC2 instance
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.micro, t3.micro, t3.small]
+
+Resources:
+  AppVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: cfn-vpc
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref AppVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      MapPublicIpOnLaunch: true
+
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: ami-0abcdef1234567890
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Name
+          Value: cfn-web-server
+
+Outputs:
+  InstancePublicIp:
+    Description: Public IP of the web server
+    Value: !GetAtt WebServer.PublicIp
+  VpcId:
+    Value: !Ref AppVPC
+    Export:
+      Name: cfn-vpc-id
+```
+
+### Key Template Sections
+
+| Section | Purpose |
+|---|---|
+| `Parameters` | Input values supplied at deploy time |
+| `Resources` | The AWS resources to create (required) |
+| `Outputs` | Values exposed after creation — can be imported by other stacks |
+| `Conditions` | Conditional resource creation (e.g., prod vs. dev) |
+| `Mappings` | Static lookup tables (e.g., AMI IDs per region) |
+
+---
+
+## Step 3: Validate the Template
+
+```bash
+aws cloudformation validate-template --template-body file://template.yaml
+```
+
+Fixes syntax errors before attempting a deployment.
+
+---
+
+## Step 4: Create the Stack (Console)
+
+1. **CloudFormation Console** → **Stacks** → **Create stack** → **With new resources (standard)**
+2. **Prerequisite**: choose **Template is ready** → **Upload a template file** → select `template.yaml`
+3. Click **Next**
+4. **Stack details**:
+   - Stack name: `orders-app-infra`
+   - Parameters: adjust `InstanceType` if needed
+5. Click **Next**
+6. **Configure stack options**:
+   - Tags: add `Environment: Production`
+   - **IAM role**: assign a role if CloudFormation needs elevated permissions beyond your user's
+   - **Stack failure options**: **Roll back all stack resources** (default, recommended)
+   - **Termination protection**: **Enable** for production stacks (prevents accidental deletion)
+7. Click **Next** → review → check the acknowledgment box if IAM resources are included → **Submit**
+8. Watch the **Events** tab — status progresses `CREATE_IN_PROGRESS` → `CREATE_COMPLETE`
+
+### Alternative: Create via CLI
+
+```bash
+aws cloudformation create-stack \
+  --stack-name orders-app-infra \
+  --template-body file://template.yaml \
+  --parameters ParameterKey=InstanceType,ParameterValue=t3.micro \
+  --capabilities CAPABILITY_NAMED_IAM
+```
+
+---
+
+## Step 5: Preview Changes with Change Sets
+
+Before applying an update to a live stack, preview exactly what will change.
+
+1. Select the stack → **Stack actions** → **Create change set for current stack**
+2. Upload the modified template
+3. Click **Create change set**
+4. Review the **Changes** tab — shows Add/Modify/Remove per resource, and whether a change requires **replacement** (destructive) vs. **in-place update**
+5. If acceptable, select the change set → **Execute**
+
+---
+
+## Step 6: Reference Outputs Across Stacks (Cross-Stack References)
+
+1. In the producing stack's template, export a value (already shown in Step 2's `Outputs`)
+2. In a consuming stack's template, import it:
+   ```yaml
+   Resources:
+     AppServer:
+       Type: AWS::EC2::Instance
+       Properties:
+         SubnetId: !ImportValue cfn-vpc-id
+   ```
+3. This lets you split infrastructure into logical stacks (network, database, application) while still wiring them together
+
+---
+
+## Step 7: Use Nested Stacks (For Modular Templates)
+
+```yaml
+Resources:
+  NetworkStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://s3.amazonaws.com/my-templates/network.yaml
+      Parameters:
+        CidrBlock: 10.0.0.0/16
+```
+
+Nested stacks let you reuse common templates (e.g., a standard VPC pattern) across multiple parent stacks.
+
+---
+
+## Step 8: Detect and Remediate Drift
+
+Drift occurs when someone manually changes a resource outside CloudFormation.
+
+1. Select the stack → **Stack actions** → **Detect drift**
+2. Wait for detection to complete
+3. Review the **Drift status** column per resource: `IN_SYNC`, `MODIFIED`, `DELETED`
+4. For drifted resources, either manually revert the out-of-band change, or update the template to match reality and redeploy
+
+---
+
+## Step 9: Set Up Stack Policies (Protect Critical Resources)
+
+Prevent specific resources from being accidentally updated/replaced during a stack update.
+
+1. Select the stack → **Edit stack policy**
+2. Example — deny replacement of the production database:
+   ```json
+   {
+     "Statement": [
+       {
+         "Effect": "Deny",
+         "Action": "Update:Replace",
+         "Principal": "*",
+         "Resource": "LogicalResourceId/ProdDatabase"
+       },
+       {
+         "Effect": "Allow",
+         "Action": "Update:*",
+         "Principal": "*",
+         "Resource": "*"
+       }
+     ]
+   }
+   ```
+3. Click **Save**
+
+---
+
+## Step 10: Delete the Stack
+
+1. Select the stack → **Delete**
+2. Confirm — CloudFormation deletes resources in dependency order automatically
+3. If deletion fails on a resource (e.g., a non-empty S3 bucket), resolve the blocker (empty the bucket) and retry, or use **Delete** → **Force delete** for stacks stuck in `DELETE_FAILED`
+
+---
+
+## Verification Checklist
+
+- [ ] Template validated before deployment
+- [ ] Change sets used to preview updates before executing against live stacks
+- [ ] Termination protection enabled on production stacks
+- [ ] Stack policies protect critical resources from accidental replacement
+- [ ] Outputs/exports used for clean cross-stack references instead of hardcoded ARNs
+- [ ] Drift detection run periodically to catch manual out-of-band changes
+- [ ] Rollback behavior tested (intentionally trigger a failure in a test stack to confirm rollback works)
+
+---
+
+## Common Troubleshooting
+
+| Issue | Likely Cause | Fix |
+|---|---|---|
+| Stack stuck in `ROLLBACK_COMPLETE` | Initial creation failed; stack can't be updated from this state | Delete the stack and recreate |
+| `Insufficient capabilities` error | Template creates IAM resources without acknowledgment | Add `--capabilities CAPABILITY_NAMED_IAM` (CLI) or check the acknowledgment box (console) |
+| Update requires replacement unexpectedly | Changed an immutable property (e.g., subnet CIDR) | Check the change set's **Replacement** column before executing; some properties can't be updated in place |
+| `DELETE_FAILED` | A resource has dependencies preventing deletion (e.g., non-empty S3 bucket, ENI still attached) | Manually resolve the blocker, then retry delete |
+
+---
+
+## Next Steps / Advanced Topics
+
+- **AWS CDK** — define infrastructure in TypeScript/Python/Java, which synthesizes to CloudFormation templates
+- **StackSets** — deploy the same stack across multiple accounts/regions simultaneously
+- **Custom Resources** — extend CloudFormation with Lambda-backed logic for unsupported resource types
+- **SAM (Serverless Application Model)** — CloudFormation extension simplifying Lambda/API Gateway templates
+
+
+---
+
+<a id="chapter-21-ssm"></a>
+
+# Setting Up AWS Systems Manager (SSM) — Complete Step-by-Step Guide
+
+AWS Systems Manager is an operations hub for managing EC2 instances and on-premises servers at scale — patching, running commands remotely, secure shell access without SSH keys/bastion hosts, and centralized parameter storage.
+
+---
+
+## Architecture Overview
+
+```
+        Admin (Console / CLI)
+                │
+        Systems Manager
+                │
+    ┌───────────┼────────────┐
+    │           │            │
+Run Command  Session Mgr  Parameter Store
+    │           │            │
+    └───────────┴────────────┘
+                │
+          SSM Agent (on instances)
+                │
+        EC2 Instances (no open SSH port needed)
+```
+
+---
+
+## Prerequisites
+
+- Active AWS account
+- IAM user/role with `AmazonSSMFullAccess` (or scoped equivalent)
+- EC2 instances with the **SSM Agent** installed (pre-installed on Amazon Linux 2023, Ubuntu 20.04+, Windows Server 2016+ AMIs)
+
+---
+
+## Step 1: Sign In and Open Systems Manager
+
+1. Go to [https://console.aws.amazon.com](https://console.aws.amazon.com)
+2. Sign in with IAM credentials
+3. Select your target **region**
+4. In the search bar, type `Systems Manager` and select **Systems Manager**
+
+---
+
+## Step 2: Attach the SSM IAM Role to Instances
+
+1. **IAM Console** → **Roles** → **Create role**
+2. Trusted entity: **AWS service** → **EC2**
+3. Attach policy: `AmazonSSMManagedInstanceCore`
+4. Name: `ssm-instance-role`
+5. Click **Create role**
+6. **EC2 Console** → select instance → **Actions** → **Security** → **Modify IAM role** → attach `ssm-instance-role`
+
+---
+
+## Step 3: Verify Managed Instances
+
+1. **Systems Manager Console** → **Fleet Manager** (or **Managed instances** under Node Management)
+2. Confirm your instance appears with **Ping status: Online**
+3. If not appearing, verify: SSM Agent running, IAM role attached, instance has outbound internet/NAT access (or SSM VPC endpoints for private-only instances)
+
+---
+
+## Step 4: Connect via Session Manager (No SSH Key/Open Port Needed)
+
+1. **EC2 Console** → select instance → **Connect** → **Session Manager** tab → **Connect**
+2. Opens a browser-based shell directly on the instance
+3. Or via CLI:
+   ```bash
+   aws ssm start-session --target i-0123456789abcdef0
+   ```
+4. **Key benefit**: no inbound SSH port (22) needs to be open in the security group at all — all access is via the SSM Agent's outbound connection, fully logged in CloudTrail
+
+---
+
+## Step 5: Run Commands Across Multiple Instances (Run Command)
+
+1. Left sidebar → **Run Command** → **Run command**
+2. Select a document, e.g., `AWS-RunShellScript`
+3. **Command parameters**:
+   ```bash
+   sudo yum update -y
+   sudo systemctl restart httpd
+   ```
+4. **Targets**: select instances by tag (e.g., `Environment=Production`), manually, or by resource group
+5. **Output options**: enable S3 or CloudWatch Logs output for auditing
+6. Click **Run**
+7. Review per-instance output under the command's **Output** tab
+
+---
+
+## Step 6: Store Configuration in Parameter Store
+
+1. Left sidebar → **Parameter Store** → **Create parameter**
+2. Configure:
+   - Name: `/orders-app/prod/db-host`
+   - Type: **String** (or **SecureString** for sensitive values, encrypted via KMS)
+   - Value: `prod-postgres-db.abc123.ap-south-1.rds.amazonaws.com`
+3. Click **Create parameter**
+4. Retrieve in application code:
+   ```bash
+   aws ssm get-parameter --name /orders-app/prod/db-host --with-decryption
+   ```
+5. Use hierarchical naming (`/app/env/key`) for organized, IAM-scopable access via path-based policies
+
+---
+
+## Step 7: Automate Patching with Patch Manager
+
+1. Left sidebar → **Patch Manager** → **Configure patching**
+2. Select target instances by tag
+3. **Patch baseline**: use the default (AWS-provided), or create a custom baseline defining approval rules (e.g., auto-approve security patches after 7 days)
+4. **Schedule**: create a maintenance window, e.g., weekly Sunday 2 AM
+5. Click **Configure patching**
+6. Review compliance under **Patch Manager** → **Compliance reporting**
+
+---
+
+## Step 8: Use State Manager to Enforce Configuration Drift Correction
+
+1. Left sidebar → **State Manager** → **Create association**
+2. Select a document (e.g., ensure a specific package is always installed, or a config file matches a defined state)
+3. Targets: by tag
+4. Schedule: **Rate**, e.g., every 30 minutes — State Manager continuously re-applies the desired state
+5. Click **Create association**
+
+---
+
+## Step 9: Use Automation Runbooks (Self-Healing / Routine Ops)
+
+1. Left sidebar → **Automation** → **Execute automation**
+2. Choose a document, e.g., `AWS-RestartEC2Instance` or a custom automation document chaining multiple steps
+3. Targets and parameters as needed → **Execute**
+4. Combine with **CloudWatch Alarms** → **EventBridge** to trigger automation runbooks automatically on alarm state changes (e.g., auto-restart an unhealthy service)
+
+---
+
+## Step 10: Port Forwarding via Session Manager (Access Private Resources)
+
+Connect to a private RDS/internal service without a bastion host:
+
+```bash
+aws ssm start-session \
+  --target i-0123456789abcdef0 \
+  --document-name AWS-StartPortForwardingSessionToRemoteHost \
+  --parameters '{"host":["prod-postgres-db.abc123.ap-south-1.rds.amazonaws.com"],"portNumber":["5432"],"localPortNumber":["5432"]}'
+```
+
+Then connect to `localhost:5432` locally — traffic tunnels securely through the SSM Agent on the EC2 instance.
+
+---
+
+## Verification Checklist
+
+- [ ] SSM Agent running and instances show **Online** in Fleet Manager
+- [ ] IAM role `AmazonSSMManagedInstanceCore` attached to all managed instances
+- [ ] Session Manager tested — no SSH port needed to be open
+- [ ] Sensitive config stored as `SecureString` parameters, not plaintext
+- [ ] Patch Manager baseline and maintenance window configured for production instances
+- [ ] Run Command output logged to S3/CloudWatch for auditing
+- [ ] CloudTrail confirms all Session Manager sessions are logged
+
+---
+
+## Common Troubleshooting
+
+| Issue | Likely Cause | Fix |
+|---|---|---|
+| Instance shows offline in Fleet Manager | SSM Agent not running, missing IAM role, or no outbound connectivity | Verify agent status, attach role, confirm NAT/internet access or SSM VPC endpoints |
+| Session Manager connection fails | Security group blocks all outbound, or agent outdated | Allow outbound HTTPS (443); update the SSM Agent |
+| Run Command shows "Failed" on some instances | Script error, or command timeout too short | Check per-instance output; increase the command timeout |
+| Parameter Store `AccessDenied` | IAM policy doesn't cover the specific parameter path | Scope policy to `arn:aws:ssm:region:account:parameter/orders-app/*` |
+
+---
+
+## Next Steps / Advanced Topics
+
+- **SSM Inventory** — collect software/configuration metadata across your fleet for compliance reporting
+- **Change Manager** — formal change request/approval workflow before running automations in production
+- **Hybrid Activations** — manage on-premises servers alongside EC2 through the same SSM console
+- **Infrastructure as Code** — manage parameters, patch baselines, and associations via Terraform or CloudFormation
+
+
+---
+
+<a id="chapter-22-codecommit-codedeploy"></a>
+
+# Setting Up CodeCommit & CodeDeploy in AWS — Complete Step-by-Step Guide
+
+AWS CodeCommit is a managed private Git repository. AWS CodeDeploy automates application deployments to EC2, on-premises servers, Lambda, or ECS with built-in rollback on failure. This guide covers both individually and how they fit into the broader CI/CD pipeline from the companion *AWS CodePipeline Guide*.
+
+> **Note:** As of recent AWS guidance, CodeCommit is in maintenance mode for new customers — AWS recommends GitHub, GitLab, or Bitbucket for new projects (as used in the companion CodePipeline guide). This chapter is included for completeness and for existing CodeCommit users.
+
+---
+
+## Architecture Overview
+
+```
+    Developer                CodeDeploy
+        │                        │
+   git push                Deployment Group
+        │                        │
+  ┌──────────┐          ┌────────────────┐
+  │CodeCommit │─────────►│  EC2 / ASG /     │
+  │Repository │  trigger │  Lambda / ECS     │
+  └──────────┘          └────────────────┘
+                          appspec.yml defines
+                          deployment lifecycle hooks
+```
+
+---
+
+## Prerequisites
+
+- Active AWS account
+- IAM user/role with `AWSCodeCommitFullAccess` and `AWSCodeDeployFullAccess`
+- Git installed locally
+- A deployment target: EC2 instances (with CodeDeploy agent), Lambda function, or ECS service
+
+---
+
+## Part A: CodeCommit
+
+### Step A1: Create a Repository
+
+1. **CodeCommit Console** → **Create repository**
+2. Name: `orders-app`
+3. Description: `Orders service source code`
+4. Click **Create**
+
+### Step A2: Configure Git Credentials
+
+1. **IAM Console** → select your user → **Security credentials** tab
+2. Scroll to **HTTPS Git credentials for AWS CodeCommit** → **Generate credentials**
+3. Download the generated username/password
+4. Alternatively, use the **AWS CLI credential helper** (recommended, no separate Git password needed):
+   ```bash
+   git config --global credential.helper '!aws codecommit credential-helper $@'
+   git config --global credential.UseHttpPath true
+   ```
+
+### Step A3: Clone and Push
+
+```bash
+git clone https://git-codecommit.ap-south-1.amazonaws.com/v1/repos/orders-app
+cd orders-app
+git add .
+git commit -m "Initial commit"
+git push origin main
+```
+
+### Step A4: Set Up Branch Protection (Approval Rules)
+
+1. Select the repository → **Settings** → **Approval rule templates** → **Create template**
+2. Configure:
+   - Number of approvals needed: `1`
+   - Approval pool members: specific IAM users/roles, or `CodeCommitApprovers:*` (any repo contributor)
+3. Associate the template with the repository and target branch (`main`)
+4. Pull requests targeting `main` now require approval before merging
+
+---
+
+## Part B: CodeDeploy
+
+### Step B1: Create a CodeDeploy Application
+
+1. **CodeDeploy Console** → **Applications** → **Create application**
+2. Name: `orders-app`
+3. Compute platform: **EC2/On-premises**, **Lambda**, or **ECS** (choose based on target)
+4. Click **Create application**
+
+---
+
+### Step B2 (EC2/On-Premises Path): Install the CodeDeploy Agent
+
+On each target EC2 instance:
+```bash
+sudo yum install -y ruby wget
+cd /home/ec2-user
+wget https://aws-codedeploy-ap-south-1.s3.ap-south-1.amazonaws.com/latest/install
+chmod +x ./install
+sudo ./install auto
+sudo systemctl status codedeploy-agent
+```
+
+Attach an IAM role to the instance with `AmazonEC2RoleforAWSCodeDeploy` (or a scoped equivalent granting S3 read access to the deployment artifact bucket).
+
+---
+
+### Step B3: Create a Deployment Group
+
+1. Select the application → **Create deployment group**
+2. Configure:
+   - Deployment group name: `orders-app-prod`
+   - Service role: create/select an IAM role with `AWSCodeDeployRole` trust policy
+   - Deployment type:
+     - **In-place** — updates instances directly, brief downtime per instance during update
+     - **Blue/green** — provisions new instances, shifts traffic, terminates old ones — zero downtime
+   - Environment configuration: **Amazon EC2 Auto Scaling groups**, or **EC2 instances** tagged (e.g., `Name=orders-app-prod`)
+   - Deployment settings: **CodeDeployDefault.AllAtOnce**, **HalfAtATime**, or **OneAtATime** (controls rollout speed vs. risk)
+   - Load balancer: attach an ALB target group for health-checked rollouts
+3. Click **Create deployment group**
+
+---
+
+### Step B4: Create an `appspec.yml`
+
+Place at the root of your application source (EC2 example):
+
+```yaml
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/orders-app
+
+hooks:
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 300
+  AfterInstall:
+    - location: scripts/after_install.sh
+      timeout: 300
+  ApplicationStart:
+    - location: scripts/start_server.sh
+      timeout: 300
+  ApplicationStop:
+    - location: scripts/stop_server.sh
+      timeout: 300
+  ValidateService:
+    - location: scripts/validate_service.sh
+      timeout: 300
+```
+
+### Deployment Lifecycle Hooks Reference
+
+| Hook | When It Runs |
+|---|---|
+| `ApplicationStop` | Before the new revision is downloaded (stop the old version) |
+| `BeforeInstall` | Before new files are copied (e.g., back up current version) |
+| `AfterInstall` | After files copied, before app starts (e.g., install dependencies) |
+| `ApplicationStart` | Start the new application version |
+| `ValidateService` | Confirm the deployment succeeded (e.g., curl a health endpoint) |
+
+---
+
+### Step B5: Package and Upload the Deployment Artifact
+
+```bash
+zip -r app.zip appspec.yml scripts/ src/
+aws deploy push \
+  --application-name orders-app \
+  --s3-location s3://my-deployment-artifacts/orders-app/app.zip \
+  --source app.zip
+```
+
+---
+
+### Step B6: Create a Deployment
+
+1. Select the application/deployment group → **Create deployment**
+2. Revision location: the S3 URI from Step B5, or connect directly to CodeCommit/GitHub
+3. Click **Create deployment**
+4. Watch the deployment progress through each lifecycle hook per instance
+5. On failure, CodeDeploy automatically rolls back (if configured) to the last known-good deployment
+
+---
+
+### Step B7 (Lambda Path): Configure Traffic Shifting
+
+For Lambda deployments, `appspec.yml` looks different:
+
+```yaml
+version: 0.0
+Resources:
+  - orders-function:
+      Type: AWS::Lambda::Function
+      Properties:
+        Name: process-order-events
+        Alias: live
+        CurrentVersion: "3"
+        TargetVersion: "4"
+```
+
+Deployment configuration options:
+
+| Config | Behavior |
+|---|---|
+| `CodeDeployDefault.LambdaAllAtOnce` | Instant full cutover |
+| `CodeDeployDefault.LambdaLinear10PercentEvery1Minute` | Gradual, safer rollout |
+| `CodeDeployDefault.LambdaCanary10Percent5Minutes` | Small canary, then full shift if healthy |
+
+CloudWatch Alarms can be attached to automatically roll back if error rates spike during the shift.
+
+---
+
+## Verification Checklist
+
+- [ ] CodeCommit repository created with Git credential helper configured
+- [ ] Approval rule template enforces review before merging to main (if applicable)
+- [ ] CodeDeploy agent installed and running on all target EC2 instances
+- [ ] Deployment group configured with the correct deployment type (in-place vs. blue/green)
+- [ ] `appspec.yml` lifecycle hooks tested — especially `ValidateService` actually checks application health
+- [ ] Deployment successfully completes and rolls back automatically on a simulated failure
+- [ ] (Lambda) Traffic-shifting deployment configuration and rollback alarms tested
+
+---
+
+## Common Troubleshooting
+
+| Issue | Likely Cause | Fix |
+|---|---|---|
+| Deployment stuck at `Install` | CodeDeploy agent not running, or IAM role missing S3 access | `sudo systemctl status codedeploy-agent`; verify instance role permissions |
+| `ValidateService` hook always fails | Health check script has wrong path/port | Test the script manually via SSH/Session Manager first |
+| Deployment succeeds but old code still running | `ApplicationStart` script doesn't actually restart the service | Confirm the start script correctly restarts (not just starts, if already running) the process |
+| Rollback not triggering on failure | Rollback not enabled on the deployment group | Edit deployment group → enable automatic rollback on deployment failure |
+
+---
+
+## Next Steps / Advanced Topics
+
+- **CodeArtifact** — private package repository for npm/pip/Maven, integrates into CodeBuild's build phase
+- **Blue/Green with Auto Scaling Groups** — CodeDeploy provisions a full replacement ASG for true zero-downtime EC2 deployments
+- **CodeDeploy + CodePipeline** — chain CodeCommit → CodeBuild → CodeDeploy into one automated pipeline (see companion *AWS CodePipeline Guide*)
+- **Infrastructure as Code** — manage applications, deployment groups, and repositories via Terraform or CloudFormation
+
+
+---
+
+<a id="chapter-23-stepfunctions-eventbridge"></a>
+
+# Setting Up Step Functions & EventBridge in AWS — Complete Step-by-Step Guide
+
+AWS Step Functions orchestrates multi-step workflows (state machines) across Lambda, ECS, SQS, and other services with built-in error handling and retries. Amazon EventBridge is AWS's event bus, routing events between AWS services, SaaS apps, and custom applications based on rules. This guide covers both — commonly used together to build event-driven, orchestrated automation.
+
+---
+
+## Architecture Overview
+
+```
+      Event Source (S3, custom app, schedule)
+                    │
+             EventBridge Bus
+                    │
+              Rule (pattern match)
+                    │
+        ┌───────────┼────────────┐
+        │           │            │
+    Lambda      Step Functions   SQS/SNS
+                     │
+          ┌──────────┼──────────┐
+          │          │          │
+      Task 1      Choice     Task 2
+     (Lambda)    (branch)   (Lambda)
+          │
+      Parallel / Retry / Catch
+```
+
+---
+
+## Prerequisites
+
+- Active AWS account
+- IAM user/role with `AWSStepFunctionsFullAccess` and `AmazonEventBridgeFullAccess`
+- Existing Lambda functions or other targets to orchestrate (see companion *AWS Lambda Creation Guide*)
+
+---
+
+## Part A: Step Functions
+
+### Step A1: Sign In and Open Step Functions
+
+1. Go to [https://console.aws.amazon.com](https://console.aws.amazon.com)
+2. Sign in, select your region
+3. Search for `Step Functions` and select it
+
+### Step A2: Create a State Machine
+
+1. **State machines** → **Create state machine**
+2. Choose authoring method: **Design your workflow visually** (drag-and-drop) or **Write your workflow in code** (Amazon States Language / ASL)
+3. Type: **Standard** (durable, up to 1 year, exactly-once, best for long workflows/audit trail) or **Express** (high-volume, up to 5 minutes, at-least-once, cheaper per-execution — best for event processing)
+
+Select **Standard** for this guide.
+
+### Step A3: Define the Workflow (ASL)
+
+```json
+{
+  "Comment": "Order processing workflow",
+  "StartAt": "ValidateOrder",
+  "States": {
+    "ValidateOrder": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:ap-south-1:123456789012:function:validate-order",
+      "Next": "IsValid",
+      "Retry": [
+        {
+          "ErrorEquals": ["States.TaskFailed"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2.0
+        }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "NotifyFailure"
+        }
+      ]
+    },
+    "IsValid": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.isValid",
+          "BooleanEquals": true,
+          "Next": "ProcessPayment"
+        }
+      ],
+      "Default": "NotifyFailure"
+    },
+    "ProcessPayment": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:ap-south-1:123456789012:function:process-payment",
+      "Next": "ParallelFulfillment"
+    },
+    "ParallelFulfillment": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "UpdateInventory",
+          "States": {
+            "UpdateInventory": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:ap-south-1:123456789012:function:update-inventory",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "SendConfirmationEmail",
+          "States": {
+            "SendConfirmationEmail": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:ap-south-1:123456789012:function:send-email",
+              "End": true
+            }
+          }
+        }
+      ],
+      "Next": "Success"
+    },
+    "Success": {
+      "Type": "Succeed"
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:sns:ap-south-1:123456789012:order-events",
+      "End": true
+    }
+  }
+}
+```
+
+### Key State Types
+
+| State Type | Purpose |
+|---|---|
+| `Task` | Invokes a Lambda, ECS task, or other supported service integration |
+| `Choice` | Branches based on input data (like an if/else) |
+| `Parallel` | Runs multiple branches concurrently |
+| `Map` | Iterates over a collection, running a sub-workflow per item |
+| `Wait` | Pauses for a fixed time or until a timestamp |
+| `Succeed` / `Fail` | Terminal states |
+
+### Step A4: Set the Execution Role
+
+1. On the review step, select/create an IAM role that Step Functions assumes to invoke the resources in your workflow (Lambda, SNS, etc.)
+2. Name: `orders-workflow-role`
+3. Click **Create state machine**
+
+### Step A5: Execute and Test
+
+1. Select the state machine → **Start execution**
+2. Input (JSON):
+   ```json
+   {"orderId": "ORD-1001", "amount": 149.99}
+   ```
+3. Click **Start execution**
+4. Watch the **Graph view** — completed states turn green, failed states red
+5. Click any state to see its input/output for debugging
+
+### Step A6: Add Error Handling Patterns
+
+- **Retry**: automatically retries a failed task with exponential backoff (shown in Step A3)
+- **Catch**: routes to a fallback state on specific error types instead of failing the whole execution
+- **Timeout**: set `TimeoutSeconds` on a Task to prevent it from hanging indefinitely
+
+### Step A7: Monitor Executions
+
+1. Select the state machine → **Executions** tab — see history of all runs, filterable by status
+2. **CloudWatch** → `AWS/States` namespace — metrics like `ExecutionsFailed`, `ExecutionTime`
+3. Set an alarm on `ExecutionsFailed > 0` to catch workflow failures
+
+---
+
+## Part B: EventBridge
+
+### Step B1: Explore the Default Event Bus
+
+1. Search for `EventBridge` and select it
+2. Left sidebar → **Event buses** — the `default` bus automatically receives events from most AWS services
+3. Create a **custom event bus** for application-specific events: **Event buses** → **Create event bus** → name: `orders-app-bus`
+
+### Step B2: Create a Rule (Schedule-Based)
+
+1. Left sidebar → **Rules** → **Create rule**
+2. Name: `nightly-cleanup`
+3. Event bus: `default`
+4. Rule type: **Schedule**
+5. Schedule pattern:
+   - Cron expression: `cron(0 2 * * ? *)` (2 AM daily)
+   - Or rate expression: `rate(1 hour)`
+6. Click **Next**
+7. **Target**: select **Lambda function**, **Step Functions state machine**, or another target → select your resource
+8. Click **Next** → review → **Create rule**
+
+### Step B3: Create a Rule (Event Pattern-Based)
+
+React to actual AWS service events, e.g., an S3 upload:
+
+1. **Create rule** → Rule type: **Event pattern**
+2. **Event source**: **AWS services**
+3. **AWS service**: **Simple Storage Service (S3)**
+4. **Event type**: **Object Created**
+5. Specify the bucket name to filter to
+6. Generated pattern:
+   ```json
+   {
+     "source": ["aws.s3"],
+     "detail-type": ["Object Created"],
+     "detail": {
+       "bucket": {"name": ["my-app-bucket-prod-2026"]}
+     }
+   }
+   ```
+7. Target: your Lambda function or Step Functions state machine
+8. Click **Create rule**
+
+### Step B4: Publish Custom Application Events
+
+From your application code:
+
+```python
+import boto3
+import json
+
+client = boto3.client("events")
+client.put_events(
+    Entries=[
+        {
+            "Source": "orders.app",
+            "DetailType": "OrderCreated",
+            "Detail": json.dumps({"orderId": "ORD-1001", "amount": 149.99}),
+            "EventBusName": "orders-app-bus"
+        }
+    ]
+)
+```
+
+Create a matching rule on `orders-app-bus`:
+```json
+{
+  "source": ["orders.app"],
+  "detail-type": ["OrderCreated"]
+}
+```
+
+### Step B5: Trigger a Step Functions Workflow from EventBridge
+
+1. **Create rule** on the relevant event bus with the pattern from Step B4
+2. Target: **Step Functions state machine** → select the workflow from Part A
+3. **Configure input**: pass the full event, or a **constant JSON text**, or **input transformer** to reshape the event before passing it to the state machine
+4. Click **Create rule**
+
+This is the standard pattern for **event-driven orchestration**: an event occurs → EventBridge routes it → Step Functions coordinates the multi-step response.
+
+### Step B6: Set Up an Archive and Replay (Optional)
+
+Useful for debugging or reprocessing past events.
+
+1. Left sidebar → **Archives** → **Create archive**
+2. Select the event bus, retention period (or indefinite), and an optional filter
+3. To replay: **Replays** → **Start new replay** → select the archive and a time range → target the same or a different rule/bus
+
+### Step B7: Cross-Account/Cross-Region Event Bus
+
+1. **Event buses** → select bus → **Permissions** → add a resource policy granting another account `events:PutEvents`
+2. In the sending account, create a rule targeting the receiving account's event bus ARN as the target
+3. Useful for centralizing events (e.g., security findings) from many accounts into one monitoring account
+
+---
+
+## Verification Checklist
+
+- [ ] State machine type (Standard vs. Express) matches the workflow's duration/volume needs
+- [ ] Retry and Catch configured on tasks likely to transiently fail
+- [ ] Execution role scoped to only the resources the workflow actually invokes
+- [ ] CloudWatch alarm configured on `ExecutionsFailed`
+- [ ] EventBridge rules use specific event patterns, not overly broad matches
+- [ ] Custom application events follow a consistent `Source`/`DetailType` naming convention
+- [ ] Archive configured for critical event buses to support replay/debugging
+- [ ] Cross-account event routing tested if applicable
+
+---
+
+## Common Troubleshooting
+
+| Issue | Likely Cause | Fix |
+|---|---|---|
+| Step Functions execution fails immediately | Execution role lacks permission to invoke the target Lambda/service | Add the missing `lambda:InvokeFunction` (or equivalent) permission to the execution role |
+| EventBridge rule never triggers | Event pattern doesn't match actual event structure | Use the **Sample events** feature in the console to compare against your pattern; check `source`/`detail-type` casing |
+| Scheduled rule fires at unexpected time | Cron expressions in EventBridge use **UTC**, not local time | Convert your desired local time to UTC when writing the cron expression |
+| Duplicate workflow executions from one event | EventBridge's at-least-once delivery, or Express state machine's at-least-once semantics | Design downstream tasks to be idempotent |
+
+---
+
+## Next Steps / Advanced Topics
+
+- **Step Functions + Map (Distributed Map)** — process millions of items in parallel (e.g., S3 objects) at scale
+- **EventBridge Pipes** — simplified point-to-point integration between a source (e.g., SQS) and a target, with optional filtering/enrichment, without writing custom Lambda glue code
+- **EventBridge Scheduler** — a dedicated, more flexible scheduling service (millions of schedules) as an alternative to schedule-based rules
+- **Infrastructure as Code** — manage state machines, rules, and event buses via Terraform, AWS SAM, or CloudFormation
+
+
+---
+
+<a id="chapter-24-cloudtrail-xray"></a>
+
+# Setting Up CloudTrail & X-Ray in AWS — Complete Step-by-Step Guide
+
+AWS CloudTrail records every API call made in your account for auditing and security investigation. AWS X-Ray traces requests as they travel through distributed applications, pinpointing latency and errors across services. Together they cover **who did what** (CloudTrail) and **where time is spent/what broke** (X-Ray) — two pillars of DevOps observability.
+
+---
+
+## Architecture Overview
+
+```
+   Every API call (console, CLI, SDK)
+                │
+           CloudTrail
+                │
+      ┌─────────┴─────────┐
+      │                   │
+  S3 (log archive)   CloudWatch Logs (alerting)
+
+
+   Request → API Gateway → Lambda → DynamoDB
+                │            │         │
+                └──────┬─────┴─────────┘
+                    X-Ray traces
+                (Service Map + timing)
+```
+
+---
+
+## Prerequisites
+
+- Active AWS account
+- IAM user/role with `AWSCloudTrail_FullAccess` and `AWSXRayFullAccess`
+
+---
+
+## Part A: CloudTrail
+
+### Step A1: Sign In and Open CloudTrail
+
+1. Go to [https://console.aws.amazon.com](https://console.aws.amazon.com)
+2. Sign in with IAM credentials
+3. Search for `CloudTrail` and select it
+
+> A basic **Event history** (last 90 days, management events) is enabled automatically in every account at no cost — creating a **Trail** (Step A2) extends this with permanent storage, data events, and alerting.
+
+### Step A2: Create a Trail
+
+1. Left sidebar → **Trails** → **Create trail**
+2. Configure:
+   - Trail name: `org-management-trail`
+   - **Enable for all accounts in my organization**: check if using AWS Organizations and this is the management account
+   - Storage location: **Create new S3 bucket** (or use existing) — e.g., `cloudtrail-logs-123456789012`
+   - **Log file SSE-KMS encryption**: enable, select/create a KMS key
+   - **Log file validation**: enable (detects tampering via digest files)
+3. Click **Next**
+
+### Step A3: Choose Event Types
+
+1. **Management events**: check **Read** and **Write** — captures control-plane operations (creating/deleting resources, IAM changes)
+2. **Data events** (optional, higher cost/volume): capture object-level activity, e.g.:
+   - S3: `GetObject`, `PutObject` on specific buckets
+   - Lambda: `Invoke` calls
+   - DynamoDB: item-level `GetItem`/`PutItem`
+3. **Insights events** (optional): CloudTrail Insights automatically detects unusual API call volume/error rate patterns
+4. Click **Next** → review → **Create trail**
+
+### Step A4: Enable CloudWatch Logs Integration (For Alerting)
+
+1. Select the trail → **Edit**
+2. **CloudWatch Logs**: enable, select/create a log group (e.g., `CloudTrail/org-management-trail`)
+3. IAM role: auto-create one with permission to deliver logs
+4. Click **Save**
+5. Now you can create **CloudWatch Alarms** or **Metric Filters** on specific API activity, e.g., alert whenever `DeleteBucket`, `AuthorizationFailure`, or root account login occurs
+
+### Step A5: Create a Metric Filter/Alarm for Security-Critical Events
+
+1. **CloudWatch** → **Log groups** → select `CloudTrail/org-management-trail` → **Metric filters** → **Create metric filter**
+2. Filter pattern (example — detect root account usage):
+   ```
+   { $.userIdentity.type = "Root" && $.eventType != "AwsServiceEvent" }
+   ```
+3. Metric name: `RootAccountUsage`
+4. Create a CloudWatch alarm on this metric ≥ 1 → notify via SNS
+5. Repeat for other high-value patterns: `ConsoleLogin` failures, `DeleteTrail`, `StopLogging`, IAM policy changes
+
+### Step A6: Query and Investigate Events
+
+1. **Event history** tab — filter by event name, resource, user, or time range without needing Athena
+2. For deeper analysis at scale, set up **CloudTrail Lake**:
+   - Left sidebar → **Lake** → **Create event data store**
+   - Query with SQL directly in the console — no need to set up Athena/S3 manually
+   ```sql
+   SELECT eventName, eventTime, userIdentity.arn
+   FROM event_data_store
+   WHERE eventName = 'DeleteBucket'
+   ORDER BY eventTime DESC
+   ```
+
+### Step A7: Verify Log Integrity
+
+1. Select the trail → **Log file validation** should show **Enabled**
+2. To manually validate a range of log files:
+   ```bash
+   aws cloudtrail validate-logs \
+     --trail-arn arn:aws:cloudtrail:ap-south-1:123456789012:trail/org-management-trail \
+     --start-time 2026-07-01T00:00:00Z
+   ```
+
+---
+
+## Part B: X-Ray
+
+### Step B1: Open X-Ray
+
+1. Search for `X-Ray` and select it (or find it under **CloudWatch** → **Application Signals / X-Ray traces** in newer console layouts)
+
+### Step B2: Enable X-Ray on Lambda
+
+1. **Lambda Console** → select function → **Configuration** tab → **Monitoring and operations tools** → **Edit**
+2. Enable **Active tracing**
+3. Click **Save**
+4. Attach the `AWSXRayDaemonWriteAccess` policy to the function's execution role (often bundled automatically when enabling via console)
+
+### Step B3: Instrument Application Code
+
+**Python (Lambda) example:**
+```python
+from aws_xray_sdk.core import xray_recorder
+from aws_xray_sdk.core import patch_all
+
+patch_all()  # auto-instruments boto3, requests, etc.
+
+def lambda_handler(event, context):
+    subsegment = xray_recorder.begin_subsegment("process-order")
+    try:
+        # business logic
+        result = process_order(event)
+    finally:
+        xray_recorder.end_subsegment()
+    return result
+```
+
+**Node.js example:**
+```javascript
+const AWSXRay = require('aws-xray-sdk-core');
+const AWS = AWSXRay.captureAWS(require('aws-sdk'));
+
+exports.handler = async (event) => {
+  const segment = AWSXRay.getSegment();
+  const subsegment = segment.addNewSubsegment('process-order');
+  try {
+    // business logic
+  } finally {
+    subsegment.close();
+  }
+};
+```
+
+### Step B4: Enable X-Ray on API Gateway
+
+1. **API Gateway Console** → select API → **Stages** → select stage → **Logs/Tracing** tab → **Edit**
+2. Enable **X-Ray Tracing**
+3. Click **Save**
+
+### Step B5: Enable X-Ray on ECS/Fargate
+
+1. Add the **X-Ray daemon** as a sidecar container in your task definition:
+   ```json
+   {
+     "name": "xray-daemon",
+     "image": "amazon/aws-xray-daemon",
+     "cpu": 32,
+     "memoryReservation": 256,
+     "portMappings": [{"containerPort": 2000, "protocol": "udp"}]
+   }
+   ```
+2. Ensure the task role has `AWSXRayDaemonWriteAccess`
+3. Application code sends trace data to `localhost:2000` (the daemon sidecar)
+
+### Step B6: View the Service Map
+
+1. **X-Ray Console** → **Service map**
+2. Visualizes every service your traced requests pass through, color-coded by health:
+   - Green: healthy response times/error rates
+   - Yellow/Red: elevated latency or error rate
+3. Click any node to drill into its traces
+
+### Step B7: Analyze Individual Traces
+
+1. **X-Ray Console** → **Traces**
+2. Filter by time range, response time, or annotation
+3. Click a trace ID to see the full **timeline** — each segment/subsegment shows exactly how long each downstream call took
+4. Identify bottlenecks: e.g., a DynamoDB call taking 800ms out of a 900ms total Lambda duration
+
+### Step B8: Add Custom Annotations and Metadata
+
+```python
+subsegment.put_annotation("orderId", event["orderId"])  # indexed, searchable
+subsegment.put_metadata("orderDetails", event)            # not indexed, for context only
+```
+
+Annotations let you filter traces in the console, e.g., find all traces for a specific `orderId` during a customer support investigation.
+
+### Step B9: Set Up Sampling Rules (Control Cost/Volume)
+
+1. Left sidebar → **Sampling rules** → **Create rule**
+2. Configure:
+   - Rule name: `orders-app-sampling`
+   - Reservoir size: `1` request/second traced at 100%, beyond that
+   - Rate: `5%` of additional requests
+3. Click **Create**
+4. Reduces X-Ray costs on high-traffic services while still capturing a representative sample plus every distinct new pattern
+
+---
+
+## Verification Checklist
+
+- [ ] CloudTrail trail created covering all regions, with log file validation and encryption enabled
+- [ ] CloudTrail logs delivered to both S3 (long-term) and CloudWatch Logs (alerting)
+- [ ] Metric filters/alarms configured for security-critical events (root login, IAM changes, trail tampering)
+- [ ] X-Ray active tracing enabled on Lambda/API Gateway/ECS
+- [ ] Application code instrumented with the X-Ray SDK, not just infrastructure-level tracing
+- [ ] Service map reviewed to confirm all expected services appear and are connected correctly
+- [ ] Sampling rules configured to control cost on high-volume services
+- [ ] Custom annotations added for key business identifiers (order ID, user ID) to aid debugging
+
+---
+
+## Common Troubleshooting
+
+| Issue | Likely Cause | Fix |
+|---|---|---|
+| CloudTrail Event history missing expected events | Data events not enabled (only management events captured by default) | Enable data events for the specific resource types you need to audit |
+| Metric filter alarm never fires | Filter pattern doesn't match actual log JSON structure | Test the pattern against a real sample log entry in the console |
+| X-Ray shows no traces | Active tracing not enabled, or SDK not instrumented in code | Verify both infrastructure-level tracing AND application code `patch_all()`/SDK wrapping |
+| Service map shows a gap between two services | One service isn't propagating the trace header (`X-Amzn-Trace-Id`) downstream | Ensure the HTTP client/SDK used for that call is X-Ray-instrumented |
+| Sampling causes missing traces during an incident | Sampling rate too low for the traffic pattern | Temporarily increase the sampling rate/reservoir during active investigations |
+
+---
+
+## Next Steps / Advanced Topics
+
+- **CloudTrail Lake + Athena** — long-term SQL-based forensic analysis across years of API history
+- **GuardDuty** — layer machine-learning threat detection on top of CloudTrail/VPC Flow Logs data
+- **AWS Config** — complements CloudTrail by tracking resource *configuration state* over time, not just API calls
+- **X-Ray + CloudWatch ServiceLens** — unified view combining traces, logs, and metrics in one dashboard
+- **Infrastructure as Code** — manage trails, event data stores, and sampling rules via Terraform or CloudFormation
