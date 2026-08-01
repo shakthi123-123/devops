@@ -6,23 +6,25 @@ A comprehensive, categorized reference of essential Linux commands with syntax, 
 
 ## Table of Contents
 
-1. [File & Directory Management](#1-File-&-Directory-Management)
-2. File Permissions & Ownership
-3. Viewing & Editing Files
-4. Text Processing & Searching
-5. Process Management
-6. System Information & Monitoring
-7. Networking
-8. Package Management
-9. Disk & Storage Management
-10. User & Group Management
-11. Archiving & Compression
-12. SSH & Remote Access
-13. Scheduling & Automation
-14. System Logs
-15. Shell Scripting Essentials
-16. Environment Variables
-17. Useful Command Combinations
+1. [File & Directory Management](#sec-1-file--directory-management)
+2. [File Permissions & Ownership](#sec-2-file-permissions--ownership)
+3. [Viewing & Editing Files](#sec-3-viewing--editing-files)
+4. [Text Processing & Searching](#sec-4-text-processing--searching)
+5. [Process Management](#sec-5-process-management)
+6. [System Information & Monitoring](#sec-6-system-information--monitoring)
+7. [Networking](#sec-7-networking)
+8. [Package Management](#sec-8-package-management)
+9. [Disk & Storage Management](#sec-9-disk--storage-management)
+10. [User & Group Management](#sec-10-user--group-management)
+11. [Archiving & Compression](#sec-11-archiving--compression)
+12. [SSH & Remote Access](#sec-12-ssh--remote-access)
+13. [Scheduling & Automation](#sec-13-scheduling--automation)
+14. [System Logs](#sec-14-system-logs)
+15. [Shell Scripting Essentials](#sec-15-shell-scripting-essentials)
+16. [Environment Variables](#sec-16-environment-variables)
+17. [Useful Command Combinations](#sec-17-useful-command-combinations)
+18. [Quick Reference: Command Categories](#sec-18-quick-reference-command-categories)
+19. [Next Steps / Advanced Topics](#sec-19-next-steps--advanced-topics)
 
 ---
 
