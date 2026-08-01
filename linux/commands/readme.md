@@ -28,6 +28,8 @@ A comprehensive, categorized reference of essential Linux commands with syntax, 
 
 ---
 
+<a id="sec-1-file--directory-management"></a>
+
 ## 1. File & Directory Management
 
 | Command | Description | Example |
@@ -76,6 +78,8 @@ find / -perm -4000 2>/dev/null                # find SUID files
 ```
 
 ---
+
+<a id="sec-2-file-permissions--ownership"></a>
 
 ## 2. File Permissions & Ownership
 
@@ -127,6 +131,8 @@ chmod a+r file         # add read for all (user, group, other)
 
 ---
 
+<a id="sec-3-viewing--editing-files"></a>
+
 ## 3. Viewing & Editing Files
 
 | Command | Description | Example |
@@ -174,6 +180,8 @@ chmod a+r file         # add read for all (user, group, other)
 | `:%s/old/new/g` | Replace all occurrences in file |
 
 ---
+
+<a id="sec-4-text-processing--searching"></a>
 
 ## 4. Text Processing & Searching
 
@@ -232,6 +240,8 @@ awk 'NR==5' file.txt                                 # print only line 5
 
 ---
 
+<a id="sec-5-process-management"></a>
+
 ## 5. Process Management
 
 | Command | Description | Example |
@@ -282,6 +292,8 @@ pkill -9 -f "python app.py"        # kill by matched command
 
 ---
 
+<a id="sec-6-system-information--monitoring"></a>
+
 ## 6. System Information & Monitoring
 
 | Command | Description | Example |
@@ -315,6 +327,8 @@ uptime                          # load averages (1, 5, 15 min)
 ```
 
 ---
+
+<a id="sec-7-networking"></a>
 
 ## 7. Networking
 
@@ -354,6 +368,8 @@ dig +short example.com                          # just the IP
 ```
 
 ---
+
+<a id="sec-8-package-management"></a>
 
 ## 8. Package Management
 
@@ -395,6 +411,8 @@ dig +short example.com                          # just the IP
 
 ---
 
+<a id="sec-9-disk--storage-management"></a>
+
 ## 9. Disk & Storage Management
 
 | Command | Description | Example |
@@ -419,6 +437,8 @@ echo "/dev/sdb1 /mnt/data ext4 defaults 0 0" >> /etc/fstab  # persist across reb
 ```
 
 ---
+
+<a id="sec-10-user--group-management"></a>
 
 ## 10. User & Group Management
 
@@ -446,6 +466,8 @@ id deploy                                        # verify UID/GID/groups
 ```
 
 ---
+
+<a id="sec-11-archiving--compression"></a>
 
 ## 11. Archiving & Compression
 
@@ -479,6 +501,8 @@ tar -czvf backup.tar.gz --exclude='*.log' /data   # exclude a pattern
 
 ---
 
+<a id="sec-12-ssh--remote-access"></a>
+
 ## 12. SSH & Remote Access
 
 | Command | Description | Example |
@@ -509,6 +533,8 @@ Host myserver
 Then simply: `ssh myserver`
 
 ---
+
+<a id="sec-13-scheduling--automation"></a>
 
 ## 13. Scheduling & Automation
 
@@ -554,6 +580,8 @@ journalctl -u nginx -f        # follow live logs for a service
 
 ---
 
+<a id="sec-14-system-logs"></a>
+
 ## 14. System Logs
 
 | Command | Description | Example |
@@ -572,6 +600,8 @@ journalctl --disk-usage                        # check journal log size
 ```
 
 ---
+
+<a id="sec-15-shell-scripting-essentials"></a>
 
 ## 15. Shell Scripting Essentials
 
@@ -628,6 +658,8 @@ bash script.sh
 
 ---
 
+<a id="sec-16-environment-variables"></a>
+
 ## 16. Environment Variables
 
 | Command | Description | Example |
@@ -657,6 +689,8 @@ echo $?                                # check if last command succeeded (0 = su
 ```
 
 ---
+
+<a id="sec-17-useful-command-combinations"></a>
 
 ## 17. Useful Command Combinations
 
@@ -704,6 +738,8 @@ sudo iotop -o
 
 ---
 
+<a id="sec-18-quick-reference-command-categories"></a>
+
 ## Quick Reference: Command Categories
 
 | Task | Go-To Commands |
@@ -720,6 +756,8 @@ sudo iotop -o
 | Investigate issues | `journalctl`, `dmesg`, `tail -f` |
 
 ---
+
+<a id="sec-19-next-steps--advanced-topics"></a>
 
 ## Next Steps / Advanced Topics
 
