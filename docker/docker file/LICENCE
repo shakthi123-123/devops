@@ -1,0 +1,175 @@
+# Dockerfile Instructions: Detailed Breakdown
+
+Reference Dockerfile:
+
+```dockerfile
+# Stage 1: Build the application
+FROM node:20-alpine AS builder
+# Set the working directory
+WORKDIR /app
+# Copy dependency files first to leverage Docker cache
+COPY package*.json ./
+# Install all dependencies (including devDependencies)
+RUN npm ci
+# Copy the rest of the application source code
+COPY . .
+# Build the app (if applicable, e.g., TypeScript or React)
+# RUN npm run build
+
+# Stage 2: Run the application
+FROM node:20-alpine AS runner
+# Set production environment
+ENV NODE_ENV=production
+WORKDIR /app
+# Copy only production dependencies from the builder stage
+COPY package*.json ./
+RUN npm ci --only=production
+# Copy built assets or source code from the builder stage
+COPY --from=builder /app/server.js ./server.js
+# Use a non-root user for security
+USER node
+# Expose the application port
+EXPOSE 3000
+# Start the application
+CMD ["node", "server.js"]
+```
+
+---
+
+## `FROM`
+
+```dockerfile
+FROM <image>[:<tag>|@<digest>] [AS <name>]
+```
+
+| Option | Details |
+|---|---|
+| `<image>:<tag>` | e.g. `node:20-alpine` — pin to a tag; omitting it defaults to `:latest` (avoid in production) |
+| `<image>@sha256:<digest>` | Pin to an exact image digest for full reproducibility (safer than tags, which can move) |
+| `AS <name>` | Names this stage so later stages can reference it (`COPY --from=builder`) |
+| `--platform=<platform>` | e.g. `FROM --platform=linux/amd64 node:20-alpine` — force a specific architecture, useful in multi-arch builds |
+
+This Dockerfile uses two `FROM` lines — this is a **multi-stage build**: stage 1 (`builder`) compiles/installs everything; stage 2 (`runner`) copies only what's needed to run, keeping the final image small.
+
+---
+
+## `WORKDIR`
+
+```dockerfile
+WORKDIR /path/to/dir
+```
+
+- Sets the working directory for all subsequent `RUN`, `CMD`, `ENTRYPOINT`, `COPY`, `ADD` instructions.
+- Creates the directory if it doesn't exist.
+- Can be used multiple times; relative paths are resolved against the previous `WORKDIR`.
+- No flags — just the path argument. Always prefer absolute paths (`/app`) for clarity.
+
+---
+
+## `COPY`
+
+```dockerfile
+COPY [--from=<stage>] [--chown=<user>:<group>] [--chmod=<perms>] <src>... <dest>
+```
+
+| Option | Details |
+|---|---|
+| `--from=<stage>` | Copy from a previous build stage (`--from=builder`) or another image (`--from=nginx:latest`) instead of the build context |
+| `--chown=<user>:<group>` | Set ownership of copied files (e.g. `--chown=node:node`) — avoids a separate `RUN chown` layer |
+| `--chmod=<perms>` | Set permissions on copied files (e.g. `--chmod=755`) |
+| `<src>` | Supports wildcards (`*.json`) and multiple sources; paths are relative to the build context (or the source stage if `--from` is used) |
+| `<dest>` | Absolute path, or relative to `WORKDIR` |
+
+Note: `COPY` only moves files from the build context or another stage — it can't fetch URLs or auto-extract archives (that's what `ADD` is for, though `COPY` is preferred for plain file copying since it's more explicit/predictable).
+
+`COPY package*.json ./` copies `package.json` and `package-lock.json` (if present) separately from the rest of the source, so the `npm ci` layer is only invalidated when dependencies actually change (Docker layer caching).
+
+---
+
+## `RUN`
+
+```dockerfile
+RUN <command>                     # shell form
+RUN ["executable", "param1", ...] # exec form
+```
+
+| Form | Behavior |
+|---|---|
+| Shell form | `RUN npm ci` — runs via `/bin/sh -c`, so shell features (`&&`, `\|`, env var expansion) work |
+| Exec form | `RUN ["npm", "ci"]` — runs directly without a shell; no shell expansion, but avoids shell-related quirks |
+
+Useful flags:
+
+| Flag | Purpose |
+|---|---|
+| `--mount=type=cache,target=<path>` | Mount a persistent cache directory across builds (e.g. npm/yarn cache) without baking it into the image |
+| `--mount=type=secret,id=<id>` | Mount a secret (like an npm token) only during this RUN step, so it never lands in a layer |
+| `--mount=type=ssh` | Forward an SSH agent socket for private git dependencies |
+| `--network=<none\|default>` | Control network access during the build step |
+
+`npm ci` specifically: installs exactly from `package-lock.json` (unlike `npm install`, which can update the lockfile) — faster and more reproducible for CI/Docker builds. `npm ci --only=production` (in the runner stage) skips `devDependencies` entirely.
+
+---
+
+## `ENV`
+
+```dockerfile
+ENV <key>=<value> [<key2>=<value2> ...]
+```
+
+- Sets environment variables persisted into the final image (visible at both build time and container runtime).
+- Can set multiple variables in one instruction (fewer layers) or one per line.
+- `ENV NODE_ENV=production` here signals to npm and many Node frameworks to skip dev-only behavior/logging and enable production optimizations.
+- Differs from `ARG`: `ARG` values only exist during build and aren't in the final image unless explicitly passed into `ENV`.
+
+---
+
+## `USER`
+
+```dockerfile
+USER <user>[:<group>]
+```
+
+- Sets the user (and optionally group) that subsequent instructions and the final container process run as.
+- Can be a username or numeric UID (`USER 1000`); numeric is more portable across images that may not define that user.
+- `USER node` uses the built-in non-root `node` user shipped in the official Node.js images — a security best practice, since running as root inside a container is unnecessary risk if the container is compromised.
+
+---
+
+## `EXPOSE`
+
+```dockerfile
+EXPOSE <port>[/<protocol>]
+```
+
+- Documents which port(s) the container listens on — **purely informational**, it does not actually publish the port.
+- Default protocol is `tcp`; can specify `EXPOSE 3000/udp` if needed.
+- Actual publishing happens at `docker run -p <host>:<container>` or in a Compose/Kubernetes service definition.
+- Can list multiple ports: `EXPOSE 3000 3001`.
+
+---
+
+## `CMD`
+
+```dockerfile
+CMD ["executable", "param1", "param2"]  # exec form (preferred)
+CMD command param1 param2               # shell form
+CMD ["param1", "param2"]                # as default params to ENTRYPOINT
+```
+
+| Form | Behavior |
+|---|---|
+| Exec form (used here) | `CMD ["node", "server.js"]` — runs directly, no shell wrapper; signals (like `SIGTERM` from `docker stop`) go straight to the process, so it shuts down cleanly |
+| Shell form | `CMD node server.js` — runs via `/bin/sh -c`, which becomes PID 1 instead of your app, complicating signal handling |
+
+- Only the **last** `CMD` in a Dockerfile takes effect if there are multiple.
+- Overridable at runtime: `docker run my-image node other-script.js` replaces the whole `CMD`.
+- Different from `ENTRYPOINT`: if both are set, `CMD`'s values are passed as arguments to `ENTRYPOINT` instead of being a standalone command.
+
+---
+
+## Notes on This Specific Dockerfile
+
+- The commented-out `RUN npm run build` — if this is a TypeScript/React/Next app, a build step would be needed before stage 2, since `COPY --from=builder /app/server.js` implies a plain built JS file, not a project needing compilation.
+- Only `server.js` is copied from the builder stage — if the app has other files (routes, views, a `dist/` folder), it would need `COPY --from=builder /app/dist ./dist` etc., or the container will fail at runtime with missing modules.
+- `npm ci --only=production` is technically deprecated in favor of `npm ci --omit=dev` in newer npm versions, though `--only=production` still works.
