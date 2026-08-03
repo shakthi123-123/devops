@@ -40,9 +40,6 @@ kubectl config delete-context <context-name>
 # Set a default namespace for the current context
 kubectl config set-context --current --namespace=<namespace>
 
-# Enable shell autocompletion (bash example)
-source <(kubectl completion bash)
-
 # Handy shell alias
 echo 'alias k=kubectl' >> ~/.bashrc
 ```
