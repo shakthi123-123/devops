@@ -1,7 +1,10 @@
 # Kubernetes: Complete Step-by-Step Commands Guide
 
-## Table of Content
-## [1. Initial Setup & Cluster Access][(1. Initial Setup & Cluster Access)]
+## Table of Contents
+1. [Initial Setup & Cluster Access](#1-Initial-Setup-&-Cluster-Access)
+2. [Creating a Cluster (Local Dev Options)](#2-Creating-a-Cluster-(Local-Dev-Options))
+3. [Creating a Managed Cluster (Amazon EKS)](#3-Creating-a-Managed-Cluster-(Amazon-EKS))
+4. [Namespaces](#Namespaces)
 
 ## 1. Initial Setup & Cluster Access
 
