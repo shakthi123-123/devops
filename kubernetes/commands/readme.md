@@ -1,7 +1,62 @@
 # Kubernetes: Complete Step-by-Step Commands Guide
+
 ## Table of content
-1. [Initial Setup & Cluster Access](#1-initial-setup--cluster-access)
-2. 
+
+[Quick Reference Table](#quick-reference-table)
+1.  [Initial Setup & Cluster Access](#1-initial-setup--cluster-access)
+2.  [Creating a Cluster (Local Dev Options)](#2-reating-a-cluster-local-dev-options)
+3.  [Creating a Managed Cluster (Amazon EKS)](#3-creating-a-managed-cluster-amazon-eks)
+4.  [Nodes](#4-nodes)
+5.  [Deployments](#5-deployments)
+6.  [Pods](#6-pods)
+7.  [Namespaces](#7-namespaces)
+8.  [Services](#8-services)
+9.  [Taints & Tolerations](#9-taints--tolerations)
+10. [Replication Controllers](#10-replication-controllers)
+11. [Replicasets & Statefulsets](#11-replicasets--statefulsets)
+12. [Daemonsets](#12-daemonsets)
+13. [Autoscaling HPA](#13-autoscaling-hpa)
+14. [Networkpolicies](#14-networkpolicies)
+15. [Ingress](#15-ingress)
+16. [Configmaps & Secrets](#16-configmaps--secrets)
+17. [Persistent Volumes & Claims](#17-persistent-volumes--claims)
+18. [Health checks Readliness & Liveness Probes](#18-health-checks-readiness--liveness-probes)
+19. [Jobs & Cronjobs](#19-jobs--cronjobs)
+20. [Applying, Editing & Managing Manifests](#20-applying-editing--managing-manifests)
+21. [Kustomize](#21-kustomize)
+22. [Labels & Selectors](#22-labels--selectors)
+23. [Debugging & Troubleshooting](#23-debugging--troubleshooting)
+24. [Log Management](#24-log-management)
+25. [RBAC (Roles & Permissions)](#25-rbac-roles--permissions)
+26. [Service Accounts](#26-service-accounts)
+27. [Kubernetes Dashboard (Web UI)](#27-kubernetes-dashboard-web-ui)
+28. [Helm (Package Manager for Kubernetes)](#28-helm-package-manager-for-kubernetes)
+29. [Cleaning Up](#29-cleaning-up)
+30. [Typical Everyday Workflow (Putting It Together)](#30-typical-everyday-workflow-putting-it-together)
+
+## Quick Reference Table
+
+| Task | Command |
+|---|---|
+| Cluster info | `kubectl cluster-info` |
+| List nodes | `kubectl get nodes` |
+| List pods | `kubectl get pods` |
+| Describe resource | `kubectl describe pod <name>` |
+| View logs | `kubectl logs <pod-name>` |
+| Exec into pod | `kubectl exec -it <pod-name> -- sh` |
+| Apply manifest | `kubectl apply -f file.yaml` |
+| Apply with kustomize | `kubectl apply -k ./overlay` |
+| Delete resource | `kubectl delete -f file.yaml` |
+| Scale deployment | `kubectl scale deployment <name> --replicas=N` |
+| Autoscale deployment | `kubectl autoscale deployment <name> --cpu-percent=50 --min=2 --max=10` |
+| Rolling restart | `kubectl rollout restart deployment/<name>` |
+| Roll back deployment | `kubectl rollout undo deployment/<name>` |
+| Port forward | `kubectl port-forward pod/<name> 8080:80` |
+| Get events | `kubectl get events --sort-by='.metadata.creationTimestamp'` |
+| Get everything in namespace | `kubectl get all -n <namespace>` |
+| Decode a secret | `kubectl get secret <n> -o jsonpath='{.data.key}' \| base64 --decode` |
+| Switch context | `kubectl config use-context <name>` |
+
 ## 1. Initial Setup & Cluster Access
 
 ```bash
@@ -46,6 +101,7 @@ kubectl config set-context --current --namespace=<namespace>
 source <(kubectl completion bash)
 
 # Handy shell alias
+alias k=kubectl
 echo 'alias k=kubectl' >> ~/.bashrc
 ```
 
@@ -56,6 +112,7 @@ echo 'alias k=kubectl' >> ~/.bashrc
 minikube start
 minikube start --driver=docker --cpus=4 --memory=8192
 minikube status
+minikube profile list
 minikube stop
 minikube delete
 
@@ -105,40 +162,7 @@ eksctl create cluster \
 # Delete an EKS cluster
 eksctl delete cluster --name eks-cluster-demo
 ```
-
-## 4. Namespaces
-
-```bash
-# List all namespaces
-kubectl get namespaces
-kubectl get ns
-
-# Create a namespace
-kubectl create namespace my-namespace
-
-# Create a namespace from a YAML file
-kubectl apply -f namespace.yaml
-
-# List a specific namespace
-kubectl get namespace my-namespace
-
-# Edit a namespace definition
-kubectl edit namespace my-namespace
-
-# Show which resource types are namespace-scoped vs cluster-scoped
-kubectl api-resources --namespaced=true
-
-# Run a command against a specific namespace
-kubectl get pods -n my-namespace
-
-# Describe a namespace
-kubectl describe namespace my-namespace
-
-# Delete a namespace (and everything inside it)
-kubectl delete namespace my-namespace
-```
-
-## 5. Nodes
+## 4. Nodes
 
 ```bash
 # List all nodes
@@ -182,23 +206,70 @@ kubectl top nodes
 kubectl top node <node-name>
 ```
 
-## 6. Taints & Tolerations
+## 5. Deployments
 
 ```bash
-# Add a taint to a node (repels pods unless they tolerate it)
-kubectl taint nodes <node-name> key=value:NoSchedule
+# Create a deployment
+kubectl create deployment 'my-app' --image=nginx
 
-# Add a taint that also evicts existing non-tolerating pods
-kubectl taint nodes <node-name> key=value:NoExecute
+# Apply a deployment from YAML
+kubectl apply -f my-app.yaml
 
-# Remove a taint from a node
-kubectl taint nodes <node-name> key=value:NoSchedule-
+# Create resources from a file, directory, or URL (older alias of apply)
+kubectl create -f ./my-app.yaml
 
-# View taints on a node
-kubectl describe node <node-name> | grep Taints
+# List deployments
+kubectl get deployments
+kubectl get deploy
+
+# List deployments in a specific namespace
+kubectl get deploy -n my-namespace
+
+# Stream deployment changes in real time
+kubectl get deployment 'my-app' --watch
+
+# Describe a deployment
+kubectl describe deployment my-app
+
+# Scale a deployment manually
+kubectl scale deployment my-app --replicas=5
+
+# Update the image of a running deployment
+kubectl set image deployment/my-app my-app=nginx:1.25
+
+# Check rollout status
+kubectl rollout status deployment/my-app
+
+# View rollout history
+kubectl rollout history deployment/my-app
+
+# Roll back to the previous revision
+kubectl rollout undo deployment/my-app
+
+# Roll back to a specific revision
+kubectl rollout undo deployment/my-app --to-revision=2
+
+# Pause/resume a rollout (useful for batching changes)
+kubectl rollout pause deployment/my-app
+kubectl rollout resume deployment/my-app
+
+# Restart a deployment (rolling restart of all pods)
+kubectl rollout restart deployment/my-app
+
+# Edit a deployment definition directly
+kubectl edit deployment my-app
+
+# Force replace: delete and re-create from a config file
+kubectl replace --force -f deployment.yaml
+
+# Get a deleted deployment's last known YAML (from a backup/etcd context) to recreate it
+kubectl get deployment <deleted-deploy-name> -o yaml
+
+# Delete a deployment
+kubectl delete deployment my-app
 ```
 
-## 7. Pods
+## 6. Pods
 
 ```bash
 # List pods in current namespace
@@ -211,7 +282,7 @@ kubectl get pods -A
 # List pods with more detail (node, IP)
 kubectl get pods -o wide
 
-# Output pod info as JSON or YAML
+# Output pod info as JSON or YAML(recover deleted pod)
 kubectl get pods -o=json
 kubectl get pods -o=yaml
 
@@ -223,6 +294,10 @@ kubectl get pods --sort-by='.status.containerStatuses[0].restartCount'
 
 # Filter pods by a field, e.g. only Running pods
 kubectl get pods --field-selector=status.phase=Running
+
+# Find Stopped/Finished Pods
+kubectl get pods --field-selector=status.phase=Succeeded
+
 
 # Describe a pod (events, status, container info)
 kubectl describe pod <pod-name>
@@ -242,7 +317,7 @@ kubectl replace --force -f pod.yaml
 # Delete a pod
 kubectl delete pod <pod-name>
 
-# Delete a pod with a custom grace period
+# Delete a pod with a custom grace period(set time in sec)
 kubectl delete pod <pod-name> --grace-period=10
 
 # Delete a pod immediately (skip graceful termination)
@@ -299,168 +374,59 @@ kubectl port-forward <pod-name> 8080:80
 kubectl wait --for=condition=Ready pod/<pod-name> --timeout=60s
 ```
 
-## 8. Deployments
+## 7. Namespaces
 
 ```bash
-# Create a deployment
-kubectl create deployment my-app --image=nginx
+# List all namespaces
+kubectl get namespaces
+kubectl get ns
+--A
 
-# Apply a deployment from YAML
-kubectl apply -f deployment.yaml
+# The short flag for --namespace
+kubectl get pods -n 'ns_name'
 
-# Create resources from a file, directory, or URL (older alias of apply)
-kubectl create -f ./deployment.yaml
+# Create a namespace
+kubectl create namespace 'demo'
 
-# List deployments
-kubectl get deployments
-kubectl get deploy
+# Create a namespace from a YAML file
+kubectl apply -f namespace.yaml
 
-# List deployments in a specific namespace
-kubectl get deploy -n my-namespace
+# List a specific namespace
+kubectl get namespace 'demo'
 
-# Stream deployment changes in real time
-kubectl get deployment my-app --watch
+# Set Default to new namespace
+kubectl config set-context --current --namespace=new_ns_name
 
-# Describe a deployment
-kubectl describe deployment my-app
+# Edit a namespace definition
+kubectl edit namespace 'demo'
 
-# Scale a deployment manually
-kubectl scale deployment my-app --replicas=5
+# Show which resource types are namespace-scoped vs cluster-scoped
+kubectl api-resources --namespaced=true
 
-# Update the image of a running deployment
-kubectl set image deployment/my-app my-app=nginx:1.25
+# Run a command against a specific namespace
+kubectl get pods -n my-namespace
 
-# Check rollout status
-kubectl rollout status deployment/my-app
+# Describe a namespace
+kubectl describe namespace my-namespace
 
-# View rollout history
-kubectl rollout history deployment/my-app
+# Delete a namespace (and everything inside it)
+kubectl delete namespace my-namespace
 
-# Roll back to the previous revision
-kubectl rollout undo deployment/my-app
+# View Resource Usage for All Pods in a Namespace
+kubectl top pod -n ns_name
 
-# Roll back to a specific revision
-kubectl rollout undo deployment/my-app --to-revision=2
+# Add a label to a namespace
+kubectl label namespace <name> key=value
 
-# Pause/resume a rollout (useful for batching changes)
-kubectl rollout pause deployment/my-app
-kubectl rollout resume deployment/my-app
+# Remove a label
+kubectl label namespace <name> key-
 
-# Restart a deployment (rolling restart of all pods)
-kubectl rollout restart deployment/my-app
-
-# Edit a deployment definition directly
-kubectl edit deployment my-app
-
-# Force replace: delete and re-create from a config file
-kubectl replace --force -f deployment.yaml
-
-# Get a deleted deployment's last known YAML (from a backup/etcd context) to recreate it
-kubectl get deployment <deleted-deploy-name> -o yaml
-
-# Delete a deployment
-kubectl delete deployment my-app
+# Add an annotation
+kubectl annotate namespace <name> key=value
 ```
 
-## 9. Replication Controllers
 
-```bash
-# List replication controllers (legacy predecessor to ReplicaSets)
-kubectl get rc
-
-# List replication controllers in a specific namespace
-kubectl get rc --namespace=my-namespace
-```
-
-## 10. ReplicaSets & StatefulSets
-
-```bash
-# List ReplicaSets
-kubectl get replicasets
-kubectl get rs
-
-# Describe a ReplicaSet
-kubectl describe rs <rs-name>
-
-# Scale a ReplicaSet directly
-kubectl scale rs <rs-name> --replicas=4
-
-# List StatefulSets
-kubectl get statefulsets
-kubectl get sts
-
-# Describe a StatefulSet (inspect configuration and status)
-kubectl describe statefulset <statefulset-name>
-
-# Scale a StatefulSet
-kubectl scale statefulset my-app --replicas=3
-
-# Edit a StatefulSet in place
-kubectl edit statefulset <statefulset-name>
-
-# Force a rolling update by patching the pod template (e.g. bump an annotation)
-kubectl patch statefulset <statefulset-name> -p \
-  '{"spec":{"template":{"metadata":{"annotations":{"date":"'"$(date +%s)"'"}}}}}'
-
-# View pods managed by a StatefulSet via its label selector
-kubectl get pods -l app=<statefulset-label>
-
-# Delete a StatefulSet but keep its pods running
-kubectl delete statefulset my-app --cascade=orphan
-
-# Delete a StatefulSet and its pods
-kubectl delete statefulset my-app
-```
-
-## 11. DaemonSets
-
-```bash
-# Create a DaemonSet from YAML
-kubectl apply -f daemonset.yaml
-
-# List DaemonSets (one pod per matching node, e.g. log collectors, CNI agents)
-kubectl get daemonsets
-kubectl get ds
-
-# List DaemonSets across all namespaces
-kubectl get daemonsets --all-namespaces
-
-# Get a DaemonSet's YAML (for backup or inspection)
-kubectl get daemonset <daemonset-name> -o yaml
-
-# Describe a DaemonSet within a namespace
-kubectl describe ds <daemonset-name> -n <namespace>
-
-# Edit a DaemonSet definition directly
-kubectl edit daemonset <daemonset-name>
-
-# Check the status of a DaemonSet rollout
-kubectl rollout status daemonset/<daemonset-name>
-
-# Delete a DaemonSet
-kubectl delete daemonset <daemonset-name>
-```
-
-## 12. Autoscaling (HPA)
-
-```bash
-# Create a Horizontal Pod Autoscaler targeting CPU usage
-kubectl autoscale deployment my-app --cpu-percent=50 --min=2 --max=10
-
-# List HPAs
-kubectl get hpa
-
-# Describe an HPA (current/target metrics, events)
-kubectl describe hpa my-app
-
-# Apply an HPA from YAML (e.g. for custom/memory metrics)
-kubectl apply -f hpa.yaml
-
-# Delete an HPA
-kubectl delete hpa my-app
-```
-
-## 13. Services
+## 8. Services
 
 ```bash
 # List services
@@ -500,6 +466,123 @@ kubectl port-forward service/my-service 8080:80
 kubectl proxy
 kubectl proxy --port=8001
 ```
+
+
+## 9. Taints & Tolerations
+
+```bash
+# Add a taint to a node (repels pods unless they tolerate it)
+kubectl taint nodes <node-name> key=value:NoSchedule
+
+# Add a taint that also evicts existing non-tolerating pods
+kubectl taint nodes <node-name> key=value:NoExecute
+
+# Remove a taint from a node
+kubectl taint nodes <node-name> key=value:NoSchedule-
+
+# View taints on a node
+kubectl describe node <node-name> | grep Taints
+```
+
+
+## 10. Replication Controllers
+
+```bash
+# List replication controllers (legacy predecessor to ReplicaSets)
+kubectl get rc
+
+# List replication controllers in a specific namespace
+kubectl get rc --namespace=my-namespace
+```
+
+## 11. ReplicaSets & StatefulSets
+
+```bash
+# List ReplicaSets
+kubectl get replicasets
+kubectl get rs
+
+# Describe a ReplicaSet
+kubectl describe rs <rs-name>
+
+# Scale a ReplicaSet directly
+kubectl scale rs <rs-name> --replicas=4
+
+# List StatefulSets
+kubectl get statefulsets
+kubectl get sts
+
+# Describe a StatefulSet (inspect configuration and status)
+kubectl describe statefulset <statefulset-name>
+
+# Scale a StatefulSet
+kubectl scale statefulset my-app --replicas=3
+
+# Edit a StatefulSet in place
+kubectl edit statefulset <statefulset-name>
+
+# Force a rolling update by patching the pod template (e.g. bump an annotation)
+kubectl patch statefulset <statefulset-name> -p \
+  '{"spec":{"template":{"metadata":{"annotations":{"date":"'"$(date +%s)"'"}}}}}'
+
+# View pods managed by a StatefulSet via its label selector
+kubectl get pods -l app=<statefulset-label>
+
+# Delete a StatefulSet but keep its pods running
+kubectl delete statefulset my-app --cascade=orphan
+
+# Delete a StatefulSet and its pods
+kubectl delete statefulset my-app
+```
+
+## 12. DaemonSets
+
+```bash
+# Create a DaemonSet from YAML
+kubectl apply -f daemonset.yaml
+
+# List DaemonSets (one pod per matching node, e.g. log collectors, CNI agents)
+kubectl get daemonsets
+kubectl get ds
+
+# List DaemonSets across all namespaces
+kubectl get daemonsets --all-namespaces
+
+# Get a DaemonSet's YAML (for backup or inspection)
+kubectl get daemonset <daemonset-name> -o yaml
+
+# Describe a DaemonSet within a namespace
+kubectl describe ds <daemonset-name> -n <namespace>
+
+# Edit a DaemonSet definition directly
+kubectl edit daemonset <daemonset-name>
+
+# Check the status of a DaemonSet rollout
+kubectl rollout status daemonset/<daemonset-name>
+
+# Delete a DaemonSet
+kubectl delete daemonset <daemonset-name>
+```
+
+## 13. Autoscaling (HPA)
+
+```bash
+# Create a Horizontal Pod Autoscaler targeting CPU usage
+kubectl autoscale deployment my-app --cpu-percent=50 --min=2 --max=10
+
+# List HPAs
+kubectl get hpa
+
+# Describe an HPA (current/target metrics, events)
+kubectl describe hpa my-app
+
+# Apply an HPA from YAML (e.g. for custom/memory metrics)
+kubectl apply -f hpa.yaml
+
+# Delete an HPA
+kubectl delete hpa my-app
+```
+
 
 ## 14. NetworkPolicies
 
@@ -971,26 +1054,3 @@ kubectl rollout status deployment/my-app -n my-app-ns
 # 10. Roll back if something breaks
 kubectl rollout undo deployment/my-app -n my-app-ns
 ```
-
-## Quick Reference Table
-
-| Task | Command |
-|---|---|
-| Cluster info | `kubectl cluster-info` |
-| List nodes | `kubectl get nodes` |
-| List pods | `kubectl get pods` |
-| Describe resource | `kubectl describe pod <name>` |
-| View logs | `kubectl logs <pod-name>` |
-| Exec into pod | `kubectl exec -it <pod-name> -- sh` |
-| Apply manifest | `kubectl apply -f file.yaml` |
-| Apply with kustomize | `kubectl apply -k ./overlay` |
-| Delete resource | `kubectl delete -f file.yaml` |
-| Scale deployment | `kubectl scale deployment <name> --replicas=N` |
-| Autoscale deployment | `kubectl autoscale deployment <name> --cpu-percent=50 --min=2 --max=10` |
-| Rolling restart | `kubectl rollout restart deployment/<name>` |
-| Roll back deployment | `kubectl rollout undo deployment/<name>` |
-| Port forward | `kubectl port-forward pod/<name> 8080:80` |
-| Get events | `kubectl get events --sort-by='.metadata.creationTimestamp'` |
-| Get everything in namespace | `kubectl get all -n <namespace>` |
-| Decode a secret | `kubectl get secret <n> -o jsonpath='{.data.key}' \| base64 --decode` |
-| Switch context | `kubectl config use-context <name>` |
