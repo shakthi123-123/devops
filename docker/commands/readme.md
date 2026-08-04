@@ -31,10 +31,10 @@
 | List all containers | `docker ps -a` |
 | Stop container | `docker stop <name>` |
 | Remove container | `docker rm <name>` |
+| Remove image | `docker rmi <image>` |
 | View logs | `docker logs -f <name>` |
 | Exec into container | `docker exec -it <name> sh` |
 | List images | `docker images` |
-| Remove image | `docker rmi <image>` |
 | Compose up | `docker compose up -d` |
 | Compose down | `docker compose down` |
 | Commit container to image | `docker commit <container> <image>` |
