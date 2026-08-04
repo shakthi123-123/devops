@@ -1,5 +1,7 @@
 # Kubernetes: Complete Step-by-Step Commands Guide
-
+## Table of content
+1. [Initial Setup & Cluster Access](#1-initial-setup--cluster-access)
+2. 
 ## 1. Initial Setup & Cluster Access
 
 ```bash
