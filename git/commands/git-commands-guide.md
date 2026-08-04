@@ -80,11 +80,14 @@ git config --list
 # Option A: Create a new repo in current folder
 git init
 
-# Option B: Clone an existing remote repo
+# Add Folder to an existing remote repo
+git remote add orgin https://github.com/username/repo
+
+#  Option B: Clone a Repo from Github
 git clone https://github.com/username/repo.git
 
-# Clone into a specific folder name
-git clone https://github.com/username/repo.git my-folder
+# Move to the clone Repo
+cd /repo
 ```
 
 ## 3. Checking Status & Basic Workflow
