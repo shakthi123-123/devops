@@ -4,7 +4,7 @@
 
 [Quick Reference Table](#quick-reference-table)
 1.  [Initial Setup & Cluster Access](#1-initial-setup--cluster-access)
-2.  [Creating a Cluster (Local Dev Options)](#2-reating-a-cluster-local-dev-options)
+2.  [Creating a Cluster (Local Dev Options)](#2-creating-a-cluster-local-dev-options)
 3.  [Creating a Managed Cluster (Amazon EKS)](#3-creating-a-managed-cluster-amazon-eks)
 4.  [Nodes](#4-nodes)
 5.  [Deployments](#5-deployments)
@@ -115,6 +115,20 @@ minikube status
 minikube profile list
 minikube stop
 minikube delete
+minikube logs --node 'node name 2' (To see logs for a specific node in your default cluster)
+minikube dashboard
+minikube version
+# Label a Node
+kubectl label node 'node_name' kubernetes.io/role=worker1
+# Accessing the Worker Node
+minikube ssh -n 'node_name'
+# Minikube includes a built-in network router that maps LoadBalancer services directly to your local machine's localhost loopback adapter
+minikube service <service-name> -n <namespace-name>
+# If you have a multi-node cluster
+minikube service <service-name> --node=<node-name>
+# If you are using Docker Desktop on Mac/Windows(Use NodePort)
+minikube tunnel 
+ns lookup
 
 # Get the URL for a service exposed via minikube
 minikube service -n <namespace> <service-name> --url
