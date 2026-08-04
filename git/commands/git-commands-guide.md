@@ -1,7 +1,5 @@
-# 🐙 The Ultimate Git Version Control & Deployment Manual
-## A comprehensive, production-grade command playbook and historical tracking reference sheet for Git engine configuration, local staging workflows, branching architectures, remote synchronization, and advanced state restoration.
+# Git Commands: Complete Step-by-Step Guide
 
-## Any Modificaton (Add >> Commit >> Push)
 ## Table of content
 
 1.  [Initial Setup](#1-initial-setup)
@@ -22,6 +20,11 @@
 16. [Cleaning Up](#16-cleaning-up)
 17. [Ignoring Files](#17-ignoring-files)
 18. [Typical Everyday Workflow (Putting It Together)](#18-typical-everyday-workflow-putting-it-together)
+19. [Reflog (Recovering Lost Work)](#19-reflog-recovering-lost-work)
+20. [Submodules](#20-submodules)
+21. [Worktrees](#21-worktrees)
+22. [Aliases & Global Ignore](#22-aliases--global-ignore)
+23. [Renaming, Removing & Archiving](#23-renaming-removing--archiving)
 
 ## Quick Reference Table
 
@@ -43,6 +46,12 @@
 | Discard file changes | `git restore <file>` |
 | Stash changes | `git stash` |
 | Apply stash | `git stash pop` |
+| View reflog | `git reflog` |
+| Remove a file | `git rm <file>` |
+| Rename/move a file | `git mv <old> <new>` |
+| Add submodule | `git submodule add <url>` |
+| Add worktree | `git worktree add <path> <branch>` |
+| Create alias | `git config --global alias.<name> <command>` |
 
 
 ## 1. Initial Setup
@@ -114,6 +123,15 @@ git commit -am "Your commit message"
 
 # Amend the last commit (edit message or add files)
 git commit --amend -m "Updated message"
+
+# Amend without changing the commit message
+git commit --amend --no-edit
+
+# Skip pre-commit/commit-msg hooks
+git commit -m "message" --no-verify
+
+# Create a fixup commit targeting an earlier commit (for later autosquash)
+git commit --fixup <commit-hash>
 ```
 
 ## 5. Viewing History
@@ -133,6 +151,36 @@ git show <commit-hash>
 
 # See who changed each line of a file
 git blame filename.txt
+
+# Blame a specific range of lines
+git blame -L 10,25 filename.txt
+
+# Log with diffs for each commit
+git log -p
+
+# Log with a summary of files changed and line counts
+git log --stat
+
+# Filter log by author
+git log --author="Jane Doe"
+
+# Filter log by date range
+git log --since="2 weeks ago" --until="yesterday"
+
+# Filter log by commit message content
+git log --grep="fix"
+
+# Filter log to commits touching a specific file
+git log -- filename.txt
+
+# Follow a file's history through renames
+git log --follow filename.txt
+
+# Show commit counts per author
+git shortlog -sn
+
+# Show the nearest tag reachable from a commit (useful for versioning)
+git describe --tags
 ```
 
 ## 6. Branching
@@ -165,6 +213,18 @@ git branch -d feature-name
 
 # Force delete a local branch (unmerged changes lost)
 git branch -D feature-name
+
+# List branches already merged into current branch (safe to delete)
+git branch --merged
+
+# List branches NOT yet merged into current branch
+git branch --no-merged
+
+# List local branches with their upstream tracking status
+git branch -vv
+
+# Delete a remote branch
+git push origin --delete feature-name
 ```
 
 ## 7. Merging
@@ -284,6 +344,15 @@ git push --force origin main
 
 # Safer force push (fails if remote has new commits you don't have)
 git push --force-with-lease origin main
+
+# Show detailed info about a remote (tracked branches, push/pull URLs)
+git remote show origin
+
+# Fetch from all remotes and remove references to deleted remote branches
+git fetch --all --prune
+
+# Pull only if it can fast-forward (fails instead of creating a merge commit)
+git pull --ff-only
 ```
 
 ## 12. Undoing Changes
@@ -437,10 +506,110 @@ git commit -m "Add new login form"
 # 5. Push branch to remote
 git push -u origin feature/new-login
 
-# 6. Open a Pull Request on GitHub/GitLab (via web UI)
+# 6. Open a Pull Request on GitHub/GitLab
+# Via web UI: push output prints a PR-creation link, or open the repo page in a browser
+# Via CLI instead (requires gh or glab installed and authenticated):
+gh pr create --base main --head feature/new-login --title "Add new login form" --fill
+# GitLab equivalent:
+glab mr create --source-branch feature/new-login --target-branch main --title "Add new login form"
 
 # 7. After PR is approved and merged, clean up
 git checkout main
 git pull origin main
 git branch -d feature/new-login
+```
+
+## 19. Reflog (Recovering Lost Work)
+
+```bash
+# Show a log of everywhere HEAD has pointed (commits, resets, checkouts, etc.)
+git reflog
+
+# Recover a "lost" commit after a hard reset or deleted branch
+git checkout <commit-hash-from-reflog>
+
+# Restore a branch to where it was before a bad reset
+git reset --hard HEAD@{1}
+
+# Clear old reflog entries (rarely needed; entries expire automatically)
+git reflog expire --expire=now --all
+```
+
+## 20. Submodules
+
+```bash
+# Add a repo as a submodule
+git submodule add https://github.com/username/lib.git path/to/lib
+
+# Clone a repo including its submodules
+git clone --recurse-submodules https://github.com/username/repo.git
+
+# Initialize submodules after a normal clone
+git submodule init
+git submodule update
+
+# Do both in one step
+git submodule update --init --recursive
+
+# Pull latest changes for all submodules
+git submodule update --remote
+
+# Remove a submodule
+git submodule deinit path/to/lib
+git rm path/to/lib
+```
+
+## 21. Worktrees
+
+```bash
+# Add a new worktree for a branch (lets you check out multiple branches at once)
+git worktree add ../feature-folder feature-name
+
+# Add a worktree with a new branch
+git worktree add -b feature-name ../feature-folder main
+
+# List all worktrees
+git worktree list
+
+# Remove a worktree
+git worktree remove ../feature-folder
+
+# Clean up stale worktree references
+git worktree prune
+```
+
+## 22. Aliases & Global Ignore
+
+```bash
+# Create a shorthand alias for a command
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.lg "log --oneline --graph --all"
+# Usage afterward: git st, git co main, git lg
+
+# Set a global .gitignore for patterns across all repos (e.g. OS/editor files)
+git config --global core.excludesFile ~/.gitignore_global
+
+# Set the default pull behavior (merge vs rebase) globally
+git config --global pull.rebase false
+```
+
+## 23. Renaming, Removing & Archiving
+
+```bash
+# Rename or move a tracked file
+git mv oldname.txt newname.txt
+
+# Remove a tracked file (from working directory and staging)
+git rm filename.txt
+
+# Remove a file from Git but keep it on disk
+git rm --cached filename.txt
+
+# Remove a whole directory
+git rm -r some-directory
+
+# Export the repo (or a branch) as a zip/tar archive, no .git history
+git archive --format=zip -o project.zip main
 ```
