@@ -127,7 +127,8 @@ minikube service <service-name> -n <namespace-name>
 # If you have a multi-node cluster
 minikube service <service-name> --node=<node-name>
 # If you are using Docker Desktop on Mac/Windows(Use NodePort)
-minikube tunnel 
+minikube tunnel
+minikube service hello-world --url
 ns lookup
 
 # Get the URL for a service exposed via minikube
