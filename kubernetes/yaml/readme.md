@@ -1,253 +1,424 @@
-## Create A New NameSpace
-```bash
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: new-namespace
-```
-#### Apply the configuration file to your active cluster
-```bash
-kubectl apply -f namespace.yaml
-```
-#### List all namespaces in the cluster
-```bash
-kubectl get namespaces
-```
-#### Switch your current active terminal context permanently
-```bash
-kubectl config set-context --current --namespace=my-namespace
-```
----
-
-# Kubernetes Resource Reference
-
-A reference of common Kubernetes object types, each shown with its frequently-used configuration options as commented YAML.
-
-> Not meant to be applied all at once — pick and adapt the objects relevant to your setup. Some reference each other (e.g. `demo-secret`, `data-pvc`).
-
----
+# Kubernetes Resource Examples
 
 ## Table of Contents
-
-1. [Namespace](#namespace)
-2. [Pod](#pod)
-3. [Deployment](#deployment)
-4. [StatefulSet](#statefulset)
-5. [DaemonSet](#daemonset)
-6. [Job](#job)
-7. [CronJob](#cronjob)
-8. [Service](#service)
-9. [Ingress](#ingress)
-10. [ConfigMap](#configmap)
-11. [Secret](#secret)
-12. [StorageClass & PersistentVolumeClaim](#storageclass--persistentvolumeclaim)
-13. [HorizontalPodAutoscaler](#horizontalpodautoscaler)
-14. [PodDisruptionBudget](#poddisruptionbudget)
-15. [NetworkPolicy](#networkpolicy)
-16. [RBAC (ServiceAccount / Role / ClusterRole)](#rbac)
-17. [ResourceQuota & LimitRange](#resourcequota--limitrange)
+1. [Namespace](#1-namespace)
+2. [PersistentVolume](#2-persistentvolume)
+3. [PersistentVolumeClaim](#3-persistentvolumeclaim)
+4. [Deployment (Volumes & Ports)](#4-deployment-volumes--ports)
+5. [Service (Ports)](#5-service-ports)
+6. [ConfigMap](#6-configmap)
+7. [Secret](#7-secret)
+8. [Ingress](#8-ingress)
+9. [NetworkPolicy](#9-networkpolicy)
+10. [ResourceQuota](#10-resourcequota)
+11. [LimitRange](#11-limitrange)
+12. [ServiceAccount, Role & RoleBinding](#12-serviceaccount-role--rolebinding)
+13. [HorizontalPodAutoscaler (HPA)](#13-horizontalpodautoscaler-hpa)
+14. [StatefulSet](#14-statefulset)
+15. [DaemonSet](#15-daemonset)
+16. [Job](#16-job)
+17. [CronJob](#17-cronjob)
 
 ---
 
-## Namespace
+## 1. Namespace
 
-Logical partition of a cluster — isolates resources between teams/environments.
+Creates an isolated logical partition within the cluster.
 
 ```yaml
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: demo
+  name: my-app-namespace
   labels:
-    environment: dev
+    env: dev
     team: platform
 ```
 
 ---
 
-## Pod
+## 2. PersistentVolume
 
-Smallest deployable unit. Shows scheduling controls, env injection, probes, and security context.
+Represents an actual piece of storage in the cluster (provisioned by admin or dynamically).
 
 ```yaml
 apiVersion: v1
-kind: Pod
+kind: PersistentVolume
 metadata:
-  name: demo-pod
-  namespace: demo
-  labels:
-    app: demo
+  name: my-app-pv
 spec:
-  restartPolicy: Always          # Always | OnFailure | Never
-  terminationGracePeriodSeconds: 30
-  nodeSelector:
-    disktype: ssd
-  tolerations:
-    - key: "dedicated"
-      operator: "Equal"
-      value: "gpu"
-      effect: "NoSchedule"       # NoSchedule | PreferNoSchedule | NoExecute
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: kubernetes.io/os
-                operator: In
-                values: ["linux"]
-    podAntiAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          podAffinityTerm:
-            labelSelector:
-              matchLabels: {app: demo}
-            topologyKey: kubernetes.io/hostname
-  containers:
-    - name: app
-      image: nginx:1.27
-      imagePullPolicy: IfNotPresent   # Always | IfNotPresent | Never
-      ports:
-        - containerPort: 80
-      env:
-        - name: ENVIRONMENT
-          value: "production"
-        - name: SECRET_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: demo-secret
-              key: token
-        - name: CONFIG_VALUE
-          valueFrom:
-            configMapKeyRef:
-              name: demo-config
-              key: app.mode
-      resources:
-        requests: {cpu: "100m", memory: "128Mi"}
-        limits: {cpu: "500m", memory: "256Mi"}
-      volumeMounts:
-        - name: data
-          mountPath: /data
-        - name: config-vol
-          mountPath: /etc/config
-          readOnly: true
-      livenessProbe:
-        httpGet: {path: /healthz, port: 80}
-        initialDelaySeconds: 10
-        periodSeconds: 10
-        failureThreshold: 3
-      readinessProbe:
-        tcpSocket: {port: 80}
-        initialDelaySeconds: 5
-        periodSeconds: 5
-      startupProbe:
-        exec:
-          command: ["cat", "/tmp/ready"]
-        failureThreshold: 30
-        periodSeconds: 2
-      lifecycle:
-        preStop:
-          exec:
-            command: ["sh", "-c", "sleep 5"]
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        allowPrivilegeEscalation: false
-        readOnlyRootFilesystem: true
-        capabilities:
-          drop: ["ALL"]
-  volumes:
-    - name: data
-      persistentVolumeClaim:
-        claimName: data-pvc
-    - name: config-vol
-      configMap:
-        name: demo-config
-  imagePullSecrets:
-    - name: registry-credentials
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  hostPath:                     # use hostPath only for local/dev testing
+    path: /data/my-app-pv
 ```
-
-| Field | Options |
-|---|---|
-| `restartPolicy` | `Always`, `OnFailure`, `Never` |
-| `imagePullPolicy` | `Always`, `IfNotPresent`, `Never` |
-| `toleration.effect` | `NoSchedule`, `PreferNoSchedule`, `NoExecute` |
-| Probe types | `httpGet`, `tcpSocket`, `exec`, `grpc` |
 
 ---
 
-## Deployment
+## 3. PersistentVolumeClaim
 
-Manages stateless apps via a ReplicaSet, with rolling updates.
+A request for storage by a user/pod; binds to a matching PersistentVolume.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: my-app-pvc
+  namespace: my-app-namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: standard
+```
+
+---
+
+## 4. Deployment (Volumes & Ports)
+
+Manages a set of replica Pods, mounts the PVC as a volume, and exposes a container port.
 
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: demo-deployment
-  namespace: demo
+  name: my-app-deployment
+  namespace: my-app-namespace
+  labels:
+    app: my-app
 spec:
-  replicas: 3
-  revisionHistoryLimit: 5
-  strategy:
-    type: RollingUpdate            # RollingUpdate | Recreate
-    rollingUpdate:
-      maxSurge: 1                  # extra pods allowed during update
-      maxUnavailable: 0            # pods that can be down during update
+  replicas: 2
   selector:
     matchLabels:
-      app: demo
+      app: my-app
   template:
     metadata:
       labels:
-        app: demo
+        app: my-app
     spec:
       containers:
-        - name: app
-          image: myregistry/demo:1.4.0
+        - name: my-app-container
+          image: nginx:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: app-storage
+              mountPath: /usr/share/nginx/html
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+      volumes:
+        - name: app-storage
+          persistentVolumeClaim:
+            claimName: my-app-pvc
 ```
 
 ---
 
-## StatefulSet
+## 5. Service (Ports)
 
-For stateful apps needing stable network identity and per-replica persistent storage.
+Exposes the Deployment's pods on a stable network endpoint, mapping service port -> container port.
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+  namespace: my-app-namespace
+spec:
+  type: ClusterIP        # other options: NodePort, LoadBalancer, ExternalName
+  selector:
+    app: my-app
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80            # port the Service listens on
+      targetPort: 80       # port on the container (matches containerPort above)
+      # nodePort: 30080    # only used if type is NodePort (must be 30000-32767)
+```
+
+---
+
+## 6. ConfigMap
+
+Stores non-sensitive config data that can be mounted as env vars or files.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-app-config
+  namespace: my-app-namespace
+data:
+  APP_ENV: "development"
+  LOG_LEVEL: "debug"
+  config.yaml: |
+    server:
+      port: 80
+      timeout: 30s
+```
+
+---
+
+## 7. Secret
+
+Stores sensitive data (base64-encoded, NOT encrypted by default - use a vault/sealed-secrets for real secrets).
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: my-app-secret
+  namespace: my-app-namespace
+type: Opaque
+data:
+  # echo -n 'myusername' | base64
+  DB_USERNAME: bXl1c2VybmFtZQ==
+  # echo -n 'mypassword' | base64
+  DB_PASSWORD: bXlwYXNzd29yZA==
+```
+
+---
+
+## 8. Ingress
+
+Routes external HTTP(S) traffic into Services based on host/path rules.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-app-ingress
+  namespace: my-app-namespace
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: myapp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: my-app-service
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - myapp.example.com
+      secretName: my-app-tls-secret
+```
+
+---
+
+## 9. NetworkPolicy
+
+Controls which pods/namespaces can send or receive traffic to/from this pod.
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: my-app-network-policy
+  namespace: my-app-namespace
+spec:
+  podSelector:
+    matchLabels:
+      app: my-app
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              role: frontend
+      ports:
+        - protocol: TCP
+          port: 80
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              role: database
+      ports:
+        - protocol: TCP
+          port: 5432
+```
+
+---
+
+## 10. ResourceQuota
+
+Caps the total amount of CPU, memory, storage, or object count within a namespace.
+
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: my-app-quota
+  namespace: my-app-namespace
+spec:
+  hard:
+    requests.cpu: "4"
+    requests.memory: 4Gi
+    limits.cpu: "8"
+    limits.memory: 8Gi
+    persistentvolumeclaims: "4"
+    pods: "20"
+```
+
+---
+
+## 11. LimitRange
+
+Sets default, minimum, and maximum resource limits for pods/containers in a namespace.
+
+```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: my-app-limit-range
+  namespace: my-app-namespace
+spec:
+  limits:
+    - type: Container
+      default:
+        cpu: "250m"
+        memory: "256Mi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+      max:
+        cpu: "1"
+        memory: "1Gi"
+      min:
+        cpu: "50m"
+        memory: "64Mi"
+```
+
+---
+
+## 12. ServiceAccount, Role & RoleBinding
+
+Provides an identity for pods and grants scoped RBAC permissions within a namespace.
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-app-sa
+  namespace: my-app-namespace
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: my-app-role
+  namespace: my-app-namespace
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "configmaps"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: my-app-role-binding
+  namespace: my-app-namespace
+subjects:
+  - kind: ServiceAccount
+    name: my-app-sa
+    namespace: my-app-namespace
+roleRef:
+  kind: Role
+  name: my-app-role
+  apiGroup: rbac.authorization.k8s.io
+```
+
+---
+
+## 13. HorizontalPodAutoscaler (HPA)
+
+Automatically scales the number of pod replicas based on observed CPU/memory usage.
+
+```yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-app-hpa
+  namespace: my-app-namespace
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app-deployment
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+```
+
+---
+
+## 14. StatefulSet
+
+Like a Deployment, but gives each pod a stable network identity and its own persistent storage — used for stateful apps (databases, queues).
 
 ```yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: demo-statefulset
-  namespace: demo
+  name: my-app-statefulset
+  namespace: my-app-namespace
 spec:
-  serviceName: demo-headless        # must match a headless Service
+  serviceName: my-app-headless-service
   replicas: 3
-  podManagementPolicy: OrderedReady # OrderedReady | Parallel
-  updateStrategy:
-    type: RollingUpdate             # RollingUpdate | OnDelete
   selector:
     matchLabels:
-      app: demo-db
+      app: my-app-stateful
   template:
     metadata:
       labels:
-        app: demo-db
+        app: my-app-stateful
     spec:
       containers:
-        - name: db
+        - name: my-app-container
           image: postgres:16
           ports:
             - containerPort: 5432
+              name: db
           volumeMounts:
-            - name: pgdata
+            - name: data
               mountPath: /var/lib/postgresql/data
-  volumeClaimTemplates:              # one PVC created per replica
+  volumeClaimTemplates:
     - metadata:
-        name: pgdata
+        name: data
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: fast-ssd
         resources:
           requests:
             storage: 10Gi
@@ -255,451 +426,112 @@ spec:
 
 ---
 
-## DaemonSet
+## 15. DaemonSet
 
-Ensures a copy of a Pod runs on every (or selected) node — e.g. log collectors, CNI agents.
+Ensures one copy of a pod runs on every (or selected) node — commonly used for log collectors, monitoring agents, or networking components.
 
 ```yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: demo-agent
-  namespace: demo
+  name: my-app-daemonset
+  namespace: my-app-namespace
 spec:
   selector:
     matchLabels:
-      app: node-agent
-  updateStrategy:
-    type: RollingUpdate             # RollingUpdate | OnDelete
-    rollingUpdate:
-      maxUnavailable: 1
+      app: my-app-agent
   template:
     metadata:
       labels:
-        app: node-agent
+        app: my-app-agent
     spec:
-      tolerations:
-        - operator: "Exists"        # run even on tainted nodes (e.g. control-plane)
       containers:
-        - name: agent
-          image: fluent/fluent-bit:3.0
+        - name: log-agent
+          image: fluent/fluent-bit:latest
           resources:
-            requests: {cpu: "50m", memory: "64Mi"}
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+          volumeMounts:
+            - name: varlog
+              mountPath: /var/log
+      volumes:
+        - name: varlog
+          hostPath:
+            path: /var/log
 ```
 
 ---
 
-## Job
+## 16. Job
 
-Run-to-completion batch task.
+Runs one or more pods to completion for a batch/one-off task, then stops.
 
 ```yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: demo-job
-  namespace: demo
+  name: my-app-job
+  namespace: my-app-namespace
 spec:
-  completions: 5                    # total successful completions needed
-  parallelism: 2                    # how many run concurrently
-  backoffLimit: 4                   # retries before marking failed
-  activeDeadlineSeconds: 300
-  ttlSecondsAfterFinished: 3600     # auto-cleanup after completion
+  completions: 1
+  backoffLimit: 3
   template:
     spec:
-      restartPolicy: OnFailure      # OnFailure | Never (no Always for Jobs)
       containers:
-        - name: worker
-          image: myregistry/batch-worker:2.0
-          args: ["--task=process"]
+        - name: my-app-job-container
+          image: my-app-migration:latest
+          command: ["python", "run_migration.py"]
+      restartPolicy: Never
 ```
 
 ---
 
-## CronJob
+## 17. CronJob
 
-Scheduled Job, using standard cron syntax.
+Runs a Job on a repeating schedule (like cron) — for backups, cleanup tasks, scheduled reports.
 
 ```yaml
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: demo-cronjob
-  namespace: demo
+  name: my-app-cronjob
+  namespace: my-app-namespace
 spec:
-  schedule: "0 2 * * *"             # 2 AM daily
-  concurrencyPolicy: Forbid         # Allow | Forbid | Replace
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 1
-  suspend: false
+  schedule: "0 2 * * *"        # every day at 2:00 AM
   jobTemplate:
     spec:
       template:
         spec:
-          restartPolicy: OnFailure
           containers:
-            - name: backup
-              image: myregistry/backup-tool:1.0
+            - name: my-app-backup
+              image: my-app-backup:latest
+              command: ["/bin/sh", "-c", "backup.sh"]
+          restartPolicy: OnFailure
 ```
 
 ---
 
-## Service
+## Apply Order
 
-Four common types, shown separately.
-
-```yaml
-# ClusterIP — default, internal-only virtual IP
-apiVersion: v1
-kind: Service
-metadata:
-  name: demo-clusterip
-  namespace: demo
-spec:
-  type: ClusterIP
-  selector:
-    app: demo
-  ports:
-    - name: http
-      port: 80
-      targetPort: 8080
-      protocol: TCP
----
-# NodePort — exposes a static port on every node
-apiVersion: v1
-kind: Service
-metadata:
-  name: demo-nodeport
-  namespace: demo
-spec:
-  type: NodePort
-  selector:
-    app: demo
-  ports:
-    - port: 80
-      targetPort: 8080
-      nodePort: 30080              # optional: 30000-32767 range
----
-# LoadBalancer — provisions an external cloud load balancer
-apiVersion: v1
-kind: Service
-metadata:
-  name: demo-loadbalancer
-  namespace: demo
-spec:
-  type: LoadBalancer
-  selector:
-    app: demo
-  ports:
-    - port: 443
-      targetPort: 8443
-  externalTrafficPolicy: Local     # Local (preserve client IP) | Cluster
----
-# Headless — used by StatefulSets, returns Pod IPs directly (no VIP)
-apiVersion: v1
-kind: Service
-metadata:
-  name: demo-headless
-  namespace: demo
-spec:
-  clusterIP: None
-  selector:
-    app: demo-db
-  ports:
-    - port: 5432
+```bash
+kubectl apply -f 01-namespace.yaml
+kubectl apply -f 02-persistent-volume.yaml
+kubectl apply -f 03-persistent-volume-claim.yaml
+kubectl apply -f 04-resourcequota.yaml
+kubectl apply -f 05-limitrange.yaml
+kubectl apply -f 06-serviceaccount-rbac.yaml
+kubectl apply -f 07-configmap.yaml
+kubectl apply -f 08-secret.yaml
+kubectl apply -f 09-deployment.yaml
+kubectl apply -f 10-statefulset.yaml
+kubectl apply -f 11-daemonset.yaml
+kubectl apply -f 12-service.yaml
+kubectl apply -f 13-ingress.yaml
+kubectl apply -f 14-networkpolicy.yaml
+kubectl apply -f 15-hpa.yaml
+kubectl apply -f 16-job.yaml
+kubectl apply -f 17-cronjob.yaml
 ```
 
----
-
-## Ingress
-
-L7 HTTP/HTTPS routing with TLS termination.
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: demo-ingress
-  namespace: demo
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts: ["demo.example.com"]
-      secretName: demo-tls
-  rules:
-    - host: demo.example.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix       # Prefix | Exact | ImplementationSpecific
-            backend:
-              service:
-                name: demo-clusterip
-                port:
-                  number: 80
-```
-
----
-
-## ConfigMap
-
-Non-sensitive configuration, injected as env vars or mounted files.
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: demo-config
-  namespace: demo
-data:
-  app.mode: "production"
-  app.properties: |
-    max_connections=100
-    timeout=30s
-```
-
----
-
-## Secret
-
-Two common types: generic key-value, and Docker registry credentials.
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: demo-secret
-  namespace: demo
-type: Opaque                        # generic key-value secret
-data:
-  token: c3VwZXItc2VjcmV0LXRva2Vu   # base64-encoded value
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: registry-credentials
-  namespace: demo
-type: kubernetes.io/dockerconfigjson  # for imagePullSecrets
-data:
-  .dockerconfigjson: eyJhdXRocyI6IHt9fQ==
-```
-
----
-
-## StorageClass & PersistentVolumeClaim
-
-```yaml
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: fast-ssd
-provisioner: ebs.csi.aws.com
-parameters:
-  type: gp3
-reclaimPolicy: Delete               # Delete | Retain
-volumeBindingMode: WaitForFirstConsumer  # Immediate | WaitForFirstConsumer
-allowVolumeExpansion: true
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: data-pvc
-  namespace: demo
-spec:
-  accessModes: ["ReadWriteOnce"]    # ReadWriteOnce | ReadOnlyMany | ReadWriteMany | ReadWriteOncePod
-  storageClassName: fast-ssd
-  resources:
-    requests:
-      storage: 20Gi
-```
-
----
-
-## HorizontalPodAutoscaler
-
-Scales replica count based on CPU/memory/custom metrics.
-
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: demo-hpa
-  namespace: demo
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: demo-deployment
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target: {type: Utilization, averageUtilization: 70}
-    - type: Resource
-      resource:
-        name: memory
-        target: {type: Utilization, averageUtilization: 80}
-  behavior:
-    scaleDown:
-      stabilizationWindowSeconds: 300
-    scaleUp:
-      stabilizationWindowSeconds: 0
-```
-
----
-
-## PodDisruptionBudget
-
-Limits voluntary disruptions (e.g. node drains) during maintenance.
-
-```yaml
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: demo-pdb
-  namespace: demo
-spec:
-  minAvailable: 2                   # or use maxUnavailable instead
-  selector:
-    matchLabels:
-      app: demo
-```
-
----
-
-## NetworkPolicy
-
-Pod-to-Pod firewall rules, enforced by a policy-aware CNI plugin.
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: demo-netpol
-  namespace: demo
-spec:
-  podSelector:
-    matchLabels:
-      app: demo-db
-  policyTypes: ["Ingress", "Egress"]
-  ingress:
-    - from:
-        - podSelector:
-            matchLabels: {app: demo}
-        - namespaceSelector:
-            matchLabels: {environment: dev}
-      ports:
-        - protocol: TCP
-          port: 5432
-  egress:
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-            except: ["169.254.169.254/32"]
-      ports:
-        - protocol: TCP
-          port: 443
-```
-
----
-
-## RBAC
-
-`ServiceAccount` + namespace-scoped `Role`/`RoleBinding` + cluster-scoped `ClusterRole`/`ClusterRoleBinding`.
-
-```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: demo-sa
-  namespace: demo
-automountServiceAccountToken: true
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: pod-reader
-  namespace: demo
-rules:
-  - apiGroups: [""]
-    resources: ["pods", "pods/log"]
-    verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: demo-sa-pod-reader
-  namespace: demo
-subjects:
-  - kind: ServiceAccount
-    name: demo-sa
-    namespace: demo
-roleRef:
-  kind: Role
-  name: pod-reader
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: node-viewer
-rules:
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: demo-sa-node-viewer
-subjects:
-  - kind: ServiceAccount
-    name: demo-sa
-    namespace: demo
-roleRef:
-  kind: ClusterRole
-  name: node-viewer
-  apiGroup: rbac.authorization.k8s.io
-```
-
-> RBAC is **additive only** — there's no explicit "deny" rule; access is the union of all matching bindings.
-
----
-
-## ResourceQuota & LimitRange
-
-Namespace-level governance over resource consumption.
-
-```yaml
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: demo-quota
-  namespace: demo
-spec:
-  hard:
-    pods: "20"
-    requests.cpu: "10"
-    requests.memory: 20Gi
-    limits.cpu: "20"
-    limits.memory: 40Gi
-    persistentvolumeclaims: "10"
----
-apiVersion: v1
-kind: LimitRange
-metadata:
-  name: demo-limits
-  namespace: demo
-spec:
-  limits:
-    - type: Container
-      default: {cpu: "500m", memory: "256Mi"}
-      defaultRequest: {cpu: "100m", memory: "128Mi"}
-      max: {cpu: "2", memory: "2Gi"}
-      min: {cpu: "50m", memory: "64Mi"}
-```
-
+> **Note on ordering:** Namespace must always go first. Quotas/limits/RBAC are good to set up early so nothing violates them. ConfigMaps/Secrets should exist before workloads that reference them. Everything else has few hard dependencies, but Services are commonly applied after the workloads they select.
