@@ -8,7 +8,7 @@
 2.  [Working with Images](#2-working-with-images)
 3.  [Building Images](#3-building-images)
 4.  [Running Containers](#4-running-containers)
-5.  [Logs & Debugging](#6-logs--debugging)
+5.  [Managing Containers](#5-managing-containers)
 6.  [Logs & Debugging](#6-logs--debugging)
 7.  [Volumes (Persistent Storage)](#7-volumes-persistent-storage)
 8.  [Networks](#8-networks)
