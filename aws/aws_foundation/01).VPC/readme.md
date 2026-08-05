@@ -26,6 +26,12 @@ For those who just want the checklist — full details for each step are below.
 
 ## Architecture Overview
 
+This guide builds a **2-tier architecture** (public + private). A **3-tier architecture** (public + private-app + private-data) is also covered below for workloads that need a dedicated, more isolated database layer. Pick whichever matches your workload — the step-by-step instructions later in this guide follow the 2-tier design; the 3-tier notes show what to add on top.
+
+### Tier 2 Architecture (Public + Private)
+
+Used for a typical web app: internet-facing servers in public subnets, everything else (app logic, database) in one private tier behind NAT.
+
 ```
                               Internet
                                  │
@@ -43,10 +49,67 @@ For those who just want the checklist — full details for each step are below.
         │        │                            │          │
         │  ┌─────▼───────┐              ┌─────▼───────┐  │
         │  │ Private     │              │ Private     │  │
+        │  │ (app + db)  │              │ (app + db)  │  │
         │  │ 10.0.2.0/24 │              │ 10.0.4.0/24 │  │
         │  └─────────────┘              └─────────────┘  │
         └──────────────────────────────────────────────┘
 ```
+
+- **Public subnets**: load balancers, bastion/NAT
+- **Private subnets**: everything else — app servers *and* database share the same tier/subnet, separated only by security groups
+
+### Tier 3 Architecture (Public + Private-App + Private-Data)
+
+Adds a dedicated, more isolated data layer — used when you want the database on its own subnet with tighter routing and access controls, separate from the application layer that talks to it.
+
+```
+                              Internet
+                                 │
+                          Internet Gateway
+                                 │
+        ┌──────────────────────────────────────────────────┐
+        │                     VPC (10.0.0.0/16)              │
+        │                                                    │
+        │  AZ-a                            AZ-b              │
+        │  ┌────────────┐                  ┌────────────┐    │
+        │  │ Public      │                  │ Public      │    │
+        │  │ (web/ALB)   │                  │ (web/ALB)   │    │
+        │  │ 10.0.1.0/24 │                  │ 10.0.5.0/24 │    │
+        │  │  [NAT GW-a] │                  │  [NAT GW-b] │    │
+        │  └─────┬───────┘                  └─────┬───────┘    │
+        │        │                                │            │
+        │  ┌─────▼───────┐                  ┌─────▼───────┐    │
+        │  │ Private-App │                  │ Private-App │    │
+        │  │ 10.0.2.0/24 │                  │ 10.0.6.0/24 │    │
+        │  └─────┬───────┘                  └─────┬───────┘    │
+        │        │                                │            │
+        │  ┌─────▼───────┐                  ┌─────▼───────┐    │
+        │  │ Private-Data│                  │ Private-Data│    │
+        │  │ (no NAT     │                  │ (no NAT     │    │
+        │  │  route)     │                  │  route)     │    │
+        │  │ 10.0.3.0/24 │                  │ 10.0.7.0/24 │    │
+        │  └─────────────┘                  └─────────────┘    │
+        └────────────────────────────────────────────────────┘
+```
+
+- **Public subnets**: load balancers, NAT Gateways, bastion (if used)
+- **Private-App subnets**: application/business-logic servers — reach the internet via NAT for patches, package installs, external API calls
+- **Private-Data subnets**: databases (RDS, ElastiCache, etc.) — typically **no route to NAT or IGW at all**, since databases rarely need outbound internet access; reachable only from the app tier on specific ports, via security groups
+
+### Tier 2 vs Tier 3 — Key Differences
+
+| Aspect | 2-Tier | 3-Tier |
+|---|---|---|
+| Subnets per AZ | 2 (public, private) | 3 (public, private-app, private-data) |
+| Database placement | Same subnet as app servers | Dedicated data subnet |
+| Isolation | SG-based only between app and db | SG-based *and* network/subnet-based (separate route table, often no internet route) |
+| Route tables | 1 public + 1 private RT (per AZ) | 1 public + 1 app RT + 1 data RT (per AZ) — data RT usually has no `0.0.0.0/0` route |
+| NAT Gateway usage | Serves all private resources | Serves app tier only; data tier typically has no outbound path |
+| Blast radius if app tier compromised | Attacker on the same subnet as the DB, blocked only by SG | Attacker still needs to cross into a separate subnet/route table — an extra layer before reaching data |
+| Complexity / cost | Lower — fewer subnets, route tables, NACLs to manage | Higher — more subnets and route tables, plus NACLs are more worth configuring per-tier |
+| Typical use case | Small-to-mid apps, dev/test, simpler compliance needs | Regulated workloads (PCI-DSS, HIPAA), larger apps wanting defense-in-depth |
+
+> **Note:** the CIDR-per-subnet plan above assumes a `/16` VPC split into `/24` subnets — adjust sizes to your actual capacity needs (see the CIDR Planning Reference below).
 
 ---
 
