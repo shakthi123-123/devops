@@ -4,6 +4,26 @@ A Virtual Private Cloud (VPC) is an isolated virtual network within AWS where yo
 
 ---
 
+## Quick Steps (TL;DR)
+
+For those who just want the checklist — full details for each step are below.
+
+1. **Sign in** to the AWS Console and select your target region
+2. **Open the VPC Dashboard** (search "VPC")
+3. **Create the VPC** — `10.0.0.0/16`, then enable DNS hostnames
+4. **Create 4 subnets** across 2 AZs — 2 public, 2 private — and enable auto-assign public IP on the public ones
+5. **Create an Internet Gateway** and attach it to the VPC
+6. **Create route tables** — public RT → `0.0.0.0/0` to IGW; private RT(s) left as local-only for now
+7. **Create a NAT Gateway per AZ** (each in a public subnet, its own Elastic IP), then route each AZ's private subnet through its own NAT Gateway
+8. **Create security groups** (`web-sg`, `db-sg`) and strip all rules from the `default` SG
+9. **(Optional) Create Network ACLs** for subnet-level rules
+10. **Enable VPC Flow Logs** for traffic visibility
+11. **(Optional) Create VPC Endpoints** (e.g., S3 Gateway) to avoid routing AWS-service traffic through NAT
+12. **Launch a test EC2 instance** in a public subnet (with a key pair) and one in a private subnet (with an SSM IAM role) to validate connectivity
+13. **Run through the verification checklist**, then clean up test resources when done to avoid ongoing charges
+
+---
+
 ## Architecture Overview
 
 ```
@@ -18,7 +38,7 @@ A Virtual Private Cloud (VPC) is an isolated virtual network within AWS where yo
         │  ┌────────────┐              ┌────────────┐  │
         │  │ Public      │              │ Public      │  │
         │  │ 10.0.1.0/24 │              │ 10.0.3.0/24 │  │
-        │  │  [NAT GW]   │              │             │  │
+        │  │  [NAT GW-a] │              │  [NAT GW-b] │  │
         │  └─────┬───────┘              └─────┬───────┘  │
         │        │                            │          │
         │  ┌─────▼───────┐              ┌─────▼───────┐  │
@@ -129,6 +149,12 @@ In practice (outside of point-to-point /31 and host /32), the first and last IP 
 
 4. Click **Create VPC**
 5. Confirm the VPC appears in **Your VPCs** with state `Available`
+6. **Enable DNS hostnames** (required for public DNS names on EC2 instances, and a prerequisite for many VPC Endpoint types and load balancers):
+   - Select `prod-vpc` → **Actions** → **Edit VPC settings**
+   - Check **Enable DNS hostnames** (DNS resolution is enabled by default)
+   - **Save**
+
+> **Quota check:** the default AWS limit is 5 VPCs per region. If you're on an account that's already close to that, request a limit increase before proceeding.
 
 ---
 
@@ -191,25 +217,43 @@ The IGW allows communication between your VPC and the internet.
 
 ---
 
-## Step 7: Create a NAT Gateway (for Private Subnet Internet Access)
+## Step 7: Create NAT Gateways (for Private Subnet Internet Access)
 
 Private subnet resources (e.g., app servers, databases) need outbound-only internet access for updates, without being publicly reachable.
 
+> **High availability note:** a single NAT Gateway in one AZ is a single point of failure — if that AZ has an issue, private subnets in *other* AZs lose internet access too, and traffic crossing AZs to reach it incurs cross-AZ data transfer charges. For a production-style setup, create **one NAT Gateway per AZ** and route each AZ's private subnet through the NAT Gateway in its own AZ.
+
+### 7a. Create a NAT Gateway in each public subnet
+
 1. Left sidebar → **NAT Gateways** → **Create NAT gateway**
-2. Configure:
-   - Name: `prod-nat-gw`
-   - Subnet: **must be a public subnet** (e.g., `public-subnet-a`)
+2. Configure (AZ-a):
+   - Name: `prod-nat-gw-a`
+   - Subnet: **must be a public subnet** (`public-subnet-a`)
    - Connectivity type: **Public**
    - Elastic IP: click **Allocate Elastic IP** → select the new EIP
 3. Click **Create NAT gateway**
-4. Wait for state to become `Available` (takes a few minutes)
-5. Go back to **Route Tables** → select `private-rt` → **Edit routes**
-6. **Add route**:
-   - Destination: `0.0.0.0/0`
-   - Target: **NAT Gateway** → select `prod-nat-gw`
-7. **Save changes**
+4. Repeat for AZ-b:
+   - Name: `prod-nat-gw-b`
+   - Subnet: `public-subnet-b`
+   - Allocate a separate Elastic IP
+5. Wait for both to reach state `Available` (takes a few minutes)
 
-> **Cost note:** NAT Gateways incur hourly charges plus data processing fees. For dev/test environments, consider a NAT instance (EC2-based) instead to save cost.
+> **Quota check:** the default Elastic IP limit is 5 per region — confirm you have headroom for two before starting.
+
+### 7b. Route each AZ's private subnet through its own NAT Gateway
+
+If you created a single `private-rt` in Step 6b, split it into one route table per AZ so each can point to a different NAT Gateway:
+
+1. **Route Tables** → **Create route table**
+2. Name: `private-rt-a`, VPC: `prod-vpc` → **Create**
+3. **Routes** tab → **Edit routes** → **Add route**:
+   - Destination: `0.0.0.0/0`
+   - Target: **NAT Gateway** → select `prod-nat-gw-a`
+4. **Save changes** → **Subnet associations** → associate `private-subnet-a` only
+5. Repeat: create `private-rt-b`, route `0.0.0.0/0` to `prod-nat-gw-b`, associate `private-subnet-b` only
+6. If `private-subnet-a`/`b` were already associated with the original `private-rt`, remove that association first so each subnet points to only one route table
+
+> **Cost note:** NAT Gateways incur hourly charges plus data processing fees — running two doubles this cost. For dev/test environments, a single NAT Gateway (accepting the SPOF/cross-AZ tradeoff) or a NAT instance (EC2-based) can save cost.
 
 ---
 
@@ -234,6 +278,15 @@ Security groups act as virtual firewalls at the instance level (stateful).
 5. Click **Create security group**
 6. Repeat for a `db-sg` restricting inbound to only the `web-sg` on the database port (e.g., 3306 for MySQL)
 
+### 8b. Harden the default security group
+
+Every VPC ships with a `default` security group that allows all inbound/outbound traffic between anything attached to it. Left as-is, a resource accidentally launched without an explicit SG inherits this wide-open access.
+
+1. Left sidebar → **Security Groups** → select the `default` SG for `prod-vpc`
+2. **Inbound rules** → **Edit inbound rules** → remove all rules → **Save**
+3. **Outbound rules** → optionally restrict similarly, or leave default-allow if not a concern
+4. Going forward, always attach a purpose-built SG (`web-sg`, `db-sg`, etc.) to every resource instead of relying on `default`
+
 ---
 
 ## Step 9: Configure Network ACLs (Optional, Extra Layer)
@@ -246,6 +299,22 @@ NACLs are stateless, subnet-level firewalls — an additional layer beyond secur
 4. Define inbound/outbound rules with rule numbers (evaluated in order, lowest first)
 
 > Most setups rely on Security Groups alone; NACLs are useful for blocking specific malicious IP ranges at the subnet level.
+
+---
+
+## Step 9b: Enable VPC Flow Logs (Recommended)
+
+Flow Logs capture metadata about traffic entering/leaving network interfaces in your VPC — the primary tool for diagnosing SG, NACL, and routing issues, and worth enabling from the start rather than bolting on later.
+
+1. Left sidebar → **Your VPCs** → select `prod-vpc` → **Flow Logs** tab → **Create flow log**
+2. Configure:
+   - Name: `prod-vpc-flow-log`
+   - Filter: **All** (accepted and rejected traffic)
+   - Destination: **Send to CloudWatch Logs** (or S3 for lower cost at scale)
+   - Destination log group: create new, e.g. `/vpc/prod-vpc/flowlogs`
+   - IAM role: create/select a role with permissions to publish logs
+3. Click **Create flow log**
+4. Confirm status becomes `Active`
 
 ---
 
@@ -264,6 +333,13 @@ Avoid routing traffic to AWS services (like S3, DynamoDB) through the public int
 
 ## Step 11: Launch a Test EC2 Instance to Validate
 
+### 11a. Prerequisites
+
+- **Key pair:** if you don't already have one, create it first: **EC2 Dashboard** → **Key Pairs** → **Create key pair** (download and store the `.pem` file securely — AWS won't let you download it again).
+- **IAM role for Session Manager:** to reach the private-subnet instance without SSH or a bastion host, create an IAM role with the `AmazonSSMManagedInstanceCore` managed policy attached, and assign it to both test instances. Amazon Linux 2023 ships with the SSM Agent pre-installed, so the IAM role is the only extra setup needed.
+
+### 11b. Launch the instances
+
 1. Go to **EC2 Dashboard** → **Launch instance**
 2. Choose an AMI (e.g., Amazon Linux 2023)
 3. Instance type: `t2.micro` (free tier eligible)
@@ -272,13 +348,14 @@ Avoid routing traffic to AWS services (like S3, DynamoDB) through the public int
    - Subnet: `public-subnet-a`
    - Auto-assign public IP: **Enable**
    - Security group: `web-sg`
-5. Configure key pair for SSH access
-6. Click **Launch instance**
-7. Once running, test connectivity:
+5. Key pair: select the key pair created above
+6. Under **Advanced details** → **IAM instance profile**: select the SSM role
+7. Click **Launch instance**
+8. Once running, test connectivity:
    ```bash
    ssh -i your-key.pem ec2-user@<public-ip>
    ```
-8. To verify private subnet + NAT setup, launch a second instance in `private-subnet-a` (no public IP) and confirm it can reach the internet (e.g., `curl https://amazon.com`) via a bastion host or Session Manager, but is not directly reachable from outside
+9. To verify private subnet + NAT setup, launch a second instance in `private-subnet-a` (no public IP, same IAM role attached) and connect via **EC2 Dashboard** → select instance → **Connect** → **Session Manager** tab. Confirm it can reach the internet (e.g., `curl https://amazon.com`) but is not directly reachable from outside.
 
 ---
 
@@ -287,12 +364,15 @@ Avoid routing traffic to AWS services (like S3, DynamoDB) through the public int
 - [ ] VPC shows `Available` state with correct CIDR
 - [ ] All 4 subnets created and mapped to correct AZs
 - [ ] Internet Gateway attached to VPC
+- [ ] DNS hostnames enabled on the VPC
 - [ ] Public route table has `0.0.0.0/0 → IGW` and is associated with public subnets
-- [ ] Private route table has `0.0.0.0/0 → NAT Gateway` and is associated with private subnets
-- [ ] NAT Gateway state is `Available`
+- [ ] Each AZ's private route table has `0.0.0.0/0 → NAT Gateway` pointing to the NAT Gateway *in the same AZ*
+- [ ] Both NAT Gateways show state `Available`
+- [ ] Default security group has no inbound/outbound rules
 - [ ] Security groups restrict SSH to known IPs only
+- [ ] IAM role with `AmazonSSMManagedInstanceCore` attached to test instances
 - [ ] Test EC2 instance in public subnet is internet-reachable
-- [ ] Test instance in private subnet has outbound-only access
+- [ ] Test instance in private subnet has outbound-only access via Session Manager
 
 ---
 
@@ -301,8 +381,8 @@ Avoid routing traffic to AWS services (like S3, DynamoDB) through the public int
 If this was for testing/learning, delete resources in this order:
 
 1. Terminate EC2 instances
-2. Delete NAT Gateway (releases the Elastic IP association)
-3. Release the Elastic IP
+2. Delete both NAT Gateways (`prod-nat-gw-a` and `prod-nat-gw-b`) — releases the Elastic IP associations
+3. Release both Elastic IPs
 4. Detach and delete the Internet Gateway
 5. Delete subnets
 6. Delete route tables (except the default one, which is deleted with the VPC)
@@ -332,5 +412,5 @@ If this was for testing/learning, delete resources in this order:
 - **VPC Peering** — connect two VPCs privately
 - **Transit Gateway** — hub-and-spoke connectivity for many VPCs
 - **VPN/Direct Connect** — hybrid connectivity to on-premises networks
-- **Flow Logs** — enable for traffic monitoring and troubleshooting
+- **Consistent tagging** — beyond `Name`, consider tagging resources with `Environment`, `Project`, and `CostCenter` for billing attribution and organization at scale
 - **Infrastructure as Code** — replicate this setup using Terraform or AWS CloudFormation for repeatability
