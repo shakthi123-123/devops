@@ -30,7 +30,7 @@
 
 | Task | Command |
 |---|---|
-| Vs code in Github | . |
+| Vs code in Github | `.` |
 | Initialize repo | `git init` |
 | Clone repo | `git clone <url>` |
 | Check status | `git status` |
@@ -53,6 +53,7 @@
 | Add submodule | `git submodule add <url>` |
 | Add worktree | `git worktree add <path> <branch>` |
 | Create alias | `git config --global alias.<name> <command>` |
+| List remotes URLs | `git remote -v` |
 
 
 ## 1. Initial Setup
@@ -73,6 +74,9 @@ git config --global core.editor "code --wait"
 
 # View all config settings
 git config --list
+
+# Pull Up the Local System Manual for a Specific Subcommand
+git help config
 ```
 
 ## 2. Starting a Repository
@@ -89,6 +93,8 @@ git clone https://github.com/username/repo.git
 
 # Move to the clone Repo
 cd /repo
+# Add Readme.md file
+git add README.md
 ```
 
 ## 3. Checking Status & Basic Workflow
@@ -372,6 +378,9 @@ git restore --staged filename.txt
 # or (older syntax)
 git reset filename.txt
 
+# Drop Specific File Allocations out of Staging Directories
+git reset filename.txt
+
 # Undo the last commit but keep changes staged
 git reset --soft HEAD~1
 
@@ -383,6 +392,8 @@ git reset --hard HEAD~1
 
 # Revert a commit by creating a new "undo" commit (safe for shared history)
 git revert <commit-hash>
+
+
 ```
 
 ## 13. Stashing (Save Work Temporarily)
