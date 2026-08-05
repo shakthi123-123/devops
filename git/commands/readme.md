@@ -91,6 +91,9 @@ git remote add orgin https://github.com/username/repo
 #  Option B: Clone a Repo from Github
 git clone https://github.com/username/repo.git
 
+# Clone into a specific folder name
+git clone https://github.com/username/repo.git my-folder
+
 # Move to the clone Repo
 cd /repo
 # Add Readme.md file
