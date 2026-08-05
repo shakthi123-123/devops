@@ -30,6 +30,7 @@
 
 | Task | Command |
 |---|---|
+| Vs code in Github | . |
 | Initialize repo | `git init` |
 | Clone repo | `git clone <url>` |
 | Check status | `git status` |
