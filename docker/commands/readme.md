@@ -190,9 +190,11 @@ docker run -d -v my-volume:/data nginx
 
 # Run and bind-mount a local directory
 docker run -d -v $(pwd)/html:/usr/share/nginx/html nginx
+docker run -d -it --name "container_name" -p 80:80 --mount source="volume_name",destination=/data "image_name"
 
 # Run interactively with a terminal (e.g. for shells)
-docker run -it ubuntu bash
+docker run -it ubuntu /bin/bash
+docker exec -it "container_name" /bin/bash
 
 # Run and automatically remove the container when it stops
 docker run --rm -it ubuntu bash
@@ -208,6 +210,9 @@ docker run -d --network my-network nginx
 
 # Override the container's default command
 docker run ubuntu echo "hello world"
+
+# Spin up a Container using a Direct Bind Mount (Host Directory to Target Location)
+docker run -d -it --name "container_name" -p 80:80 -v /host/data:/container/destination "image_name"
 ```
 
 ## 5. Managing Containers
