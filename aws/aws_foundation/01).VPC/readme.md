@@ -45,17 +45,52 @@ A Virtual Private Cloud (VPC) is an isolated virtual network within AWS where yo
 | /24 | 256 | 251 |
 | /28 | 16 | 11 |
 
+> **Tip:** Plan your IP ranges before starting. Avoid overlapping with any existing VPCs you may later peer with, or with your on-premises network if using VPN/Direct Connect.
+
 ---
 
-| Cidr IPs | Bit - 32 | Power of 2 | Total IPs |
-| --- | --- |--- | --- |
-| 10.0.0.0/32 | 32 | | 1 IPs |
-| 10.0.0.0/28 | 32-28=4 | 2^4=2x2x2x2 | 16 IPs |
-| 10.0.0.0/26 | 32-26=6 | 2^6=2x2x2x2x2x2 | 64 IPs |
-| 10.0.0.0/24 | 32-24=8 | 2^8=2x2x2x2x2x2x2x2 | 256 IPs |
-| 10.0.0.0/22 | 32-28=10 | 2^10=2x2x2x2x2x2x2x2x2x2 | 1024 IPs |
+| Cidr IPs | Bit | Power of 2 |	Total IPs |
+| --- | ---| --- | --- |
+| 10.0.0.0/32 |	32-32=0 |	2^0	| 1 IP |
+| 10.0.0.0/31	| 32-31=1	| 2^1 |	2 IPs |
+| 10.0.0.0/30	| 32-30=2	| 2^2	| 4 IPs |
+| 10.0.0.0/29	| 32-29=3	| 2^3	| 8 IPs |
+| 10.0.0.0/28	| 32-28=4	| 2^4	| 16 IPs |
+| 10.0.0.0/27	| 32-27=5	| 2^5	| 32 IPs |
+| 10.0.0.0/26	| 32-26=6	| 2^6	| 64 IPs |
+| 10.0.0.0/25	| 32-25=7	| 2^7	| 128 IPs |
+| 10.0.0.0/24	| 32-24=8	| 2^8	| 256 IPs |
+| 10.0.0.0/23	| 32-23=9	| 2^9	| 512 IPs |
+| 10.0.0.0/22	| 32-22=10 | 2^10 | 1,024 IPs |
+| 10.0.0.0/21	| 32-21=11 | 2^11 | 2,048 IPs |
+| 10.0.0.0/20	| 32-20=12 | 2^12 | 4,096 IPs |
+| 10.0.0.0/19	| 32-19=13 | 2^13 | 8,192 IPs | 
+| 10.0.0.0/18	| 32-18=14 | 2^14 | 16,384 IPs| 
+| 10.0.0.0/17 |	32-17=15 | 2^15 | 32,768 IPs |
+| 10.0.0.0/16	| 32-16=16 | 2^16 | 65,536 IPs |
+| 10.0.0.0/15	| 32-15=17 | 2^17 | 131,072 IPs |
+| 10.0.0.0/14	| 32-14=18 | 2^18 | 262,144 IPs |
+| 10.0.0.0/13	|32-13=19 | 2^19 | 524,288 IPs |
+| 10.0.0.0/12	| 32-12=20 | 2^20 | 1,048,576 IPs |
+| 10.0.0.0/11 | 32-11=21 | 2^21 | 2,097,152 IPs |
+| 10.0.0.0/10	| 32-10=22 | 2^22	| 4,194,304 IPs |
+| 10.0.0.0/9 | 32-9=23 | 2^23 | 8,388,608 IPs |
+| 10.0.0.0/8 | 32-8=24 | 2^24 | 16,777,216 IPs |
+| 10.0.0.0/7 | 32-7=25 | 2^25 | 33,554,432 IPs |
+| 10.0.0.0/6 | 32-6=26 | 2^26 | 67,108,864 IPs |
+| 10.0.0.0/5 | 32-5=27 | 2^27 | 134,217,728 IPs |
+| 10.0.0.0/4 | 32-4=28 | 2^28	| 268,435,456 IPs |
+| 10.0.0.0/3 | 32-3=29 | 2^29	| 536,870,912 IPs |
+| 10.0.0.0/2 | 32-2=30 | 2^30	| 1,073,741,824 IPs |
+| 10.0.0.0/1 | 32-1=31 | 2^31 | 2,147,483,648 IPs |
+| 10.0.0.0/0 | 32-0=32 | 2^32	| 4,294,967,296 IPs |
 
-> **Tip:** Plan your IP ranges before starting. Avoid overlapping with any existing VPCs you may later peer with, or with your on-premises network if using VPN/Direct Connect.
+Notes:
+
+/32 to /24 are the common ones for hosts and small subnets (used in most enterprise/cloud networking, e.g., AWS/Azure VPCs).
+/23 and larger are typically seen at ISP or large enterprise scale.
+/0 represents the entire IPv4 address space (all ~4.29 billion addresses) — used to mean "all traffic" in routing (e.g., a default route).
+In practice (outside of point-to-point /31 and host /32), the first and last IP in a subnet are reserved (network address and broadcast address), so usable hosts = Total IPs − 2 for /30 and larger.
 
 ---
 
