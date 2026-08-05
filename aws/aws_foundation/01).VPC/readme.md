@@ -37,11 +37,11 @@ Used for a typical web app: internet-facing servers in public subnets, everythin
                                  │
                           Internet Gateway
                                  │
-        ┌────────────────────────────────────────────┐
-        │                    VPC (10.0.0.0/16)         │
-        │                                              │
-        │  AZ-a                        AZ-b            │
-        │  ┌────────────┐              ┌────────────┐  │
+        ┌────────────────────────────────────────────────┐
+        │                    VPC (10.0.0.0/16)           │
+        │                                                │
+        │  AZ-a                        AZ-b              │
+        │  ┌─────────────┐              ┌─────────────┐  │
         │  │ Public      │              │ Public      │  │
         │  │ 10.0.1.0/24 │              │ 10.0.3.0/24 │  │
         │  │  [NAT GW-a] │              │  [NAT GW-b] │  │
@@ -52,7 +52,7 @@ Used for a typical web app: internet-facing servers in public subnets, everythin
         │  │ (app + db)  │              │ (app + db)  │  │
         │  │ 10.0.2.0/24 │              │ 10.0.4.0/24 │  │
         │  └─────────────┘              └─────────────┘  │
-        └──────────────────────────────────────────────┘
+        └────────────────────────────────────────────────┘
 ```
 
 - **Public subnets**: load balancers, bastion/NAT
@@ -67,11 +67,11 @@ Adds a dedicated, more isolated data layer — used when you want the database o
                                  │
                           Internet Gateway
                                  │
-        ┌──────────────────────────────────────────────────┐
-        │                     VPC (10.0.0.0/16)              │
-        │                                                    │
-        │  AZ-a                            AZ-b              │
-        │  ┌────────────┐                  ┌────────────┐    │
+        ┌──────────────────────────────────────────────────────┐
+        │                     VPC (10.0.0.0/16)                │
+        │                                                      │
+        │  AZ-a                            AZ-b                │
+        │  ┌─────────────┐                  ┌─────────────┐    │
         │  │ Public      │                  │ Public      │    │
         │  │ (web/ALB)   │                  │ (web/ALB)   │    │
         │  │ 10.0.1.0/24 │                  │ 10.0.5.0/24 │    │
@@ -89,7 +89,7 @@ Adds a dedicated, more isolated data layer — used when you want the database o
         │  │  route)     │                  │  route)     │    │
         │  │ 10.0.3.0/24 │                  │ 10.0.7.0/24 │    │
         │  └─────────────┘                  └─────────────┘    │
-        └────────────────────────────────────────────────────┘
+        └──────────────────────────────────────────────────────┘
 ```
 
 - **Public subnets**: load balancers, NAT Gateways, bastion (if used)
