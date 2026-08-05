@@ -45,6 +45,15 @@ A Virtual Private Cloud (VPC) is an isolated virtual network within AWS where yo
 | /24 | 256 | 251 |
 | /28 | 16 | 11 |
 
+---
+
+| Cidr IPs | Bit - 32 | Power of 2 | Total IPs |
+| --- | --- |--- | --- |
+| 10.0.0.0/28 | 32-28=4 | 2^4=2x2x2x2 | 16 IPs |
+| 10.0.0.0/26 | 32-26=6 | 2^6=2x2x2x2x2x2 | 64 IPs |
+| 10.0.0.0/24 | 32-24=8 | 2^8=2x2x2x2x2x2x2x2 | 256 IPs |
+| 10.0.0.0/22 | 32-28=10 | 2^10=2x2x2x2x2x2x2x2x2x2 | 1024 IPs |
+
 > **Tip:** Plan your IP ranges before starting. Avoid overlapping with any existing VPCs you may later peer with, or with your on-premises network if using VPN/Direct Connect.
 
 ---
