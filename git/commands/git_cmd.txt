@@ -1,6 +1,7 @@
 git config --global user.name " "
 git config --global user.email " "
 git config --list
+#pranavi@121
 
     TO CLONE REPO FROM GITHUB
 git clone 'repo link' 
