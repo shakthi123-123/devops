@@ -143,10 +143,13 @@ Save changes.
 Inbound rules:
 | Type | Port | Source |
 |---|---|---|
-| SSH | 22 | My IP |
+| SSH | 22 | My IP or 0.0.0.0/0 |
 | HTTP | 80 | 0.0.0.0/0 *(only if hosting a web app)* |
+| HTTPS | 80 | 0.0.0.0/0 *(only if hosting a web app)* |
+| RDS | 80 | 0.0.0.0/0 *(only if hosting a web app)* |
 
 Outbound: leave default (All traffic → 0.0.0.0/0).
+Save and Copy Public SG ID to Create Private SG
 
 ### Private-SG (for the private EC2)
 
@@ -159,7 +162,7 @@ Outbound: leave default (All traffic → 0.0.0.0/0).
 Inbound rules:
 | Type | Port | Source |
 |---|---|---|
-| SSH | 22 | Public-SG *(select the security group, not an IP — allows SSH only from the public instance)* |
+| ALL TCP| 22 | Public-SG *(select the security group, not an IP — allows SSH only from the public instance)* |
 
 Outbound: leave default.
 
@@ -200,6 +203,89 @@ Launch instance.
 Launch instance.
 
 To reach Private-EC2, SSH into Public-EC2 first (using its public IP), then SSH from there to Private-EC2's private IP (this is why Private-SG allows SSH from Public-SG).
+
+---
+
+## Step 8: Test and Verify Connectivity
+
+Do this after both instances show **Running** and status checks pass (2/2).
+
+### 8.1 SSH into Public-EC2
+
+From your local machine:
+
+```
+chmod 400 your-key.pem
+ssh -i your-key.pem ec2-user@<Public-EC2-public-IP>
+```
+
+Get the public IP from `EC2 → Instances → Public-EC2 → Public IPv4 address`.
+
+**Expected:** you land in a shell prompt on Public-EC2.
+
+### 8.2 Confirm Public-EC2 has internet access (via Internet Gateway)
+
+From inside the Public-EC2 SSH session:
+
+```
+curl -Is https://www.amazon.com | head -1
+ping -c 3 8.8.8.8
+```
+
+**Expected:** `curl` returns `HTTP/2 200` (or similar), and pings get replies. This confirms the IGW route is working.
+
+### 8.3 Copy your key and hop to Private-EC2
+
+Private-EC2 has no public IP, so you reach it only through Public-EC2 (bastion hop).
+
+From your **local machine** (not the SSH session), copy the private key to Public-EC2:
+
+```
+scp -i your-key.pem your-key.pem ec2-user@<Public-EC2-public-IP>:~/
+```
+
+Back in the Public-EC2 SSH session:
+
+```
+chmod 400 ~/your-key.pem
+ssh -i ~/your-key.pem ec2-user@<Private-EC2-private-IP>
+```
+
+Get the private IP from `EC2 → Instances → Private-EC2 → Private IPv4 address`.
+
+**Expected:** you land in a shell prompt on Private-EC2. This confirms Private-SG's "allow SSH from Public-SG" rule is working.
+
+> Better practice than copying key files around: use `ssh -A` agent forwarding from your local machine instead of copying the .pem to Public-EC2. Mentioned here for simplicity since this is a throwaway demo you're tearing down anyway.
+
+### 8.4 Confirm Private-EC2 has outbound internet access (via NAT Gateway)
+
+From inside the Private-EC2 SSH session:
+
+```
+curl -Is https://www.amazon.com | head -1
+```
+
+**Expected:** returns `HTTP/2 200` (or similar) — this confirms Private-RT's route through Demo-NAT is working, and that outbound-only internet access works even with no public IP.
+
+### 8.5 Confirm Private-EC2 has NO direct public IP / inbound path
+
+From your **local machine**, try connecting directly to Private-EC2's private IP (this should just hang or fail, since it's not routable from outside the VPC):
+
+```
+ssh -i your-key.pem -o ConnectTimeout=5 ec2-user@<Private-EC2-private-IP>
+```
+
+**Expected:** connection times out — confirming Private-EC2 truly has no direct internet-reachable path and can only be reached via the Public-EC2 hop.
+
+### 8.6 Quick pass/fail summary
+
+| Test | Confirms | Expected result |
+|---|---|---|
+| SSH into Public-EC2 | Public subnet + IGW route + Public-SG inbound | Shell access via public IP |
+| curl/ping from Public-EC2 | IGW route to internet | 200 response / ping replies |
+| SSH from Public-EC2 into Private-EC2 | Private-SG allows SSH from Public-SG | Shell access via private IP |
+| curl from Private-EC2 | Private-RT → NAT Gateway route | 200 response |
+| Direct SSH to Private-EC2 from local machine | Private-EC2 is not internet-reachable | Times out / fails |
 
 ---
 
