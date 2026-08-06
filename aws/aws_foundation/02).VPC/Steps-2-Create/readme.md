@@ -1,3 +1,33 @@
+# VPC Diagram
+
+```mermaid
+flowchart TB
+    subgraph VPC["VPC"]
+        direction LR
+        Internet((☁️ Internet)) --> Endpoint1((Endpoint))
+        Endpoint1 --> Instance1[📦 Instance]
+        Client1((Client)) --> Instance1
+        Instance1 --> Gateway[▤ Gateway]
+        Gateway --> Endpoint2((Endpoint))
+        Endpoint2 --> Instance2[📦 Instance]
+        Client2((Client)) --> Instance2
+    end
+```
+
+> Note: the original diagram had no visible text labels, so placeholder names were used (Internet, Endpoint, Instance, Client, Gateway). Swap in the real names if you have them.
+
+
+
+
+
+
+
+
+
+
+
+
+
 # AWS VPC Creation Guide (Step-by-Step, Console Click-Path)
 
 ## What you'll build
