@@ -109,6 +109,7 @@ Leave routes as-is for now — the NAT route gets added in Step 5, after the NAT
 | Field | Value |
 |---|---|
 | Name | Demo-NAT |
+| Availability | zonal |
 | Subnet | Public-Subnet-1 |
 | Connectivity type | Public |
 | Elastic IP allocation ID | Allocate Elastic IP → select it |
