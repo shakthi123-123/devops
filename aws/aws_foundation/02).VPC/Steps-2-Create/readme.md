@@ -1,16 +1,16 @@
 # AWS VPC Creation Guide (Step-by-Step, Console Click-Path)
 
 ## What you'll build
-- 1 VPC (10.0.0.0/16)
-- 2 Public Subnets (2 AZs) + 2 Private Subnets (2 AZs)
-- 1 Internet Gateway
-- 1 NAT Gateway (on-demand, in a public subnet)
-- Public + Private Route Tables
-- Security Groups (public + private)
-- 1 EC2 in a public subnet, 1 EC2 in a private subnet
-- Full teardown steps at the end (NAT Gateway bills hourly — delete it first when done)
-
-Region used in this guide: **us-east-1**. Swap AZs if you use a different region.
+- Create a Own VPC.
+- Create a public & Private Subnets for different Availability zone by assigning CIDR blocks.
+- Create Internet Gateway and attach it to the VPC.
+- Create 2 Routing table 1 as Public and 1 as Private by associating the appropriate Subnets to it.
+- Edit the Public Route table's route alone and map the Internet Gateway, not the Private one and leave it as it is.
+- Create 2 Security Group 1 for public & 1 for Private then edit the Public's Security Group's inbound rules with SSH, HTTPS, HTTP. RDP and map 0.0.0.0/0 in the source, and then for private secrity group edit the inbound rules and map the Public Security Group's ID in the source.
+- Create 2 EC2 1 in Public & 1 in Private Subnets with proper Security groups,
+- Login into the Public Ec2 Instance & check whether it is getting Internet connection.
+- Create a Nat Gateway with new elastic IP for Internet connection in the Private Subnet, them map it to Private Routing table.
+- Now Login into the Public Ec2 Instance & check whether it is getting Internet connection.
 
 ---
 
@@ -71,7 +71,7 @@ Then: `Select Demo-IGW → Actions → Attach to VPC → choose Demo-VPC → Att
 `VPC Console → Route Tables → Create route table`
 
 | Field | Value |
-|---|---|
+|---|---| 
 | Name | Public-RT |
 | VPC | Demo-VPC |
 
