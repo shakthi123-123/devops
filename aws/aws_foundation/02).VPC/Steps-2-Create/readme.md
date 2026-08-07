@@ -146,8 +146,8 @@ Inbound rules:
 |---|---|---|
 | SSH | 22 | My IP or 0.0.0.0/0 |
 | HTTP | 80 | 0.0.0.0/0 *(only if hosting a web app)* |
-| HTTPS | 80 | 0.0.0.0/0 *(only if hosting a web app)* |
-| RDS | 80 | 0.0.0.0/0 *(only if hosting a web app)* |
+| HTTPS | 443 | 0.0.0.0/0 *(only if hosting a web app)* |
+| RDS | 3389 | 0.0.0.0/0 *(only if hosting a web app)* |
 
 Outbound: leave default (All traffic → 0.0.0.0/0).
 Save and Copy Public SG ID to Create Private SG
