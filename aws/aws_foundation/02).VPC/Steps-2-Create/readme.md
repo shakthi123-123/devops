@@ -162,7 +162,7 @@ Save and Copy Public SG ID to Create Private SG
 Inbound rules:
 | Type | Port | Source |
 |---|---|---|
-| ALL TCP| 22 | Public-SG *(select the security group, not an IP — allows SSH only from the public instance)* |
+| ALL TCP| 80 | Public-SG *(select the security group, not an IP — allows SSH only from the public instance)* |
 
 Outbound: leave default.
 
